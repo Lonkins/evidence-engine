@@ -56,6 +56,18 @@ Total reachable: ~$30,404
 ✅ `riskradar/README.md` — Full project README replacing generic ATK template: architecture with Mermaid diagram (Work IQ + Foundry IQ + MCP + HITL flow), scoring rubric table, CSM coverage table, responsible AI principles section, setup/provision guide, Hack for Good framing
 ✅ `appPackage/ai-plugin.json` — Replaced hardcoded `http://localhost:3000/api` with `${{MCP_SERVER_URL}}` ATK env var substitution — human can now override for ngrok/Railway/Render without editing code
 ✅ `env/.env.dev` — Added `MCP_SERVER_URL=http://localhost:3000/api` default + comments explaining ngrok/deploy override
+
+## Completed (Overnight Loop 3 — June 9/10)
+
+✅ `data/knowledge/risk_assessment_frameworks.md` — Major enhancement: 256 → 438 lines
+  - All 15 ICO Children's Code standards listed with names and key requirements (Standards 1–15)
+  - EU AI Act Article 5(1)(a)–(f) sub-provisions with direct school implications (including 5(1)(e) — emotion/attention tracking banned in schools)
+  - NIST AI RMF sub-category citations added to every scoring dimension (GOVERN 1.2, MEASURE 2.5, MAP 5.1, etc.)
+  - Scoring tables rewritten with "Evidentiary Anchor" column — concrete evidence distinguishing each score level
+  - ICO Children's Code standards cross-referenced inside Dimension 2 (Age Appropriateness) scoring criteria
+  - Part 5 added: Full ChatGPT sample scored assessment with all 5 dimensions, citations, risk rating (16/Medium), controls, AUP clause, and HITL disclaimer
+  - Part 6 added: NIST AI RMF Sub-category Quick Reference table mapping all 5 dimensions to primary sub-categories
+✅ Build verified clean
 ✅ Build verified clean
 
 ## Open Decisions
