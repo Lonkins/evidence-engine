@@ -5,8 +5,8 @@ metadata:
   type: project
 ---
 
-## Status: TRACK PIVOTED — IDEA SELECTION IN PROGRESS
-Session 2 (June 9, 2026)
+## Status: CORE DA BUILT — READY TO PROVISION
+Session 3 (June 9, 2026)
 
 ## Locked Decisions
 
@@ -32,10 +32,24 @@ Subject to judge-persona review — see `ideas.md`
 4. Hack for Good ($1,468)
 Total reachable: ~$30,404
 
+## Completed (Session 3)
+
+✅ `instruction.txt` — Full RiskRadar instructions: 6-step workflow, 5-dimension scoring, MCP tool invocation, output format, EU AI Act flags
+✅ `declarativeAgent.json` — Updated description, 4 conversation starters, action linked
+✅ `ai-plugin.json` — 3 functions (getAssessment, saveAssessment, vendorLookup) + LocalPlugin runtime at localhost:3000/api
+✅ `manifest.json` — Proper branding, app name and descriptions
+✅ `evals/prompts.json` — 7 RiskRadar evaluation prompts
+✅ TypeScript MCP server — Express, all 3 tools, file-persisted assessment store
+✅ Common Sense Media EdTech ratings — 12 tools pre-loaded (ChatGPT, Grammarly, Khan Academy, etc.)
+✅ Committed to agents-league git repo as `riskradar/`
+
 ## Open Decisions
-- [ ] Final idea selection (pending judge-persona agent review)
-- [ ] M365 Developer tenant confirmed and active
-- [ ] Node.js + M365 Agents Toolkit installed
+- [ ] M365 Developer tenant confirmed and active → provision the DA (teamsapp provision)
+- [ ] Upload 4 knowledge docs to SharePoint / Foundry IQ → add knowledge source to declarativeAgent.json
+- [ ] OAuth on MCP server (bonus tier)
+- [ ] Work IQ signals wired
+- [ ] Architecture diagram + README update
+- [ ] Demo video
 
 ## Build Schedule
 
