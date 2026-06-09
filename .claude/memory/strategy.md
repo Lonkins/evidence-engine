@@ -32,7 +32,7 @@ Subject to judge-persona review — see `ideas.md`
 4. Hack for Good ($1,468)
 Total reachable: ~$30,404
 
-## Completed (Session 3)
+## Completed (Session 3 — June 9)
 
 ✅ `instruction.txt` — Full RiskRadar instructions: 6-step workflow, 5-dimension scoring, MCP tool invocation, output format, EU AI Act flags
 ✅ `declarativeAgent.json` — Updated description, 4 conversation starters, action linked
@@ -43,12 +43,20 @@ Total reachable: ~$30,404
 ✅ Common Sense Media EdTech ratings — 12 tools pre-loaded (ChatGPT, Grammarly, Khan Academy, etc.)
 ✅ Committed to agents-league git repo as `riskradar/`
 
+## Completed (Overnight Loop 1 — June 9/10)
+
+✅ `declarativeAgent.json` — Added `capabilities` block: OneDriveAndSharePoint (Work IQ) + GraphConnectors (Foundry IQ) with TODO markers for resource IDs
+✅ `appPackage/KNOWLEDGE_SETUP.md` — Step-by-step guide for filling in both TODO values and uploading knowledge docs
+✅ `evals/prompts.json` — Expanded from 7 to 14 prompts; added: already-deployed Critical Risk, EU AI Act prohibited (emotion recognition), tool not in CSM database, vendor refusing DPA, reassessment trigger, home-use edge case
+✅ `server/src/ratings.ts` — Expanded from 12 to 18 tools: added Notion AI (C), BrainPOP (B), Nearpod (B), Google Classroom (A), Microsoft Teams for Education (A), Turnitin (D)
+✅ Build verified clean
+
 ## Open Decisions
 - [ ] M365 Developer tenant confirmed and active → provision the DA (teamsapp provision)
-- [ ] Upload 4 knowledge docs to SharePoint / Foundry IQ → add knowledge source to declarativeAgent.json
-- [ ] OAuth on MCP server (bonus tier)
-- [ ] Work IQ signals wired
-- [ ] Architecture diagram + README update
+- [ ] Fill in TODO values in `declarativeAgent.json` using KNOWLEDGE_SETUP.md guide
+- [ ] Upload 4 knowledge docs to SharePoint + Azure AI Foundry per KNOWLEDGE_SETUP.md
+- [ ] OAuth on MCP server — NOTE: persona analysis found this is ineffective on LocalPlugin/localhost runtime; correct OAuth requires HTTPS + OAuthPluginVault (needs Azure deployment)
+- [ ] README.md for riskradar/ with Mermaid architecture diagram
 - [ ] Demo video
 
 ## Build Schedule

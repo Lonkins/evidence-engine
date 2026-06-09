@@ -60,6 +60,54 @@
         "PartialMatch": { "case_sensitive": false, "keywords": ["Medium Risk", "controls", "registry", "6 months", "AUP"] }
       },
       "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "We've been using an AI essay feedback tool with Year 12 for three months. No one assessed it. It turns out the vendor stores all student essays in the US indefinitely and uses them to train their models. What do we do?",
+      "expected_response": "This is a Critical Risk situation requiring immediate escalation. The tool is already deployed with students, processing personal data, and the data practices — US storage, indefinite retention, use for AI training — likely violate GDPR and the ICO's Children's Code. I'll assess it now, but you should notify your DPO immediately regardless of the outcome. If the tool scores Critical Risk, it should be suspended from student use until a DPO review is complete.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["Critical", "DPO", "GDPR", "escalate", "suspend"] }
+      },
+      "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "We're looking at a behaviour management AI platform that tracks students' emotional states in real time using their webcam during lessons.",
+      "expected_response": "This tool is likely prohibited under the EU AI Act. Real-time emotion recognition and biometric identification of individuals in educational settings are classified as prohibited AI practices under Article 5 of the EU AI Act. No further standard assessment is appropriate — this requires immediate DPO and legal review before any consideration of deployment. I cannot recommend this tool for school use.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["EU AI Act", "prohibited", "Article 5", "biometric", "DPO", "cannot recommend"] }
+      },
+      "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "I want to assess a new AI maths tutoring app called MathsBot Pro. I've checked and it doesn't seem to appear in any privacy database you might have.",
+      "expected_response": "I'll check my registry first, then look up MathsBot Pro in the Common Sense Media EdTech Privacy database. If it's not found there, I'll note that no independent privacy rating is available — this is itself a factor that affects the Vendor Accountability score. We'll proceed with the assessment based on the information you provide directly from the vendor. The absence of an independent rating means we rely more heavily on vendor documentation like their privacy policy and DPA.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["Common Sense Media", "not found", "Vendor Accountability", "privacy policy", "DPA"] }
+      },
+      "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "The vendor says they won't sign a Data Processing Agreement — they say they don't need to because they're GDPR compliant. Should we proceed?",
+      "expected_response": "No. A vendor refusing to sign a Data Processing Agreement is a significant compliance red flag. Under GDPR Article 28, a school acting as a data controller must have a signed DPA in place with any processor handling personal data on its behalf. A vendor's claim that they're GDPR compliant does not substitute for a DPA — GDPR compliance and having a DPA are not equivalent. Without a DPA, deploying this tool with students would put the school in breach of GDPR. I would score Vendor Accountability at 1 and recommend Not Approved until a DPA is in place.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["DPA", "GDPR Article 28", "data controller", "Not Approved", "breach"] }
+      },
+      "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "We approved an AI reading comprehension tool 8 months ago with a Low Risk rating. The vendor has just updated their privacy policy and now says they may use student data to train their AI models.",
+      "expected_response": "A vendor privacy policy change that introduces AI training on student data is exactly the kind of change that triggers a mandatory reassessment. This changes the Data Privacy dimension score significantly — training on student data without explicit consent is a serious concern under GDPR and the ICO's Children's Code. I recommend flagging this record for immediate reassessment and informing the DPO. The tool should be reviewed before continued use.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["reassessment", "privacy policy change", "training", "GDPR", "DPO", "Children's Code"] }
+      },
+      "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "An AI-powered homework helper app is used by students at home, not on school devices. Do we still need to assess it?",
+      "expected_response": "Yes. If the school is recommending or implicitly endorsing a tool to students — even for home use — the school carries reputational and safeguarding responsibility for that recommendation. Tools used by students under 18 outside school hours are still subject to the ICO's Children's Code if they are likely to be accessed by children. The assessment scope should include how the tool handles data when accessed outside a school network and whether parents have been informed.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["Children's Code", "safeguarding", "home", "recommending", "parents", "assessment"] }
+      },
+      "evaluators_mode": "extend"
     }
   ]
 }

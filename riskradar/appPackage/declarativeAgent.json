@@ -22,6 +22,24 @@
             "text": "What are the main risk factors that would make an AI tool unsuitable for use in our school?"
         }
     ],
+    "capabilities": [
+        {
+            "name": "OneDriveAndSharePoint",
+            "items_by_url": [
+                {
+                    "url": "https://TODO_TENANT_NAME.sharepoint.com/sites/TODO_SITE_NAME/Shared%20Documents/RiskRadar-Knowledge"
+                }
+            ]
+        },
+        {
+            "name": "GraphConnectors",
+            "connections": [
+                {
+                    "connection_id": "TODO_AZURE_AI_SEARCH_CONNECTION_ID"
+                }
+            ]
+        }
+    ],
     "actions": [
         {
             "id": "riskradar_tools",
