@@ -4,133 +4,130 @@
 
 - **Event**: Agents League Hackathon, hosted by Microsoft
 - **Dates**: June 4–14, 2026 — **5 days remaining** (today is June 9)
-- **Track**: 🧠 Reasoning Agents (Microsoft Foundry)
+- **Track**: 💼 Enterprise Agents (Microsoft 365 Copilot)
 - **Winners announced**: June 30, 2026
 
 ## Multi-Prize Strategy
 
-We are targeting **four prize vectors** from one submission:
-
 | Prize | Value | How |
 |-------|-------|-----|
-| 🏆 Best Overall Agent | $16,468 | Strongest overall submission across all tracks |
-| 🧠 Best Reasoning Agent | $6,468 | Win the Reasoning Agents track |
-| 💡 Best Use of IQ Tools | $6,468 | Deep, creative integration of all 3 IQ layers |
-| 🎗️ Hack for Good | $1,468 | AI security education as societal benefit |
+| 🏆 Best Overall Agent | $16,468 | Strongest overall submission |
+| 💼 Best Enterprise Agent | $6,468 | Win the track |
+| 💡 Best Use of IQ Tools | $6,468 | Deep integration of Foundry IQ + Work IQ |
+| 🎗️ Hack for Good | $1,468 | Direct child protection through systematic AI tool review |
 
-**Maximum reachable: ~$30,404 from one project.**
+**Maximum reachable: ~$30,404**
 
-The Best Overall Agent is explicitly stackable with category prizes. Hack for Good adds a separate low-competition vector if the project framing is right.
+---
 
-## Project Concept: AI Security Certification Training System
+## The Project: RiskRadar
 
-The challenge provides a suggested scenario (enterprise learning/certification) but allows creative interpretation. Our angle:
+**One line:** A Declarative Agent in Microsoft 365 Copilot that helps school IT administrators systematically assess the safety and privacy risks of AI tools before deploying them to students.
 
-**Build the enterprise learning system specifically for AI Security certifications and Responsible AI training.**
+### The Problem
 
-Why this wins:
-- Most teams will build generic HR/corporate training — this is differentiated
-- AI security is timely, technically credible, and has clear societal value (Hack for Good framing)
-- The system can demonstrate AI security principles *within itself* (meta-layer via a Security Audit Agent)
-- All 3 Microsoft IQ layers have a natural, non-forced role
-- Assessment questions grounded in real AI security frameworks (OWASP AI Top 10, NIST AI RMF) hit the "cited, grounded answers" Foundry IQ requirement directly
+Teachers are adopting AI tools into classrooms weekly. School IT admins have no systematic process to evaluate whether a tool is safe for students — data handling, age appropriateness, GDPR compliance, bias risk. Decisions happen ad hoc or not at all. No credible substitute exists for this specific workflow.
 
-## Agent Architecture (5 + 1 agents)
+### What the Agent Does
 
-| Agent | Role | IQ Layer |
-|-------|------|----------|
-| Learning Path Curator | Maps AI security certs to roles, returns cited content | Foundry IQ |
-| Study Plan Generator | Builds capacity-aware schedule | Fabric IQ |
-| Engagement Agent | Calendar-aware study reminders | Work IQ |
-| Assessment Agent | Grounded questions from AI security frameworks | Foundry IQ |
-| Manager Insights Agent | Team readiness, skill gap analysis | Work IQ + Fabric IQ |
-| **Security Audit Agent** | Validates agent outputs for responsible AI compliance | Meta-layer — all IQs |
+1. IT admin asks: "Is [tool name] safe to deploy to students?"
+2. Agent walks through a structured NIST AI RMF-based risk conversation (not a form — a dialogue)
+3. Scores the tool across: data privacy, age appropriateness, bias risk, transparency, vendor accountability
+4. Generates a scored risk assessment with cited sources from the knowledge base
+5. Writes outcome to an **Approved Tools registry** in SharePoint (via MCP) — the audit trail DPOs and governors need
+6. Surfaces prior assessments if the same tool is requested again — gets smarter over time
+7. Triggers re-assessment alerts when vendors update privacy policies or terms
+8. Optional output: generates a suggested AUP clause for the approved tool (PolicyCraft integration)
 
-The Security Audit Agent is the differentiator: it demonstrates AI security *in practice*, not just as a topic. It scans question quality, checks for bias, and validates citations — directly showcasing "Reliability & Safety" (20% of score).
+### Judge Design Constraints (from persona review)
 
-## IQ Layer Mapping
+- **Framing must be clear:** agent output is input to a human decision, not a final verdict — avoids false confidence harm
+- **Output must be action-oriented:** write to Approved Tools registry, not just a PDF report
+- **Re-assessment triggers:** automated alerts when tool updates data practices (vendor freshness)
+- **Work IQ must be real:** pull actual tenant context (what's already approved, who approved it)
 
-| IQ Layer | Role in Our System |
-|----------|-------------------|
-| **Foundry IQ** | Knowledge base: OWASP AI Top 10, NIST AI RMF, MS Responsible AI Standard, SC-200/AZ-500 study guides (all synthetic/public) |
-| **Work IQ** | Work context: meeting load, focus windows → drives Engagement Agent scheduling |
-| **Fabric IQ** | Semantic layer: Learner → Role → Cert → Skill Gap → Readiness Score ontology |
+---
 
-## Track-Specific Judging (Reasoning Agents)
+## Technical Architecture
+
+### Development Approach: Declarative Agent (DA)
+
+Manifest-based agent in M365 Agents Toolkit. No custom AI compute — runs on M365 Copilot infrastructure. Zero Azure OpenAI cost.
+
+### IQ Integration
+
+| IQ Layer | Role |
+|----------|------|
+| **Foundry IQ** | Knowledge base: NIST AI RMF, ICO AI guidance, COPPA/GDPR for minors, responsible AI principles, OWASP AI Top 10 |
+| **Work IQ** | Tenant context: existing approved tools, who approved them, organisational role of requester |
+
+### MCP Server (TypeScript — bonus criteria)
+
+| Operation | What it does |
+|-----------|-------------|
+| **Read** | Retrieve existing tool assessments from the registry |
+| **Write** | Store new risk assessment outcomes to SharePoint |
+| **Read** | Vendor privacy policy lookup (external) |
+| **OAuth** | Authenticated vendor privacy lookup — hits explicit bonus scoring tier |
+
+### Bonus Criteria Coverage
+
+| Bonus | Status |
+|-------|--------|
+| MCP Apps | ✅ |
+| External MCP Server (read + write) | ✅ |
+| OAuth on MCP | ✅ (vendor privacy lookup) |
+
+---
+
+## Track Requirements
+
+**Required (hard):**
+1. ✅ Agent hosted in Microsoft 365 Copilot Chat
+2. ✅ Microsoft IQ integration (Foundry IQ + Work IQ)
+
+**Per Enterprise Agents Starter Kit:**
+- Declarative Agent built with Microsoft 365 Agents Toolkit + VS Code
+- Agent can target Copilot Free (no paid Copilot licence needed for users)
+- External MCP server integration for read/write operations
+
+---
+
+## Prerequisites Needed
+
+- [ ] **M365 Developer tenant** — [developer.microsoft.com/microsoft-365/dev-program](https://developer.microsoft.com/microsoft-365/dev-program) (free, instant, 90-day E5)
+- [ ] **Microsoft 365 Agents Toolkit** — VS Code extension: "Microsoft 365 Agents Toolkit"
+- [ ] **Node.js LTS** — for DA scaffolding and MCP server
+- [x] **Azure account** — created (needed for Foundry IQ knowledge base)
+- [ ] **VS Code** — with ATK extension installed
+
+---
+
+## Judging Rubric
 
 | Criterion | Weight |
 |-----------|--------|
-| Accuracy & Relevance | **25%** |
-| Reasoning & Multi-step Thinking | **25%** |
+| Accuracy & Relevance | 20% |
+| Reasoning & Multi-step Thinking | 20% |
 | Reliability & Safety | 20% |
 | Creativity & Originality | 15% |
 | User Experience & Presentation | 15% |
+| Community Vote (Discord) | 10% |
 
-50% of score is accuracy + reasoning. Build something that *works and reasons visibly*. Telemetry and trace logs are "highly valued" — they make reasoning visible to judges.
+---
 
-## Technical Stack
+## Build Schedule
 
-- **Language**: Python 3.10+ (challenge requirement)
-- **Framework**: Microsoft Agent Framework (local) + Foundry Agent Service (hosted)
-- **IQ Layers**: All three (Foundry IQ, Work IQ, Fabric IQ)
-- **Data**: Synthetic only — no PII, no real customer data
-- **Deployment**: Hosted Agents in Foundry Agent Service (recommended for final solution)
-- **Observability**: Foundry telemetry + trace logs (highly valued by judges)
+| Day | Goal |
+|-----|------|
+| June 9 | M365 Dev tenant live, VS Code + ATK installed, DA project scaffolded |
+| June 10 | DA manifest complete, Foundry IQ knowledge base uploaded and live |
+| June 11 | TypeScript MCP server — read + write to SharePoint assessment store |
+| June 12 | OAuth on vendor MCP, Work IQ wired, end-to-end demo flow working |
+| June 13 | Demo video, README with architecture diagram |
+| June 14 | Submit |
 
-## Submission Requirements
-
-- [ ] Public GitHub repository
-- [ ] README explaining agent responsibilities, orchestration flow, tools, data sources
-- [ ] Demo video
-- [ ] All 3 Microsoft IQ layers integrated
-- [ ] Synthetic data only (no PII, no credentials)
-- [ ] Multi-agent system with visible reasoning and orchestration
-- [ ] Code of Conduct compliance + CLA
-
-## Highly Valued by Judges
-
-- Evaluations, telemetry, observability
-- Advanced reasoning patterns (Planner–Executor, Critic/Verifier, Self-reflection)
-- Responsible AI controls and fallbacks
-- Hosted deployment story (Foundry Agent Service)
-
-## Reasoning Patterns to Use
-
-| Pattern | Where |
-|---------|-------|
-| Planner–Executor | Top-level orchestrator dispatches to specialist agents |
-| Critic / Verifier | Security Audit Agent validates outputs before delivery |
-| Role-based specialisation | Each agent has a single clear responsibility |
-| Self-reflection | Assessment Agent loops back if confidence is low |
-
-## Synthetic Data Required
-
-All data must be fabricated. Use identifiers like `L-1001`, `EMP-001`, `TEAM-A`. No real names, emails, document titles, or customer records.
-
-Seed datasets needed:
-- Learner performance records (role, cert, practice score, outcome)
-- Work activity signals (meeting hours, focus hours, preferred slot)
-- Fabric IQ semantic model (certifications, skills, recommended hours)
-- Knowledge documents: AI security frameworks, study guides
-
-## Key Dates
-
-| Date | Milestone |
-|------|-----------|
-| June 9 (today) | Strategy locked, setup complete |
-| June 10 | Core agent framework + Foundry IQ live |
-| June 11 | All 3 IQ layers integrated, orchestration working |
-| June 12 | Security Audit Agent + telemetry |
-| June 13 | Demo video + README polish |
-| June 14 | **Submission deadline** |
-
-## Open Questions (resolve with Tom before coding)
-
-- [ ] Azure subscription confirmed and Foundry project created?
-- [ ] Python comfort level — primary language or need scaffolding?
-- [ ] Confirm Hack for Good angle (AI security education for underserved orgs)?
-- [ ] Student status? (Top Student Award — separate $1,468 low-competition vector)
-- [ ] Discord account joined? (10% community vote — needs early engagement)
+---
 
 ## File Structure (target)
 
@@ -138,30 +135,42 @@ Seed datasets needed:
 agents-league/
 ├── CLAUDE.md
 ├── README.md
-├── .env.example
-├── .gitignore
-├── requirements.txt
-├── agents/
-│   ├── orchestrator.py
-│   ├── learning_path_curator.py
-│   ├── study_plan_generator.py
-│   ├── engagement_agent.py
-│   ├── assessment_agent.py
-│   ├── manager_insights.py
-│   └── security_audit.py
-├── data/
-│   ├── synthetic/
-│   │   ├── learners.json
-│   │   ├── work_signals.json
-│   │   └── certifications.json
-│   └── knowledge/
-│       ├── ai_security_guide.md
-│       ├── owasp_ai_top10.md
-│       └── responsible_ai_standard.md
-├── config/
-│   └── foundry_config.py
-├── evaluation/
-│   └── rubric_tests.py
-└── .claude/
-    └── memory/
+├── declarative-agent/
+│   ├── appPackage/
+│   │   ├── manifest.json
+│   │   └── declarativeAgent.json   ← instructions + knowledge sources
+│   └── env/
+│       └── .env.dev
+├── mcp-server/                     ← TypeScript, bonus criteria
+│   ├── src/
+│   │   ├── index.ts
+│   │   ├── tools/
+│   │   │   ├── getAssessment.ts
+│   │   │   ├── saveAssessment.ts
+│   │   │   └── vendorLookup.ts
+│   │   └── auth/
+│   │       └── oauth.ts
+│   ├── package.json
+│   └── tsconfig.json
+└── data/
+    └── knowledge/                  ← Foundry IQ sources (carry over)
+        ├── owasp_ai_top10.md
+        ├── ai_security_cert_guide.md
+        └── team_readiness_report.md
 ```
+
+---
+
+## Hack for Good Framing
+
+"RiskRadar gives every school in the country a systematic, free process for protecting students from harmful AI tools — replacing ad hoc decisions with a credible, auditable framework that scales without consultancy cost."
+
+The re-assessment trigger is the responsible AI story: protection doesn't expire when the vendor updates its terms.
+
+---
+
+## What the Python Work Produced That Carries Over
+
+- `data/knowledge/` — three documents feed directly into Foundry IQ
+- Domain knowledge: NIST AI RMF, OWASP AI Top 10, ICO guidance — all still needed
+- Hack for Good and AI security narrative — unchanged
