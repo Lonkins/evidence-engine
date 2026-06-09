@@ -1,0 +1,31 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/copilot/declarative-agent/v1.7/schema.json",
+    "version": "v1.7",
+    "name": "RiskRadar",
+    "description": "AI tool risk assessment for schools. RiskRadar helps IT administrators and DPOs evaluate AI tools against the NIST AI RMF, ICO Children's Code, and EU AI Act before deploying them to students.",
+    "instructions": "$[file('instruction.txt')]",
+    "conversation_starters": [
+        {
+            "title": "Assess a new AI tool",
+            "text": "I need to assess an AI tool before we roll it out to students. Can you help me evaluate it?"
+        },
+        {
+            "title": "Check an existing assessment",
+            "text": "Has ChatGPT been assessed before? Can you pull up the existing record?"
+        },
+        {
+            "title": "Urgent: tool already deployed",
+            "text": "A teacher has already started using an AI writing tool with Year 9 students. I need to assess it urgently."
+        },
+        {
+            "title": "What makes a tool high risk?",
+            "text": "What are the main risk factors that would make an AI tool unsuitable for use in our school?"
+        }
+    ],
+    "actions": [
+        {
+            "id": "riskradar_tools",
+            "file": "ai-plugin.json"
+        }
+    ]
+}

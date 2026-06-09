@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.2.0",
+  "default_evaluators": {
+    "Relevance": {},
+    "Coherence": {}
+  },
+  "items": [
+    {
+      "prompt": "I need to assess ChatGPT before we use it with Year 10 students. Where do we start?",
+      "expected_response": "I'll check if ChatGPT has been assessed before, then walk you through a structured assessment covering data privacy, age appropriateness, transparency, bias and fairness, and vendor accountability.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["assessment", "privacy", "ChatGPT"] }
+      },
+      "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "A teacher has started using an AI writing assistant called Grammarly with Year 9. I haven't assessed it yet — is this a problem?",
+      "expected_response": "This is a situation requiring immediate attention. I'll look up whether Grammarly has been assessed previously, and if not, we should run an assessment now. Tools already in use with students that haven't been assessed carry compliance risk under GDPR and the ICO's Children's Code.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["immediate", "assessed", "compliance", "GDPR"] }
+      },
+      "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "What factors make an AI tool high risk for a school?",
+      "expected_response": "Key risk factors include: collecting biometric or behavioural data from minors, storing data outside the UK/EU, lack of a Data Processing Agreement, tools that influence grades or formal decisions about students, no published privacy policy, and tools prohibited under the EU AI Act such as emotion recognition or real-time biometric identification.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["biometric", "DPA", "EU AI Act", "GDPR", "minors"] }
+      },
+      "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "We're looking at an adaptive learning platform that tracks student attention and engagement. Should we be concerned?",
+      "expected_response": "Attention and engagement tracking of students raises significant concerns under both the EU AI Act and the ICO's Children's Code. Depending on the implementation, this could constitute prohibited AI practice or high-risk AI system use. This requires detailed vendor documentation and likely DPO involvement before any deployment.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["EU AI Act", "Children's Code", "DPO", "attention", "high-risk"] }
+      },
+      "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "Can you explain the five scoring dimensions?",
+      "expected_response": "RiskRadar scores tools across five dimensions each rated 1 to 5: (1) Data Privacy — what data is collected and how it's protected; (2) Age Appropriateness — whether the tool is designed or suitable for the student age group; (3) Transparency and Explainability — how clear the vendor is about how AI decisions are made; (4) Bias and Fairness — whether the tool has been tested for bias that could disadvantage groups of students; (5) Vendor Accountability — whether the vendor provides contracts, certifications, and ongoing support.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["Data Privacy", "Age Appropriateness", "Transparency", "Bias", "Vendor Accountability"] }
+      },
+      "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "The vendor says their AI tutoring tool is GDPR compliant. Is that enough?",
+      "expected_response": "A vendor claiming GDPR compliance is a starting point, not a guarantee. You should ask for a signed Data Processing Agreement, check their privacy policy for specifics on data retention and third-party sharing, and verify any certifications such as ISO 27001 or SOC 2. Schools also need to apply the ICO's Children's Code which goes beyond general GDPR requirements.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["DPA", "Data Processing Agreement", "Children's Code", "ISO 27001"] }
+      },
+      "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "The assessment is done. The tool scored 19 out of 25 — Medium Risk. What happens next?",
+      "expected_response": "A Medium Risk rating means the tool can potentially be used but with appropriate controls in place. I'll save this to your Approved Tools Registry and recommend a 6-month review. I'll suggest an Acceptable Use Policy clause you can add to your school's AI policy, and note any specific controls the assessment identified.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["Medium Risk", "controls", "registry", "6 months", "AUP"] }
+      },
+      "evaluators_mode": "extend"
+    }
+  ]
+}
