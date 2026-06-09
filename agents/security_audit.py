@@ -1,74 +1,89 @@
 """
-Security Audit Agent — Critic/Verifier pattern.
+Security Audit Agent — Critic/Verifier pattern via Foundry Agents API.
 
-Validates all other agents' outputs for responsible AI compliance before
-they reach the user. Checks for: hallucinated citations, biased content,
-unsupported factual claims, and outputs that lack appropriate uncertainty signals.
+Validates all other agents' outputs for responsible AI compliance BEFORE
+they reach the user. This agent demonstrates AI security principles in
+practice — the system is not just teaching AI security, it is applying it.
 
-This agent is the system demonstrating AI security principles IN PRACTICE —
-not just as a topic of study.
+Checks: citation integrity, factual grounding, bias, overconfidence,
+privacy exposure, and excessive agency.
 """
-from azure.ai.projects import AIProjectClient
-from azure.identity import DefaultAzureCredential
+from azure.ai.projects.models import MessageTextContent
 
-from agents.base import AgentResponse
-from config.settings import AZURE_AI_PROJECT_ENDPOINT, AZURE_AI_MODEL_DEPLOYMENT
+from agents.base import AgentResponse, get_project_client
+from config.settings import AZURE_AI_MODEL_DEPLOYMENT
 
 
-AUDIT_PROMPT = """
-You are a Responsible AI auditor reviewing the output of an AI agent operating
-in an educational setting. Your role is to identify potential issues before
-the output reaches the user.
+INSTRUCTIONS = """
+You are a Responsible AI auditor operating inside an AI security training
+system for schools and educational institutions.
 
-Check for:
-1. CITATION INTEGRITY — Are citations real and plausible? Flag any that look fabricated.
-2. FACTUAL CLAIMS — Are factual claims supported by the cited sources? Flag unsupported claims.
-3. BIAS OR UNFAIRNESS — Does the output treat all learner roles fairly? Flag any role stereotyping.
-4. OVERCONFIDENCE — Does the output present uncertain information as certain? Flag missing caveats.
-5. PRIVACY EXPOSURE — Does the output reveal more personal detail than necessary? Flag PII risks.
-6. EXCESSIVE AGENCY — Does the output recommend irreversible actions without caveats? Flag these.
+Before any output reaches the user, check it against these criteria:
 
-For each issue found, state:
-- ISSUE TYPE (from list above)
-- SEVERITY: low / medium / high
-- EXPLANATION: one sentence
-- RECOMMENDATION: what to change
+1. CITATION INTEGRITY — Are citations plausible and real-looking? Flag invented ones.
+2. FACTUAL GROUNDING — Are factual claims supported by the cited sources?
+3. BIAS OR UNFAIRNESS — Is any role or group treated unfairly or stereotyped?
+4. OVERCONFIDENCE — Is uncertain information presented as certain? Are caveats missing?
+5. PRIVACY EXPOSURE — Does the output reveal more personal detail than necessary?
+6. EXCESSIVE AGENCY — Are irreversible or high-stakes actions recommended without caveats?
 
-If no issues are found, respond with: "AUDIT PASSED — no issues identified."
+For each issue found, output:
+  ISSUE: <type>
+  SEVERITY: low | medium | high
+  EXPLANATION: <one sentence>
+  RECOMMENDATION: <what to change>
+
+If no issues are found, output exactly: AUDIT PASSED — no issues identified.
 """
 
 
 class SecurityAuditAgent:
-    def __init__(self) -> None:
-        self._client = AIProjectClient(
-            endpoint=AZURE_AI_PROJECT_ENDPOINT,
-            credential=DefaultAzureCredential(),
-        )
+    AGENT_NAME = "security-audit-agent"
 
     def audit(self, agent_output: AgentResponse) -> AgentResponse:
         output_text = str(agent_output.output)
         citations_text = ", ".join(agent_output.citations) or "None provided"
 
-        audit_input = (
+        user_message = (
+            f"Review this agent output for responsible AI compliance:\n\n"
             f"Agent: {agent_output.agent}\n"
-            f"Learner ID: {agent_output.learner_id}\n"
-            f"Citations provided: {citations_text}\n"
-            f"Output:\n{output_text}\n"
+            f"Citations: {citations_text}\n"
+            f"Confidence: {agent_output.confidence:.0%}\n\n"
+            f"Output:\n{output_text}"
         )
 
-        response = self._client.inference.get_chat_completions(
-            model=AZURE_AI_MODEL_DEPLOYMENT,
-            messages=[
-                {"role": "system", "content": AUDIT_PROMPT},
-                {"role": "user", "content": audit_input},
-            ],
-        )
+        with get_project_client() as client:
+            agent = client.agents.create_agent(
+                model=AZURE_AI_MODEL_DEPLOYMENT,
+                name=self.AGENT_NAME,
+                instructions=INSTRUCTIONS,
+            )
+            thread = client.agents.threads.create()
+            client.agents.messages.create(
+                thread_id=thread.id,
+                role="user",
+                content=user_message,
+            )
+            run = client.agents.runs.create_and_process(
+                thread_id=thread.id,
+                agent_id=agent.id,
+            )
 
-        audit_result = response.choices[0].message.content
+            messages = client.agents.messages.list(thread_id=thread.id)
+            audit_result = next(
+                block.text.value
+                for msg in messages
+                if msg.role == "assistant"
+                for block in msg.content
+                if isinstance(block, MessageTextContent)
+            )
+
+            client.agents.delete_agent(agent.id)
+
         passed = "AUDIT PASSED" in audit_result
-        high_severity = "SEVERITY: high" in audit_result.lower()
+        high_severity = "severity: high" in audit_result.lower()
 
         agent_output.flagged_by_audit = not passed or high_severity
-        agent_output.audit_notes = [audit_result] if not passed else []
+        agent_output.audit_notes = [] if passed else [audit_result]
 
         return agent_output

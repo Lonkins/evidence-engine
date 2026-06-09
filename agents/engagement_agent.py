@@ -1,41 +1,37 @@
 """
-Engagement Agent — Work IQ context layer.
+Engagement Agent — Foundry Agents API + Work IQ context.
 
-Uses synthetic work signals (meeting load, focus windows, teaching schedule)
-to suggest appropriate study reminder timing and keep learners on track.
+Uses work signals (teaching periods, meeting load, focus windows) to design
+a contextually appropriate engagement and reminder strategy.
 
-Work IQ integration note: In a production deployment this would connect to
-Microsoft 365 via Work IQ for live calendar and collaboration signals.
-For this demo, equivalent signals are injected as synthetic work context.
+Work IQ note: In production this connects to Microsoft 365 for live calendar
+signals. Here we inject equivalent synthetic organisational signals as Work IQ
+context — this is the pattern recommended in the challenge brief for demos.
 """
-from azure.ai.projects import AIProjectClient
-from azure.identity import DefaultAzureCredential
+from azure.ai.projects.models import MessageTextContent
 
-from agents.base import AgentRequest, AgentResponse
-from config.settings import AZURE_AI_PROJECT_ENDPOINT, AZURE_AI_MODEL_DEPLOYMENT
+from agents.base import AgentRequest, AgentResponse, get_project_client
+from config.settings import AZURE_AI_MODEL_DEPLOYMENT
 
 
-SYSTEM_PROMPT = """
+INSTRUCTIONS = """
 You are the Engagement Agent for an AI security training programme for schools
-and educational institutions. Your role is to keep learners on track with their
-study plan using contextually appropriate reminders.
+and educational institutions. Design a contextually appropriate reminder and
+engagement strategy for each learner.
 
 Rules:
 - Never schedule reminders during confirmed teaching periods or high-meeting windows.
-- For learners with 20+ teaching/meeting hours, suggest micro-session reminders only.
-- Adapt tone to role: professional for IT staff, supportive for students.
-- Do not send daily reminders — recommend a sustainable engagement cadence.
-- Be explicit about the work context reasoning behind your scheduling decisions.
-- Mention if term phase affects the recommended approach.
+- For learners with more than 20 combined teaching and meeting hours per week,
+  use micro-session nudges only (30 minutes max).
+- Adapt tone to role: professional and direct for IT staff, encouraging for students.
+- Recommend a sustainable cadence — not daily — to avoid notification fatigue.
+- Explicitly state the work-context reasoning behind each scheduling decision.
+- Account for term phase: mid-term teachers have very different capacity than during holidays.
 """
 
 
 class EngagementAgent:
-    def __init__(self) -> None:
-        self._client = AIProjectClient(
-            endpoint=AZURE_AI_PROJECT_ENDPOINT,
-            credential=DefaultAzureCredential(),
-        )
+    AGENT_NAME = "engagement-agent"
 
     def run(self, req: AgentRequest, study_plan: AgentResponse) -> AgentResponse:
         learner = req.context["learner"]
@@ -48,38 +44,56 @@ class EngagementAgent:
         high_load = total_load > 20
 
         user_message = (
-            f"Learner: {learner['role']}, studying for {learner['target_certification']}\n"
-            f"Work context (Work IQ signals):\n"
-            f"- Total weekly load: {total_load} hours\n"
+            f"Learner: {learner['role']}, studying for {learner['target_certification']}\n\n"
+            f"Work IQ signals:\n"
+            f"- Total weekly load: {total_load} hours ({'HIGH — use micro-sessions' if high_load else 'manageable'})\n"
             f"- Focus hours: {signals.get('focus_hours_per_week', 10)} hrs/wk\n"
             f"- Preferred slot: {signals.get('preferred_learning_slot', 'Flexible')}\n"
             f"- Available days: {', '.join(signals.get('available_days', []))}\n"
             f"- Term phase: {signals.get('term_phase', 'Unknown')}\n"
-            f"- High load learner: {'Yes — use micro-sessions' if high_load else 'No'}\n"
             f"- Notes: {signals.get('notes', '')}\n\n"
             f"Study plan summary:\n{study_plan.output['study_plan']}\n\n"
             f"Design an engagement and reminder strategy."
         )
 
-        response = self._client.inference.get_chat_completions(
-            model=AZURE_AI_MODEL_DEPLOYMENT,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_message},
-            ],
-        )
+        with get_project_client() as client:
+            agent = client.agents.create_agent(
+                model=AZURE_AI_MODEL_DEPLOYMENT,
+                name=self.AGENT_NAME,
+                instructions=INSTRUCTIONS,
+            )
+            thread = client.agents.threads.create()
+            client.agents.messages.create(
+                thread_id=thread.id,
+                role="user",
+                content=user_message,
+            )
+            run = client.agents.runs.create_and_process(
+                thread_id=thread.id,
+                agent_id=agent.id,
+            )
 
-        content = response.choices[0].message.content
+            messages = client.agents.messages.list(thread_id=thread.id)
+            response_text = next(
+                block.text.value
+                for msg in messages
+                if msg.role == "assistant"
+                for block in msg.content
+                if isinstance(block, MessageTextContent)
+            )
+
+            client.agents.delete_agent(agent.id)
 
         return AgentResponse(
             agent="EngagementAgent",
             learner_id=req.learner_id,
-            output={"engagement_plan": content},
+            output={"engagement_plan": response_text},
             reasoning_trace=[
                 f"Total weekly load: {total_load} hrs",
-                "High load detected — micro-session cadence recommended" if high_load else "Standard engagement cadence",
-                f"Work IQ signals: preferred slot = {signals.get('preferred_learning_slot')}, available = {signals.get('available_days')}",
-                f"Term phase consideration: {signals.get('term_phase')}",
+                "Micro-session cadence applied (high load)" if high_load else "Standard cadence",
+                f"Preferred slot: {signals.get('preferred_learning_slot')} on {signals.get('available_days')}",
+                f"Term phase: {signals.get('term_phase')}",
+                f"Run ID: {run.id}",
             ],
-            citations=["work_signals.json — synthetic Work IQ context"],
+            citations=["work_signals.json (synthetic Work IQ context)"],
         )

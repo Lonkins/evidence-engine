@@ -1,72 +1,37 @@
 """
-Assessment Agent — Foundry IQ grounding with self-reflection.
+Assessment Agent — Foundry Agents API + Foundry IQ grounding + self-reflection.
 
-Generates grounded, cited practice questions from approved AI security
-knowledge sources. Applies a self-reflection loop: if confidence in
-question quality is low, it revises before returning.
+Generates grounded, cited practice questions from approved AI security knowledge.
+Applies a self-reflection loop: the agent reviews its own questions before
+returning them. Low-confidence outputs are flagged for human review.
 """
-from azure.ai.projects import AIProjectClient
-from azure.identity import DefaultAzureCredential
+from azure.ai.projects.models import MessageTextContent
 
-from agents.base import AgentRequest, AgentResponse
-from config.settings import AZURE_AI_PROJECT_ENDPOINT, AZURE_AI_MODEL_DEPLOYMENT
+from agents.base import AgentRequest, AgentResponse, get_project_client
+from config.settings import AZURE_AI_MODEL_DEPLOYMENT
 
 
-SYSTEM_PROMPT = """
+INSTRUCTIONS = """
 You are the Assessment Agent for an AI security training programme for schools
-and educational institutions. Your role is to generate high-quality practice
-questions grounded in the knowledge base.
+and educational institutions. Generate high-quality, grounded practice questions.
 
 Rules:
-- Every question must cite the source section it is drawn from.
-- Target the learner's identified skill gaps — do not generate generic questions.
-- Questions must be multiple choice with four options (A, B, C, D) and a correct answer.
-- Include a brief explanation of why the correct answer is right.
-- Do not invent facts. Only use content present in the knowledge base.
-- If you are uncertain about accuracy, flag the question for human review.
-- Match difficulty to the certification level: Fundamentals vs Intermediate vs Associate.
-"""
-
-REFLECTION_PROMPT = """
-Review the questions you just generated. For each question:
-1. Is it grounded in a cited source?
-2. Is the correct answer unambiguous?
-3. Is it appropriately scoped to the skill gap it targets?
-
-If any question fails these checks, revise it. Return only the final, validated set.
+- Every question must include a citation (source document and section).
+- Target the learner's identified skill gaps — not generic questions.
+- Format: multiple choice, 4 options (A–D), correct answer, brief explanation.
+- Do not invent facts. Use only content from the knowledge base.
+- After generating questions, review each one:
+  1. Is it grounded in a cited source?
+  2. Is the correct answer unambiguous?
+  3. Does it target the learner's skill gap?
+  If a question fails, revise it before returning the final set.
+- Match difficulty to the certification: Fundamentals vs Intermediate vs Associate.
+- Flag any question you are uncertain about with [HUMAN REVIEW RECOMMENDED].
 """
 
 
 class AssessmentAgent:
-    def __init__(self) -> None:
-        self._client = AIProjectClient(
-            endpoint=AZURE_AI_PROJECT_ENDPOINT,
-            credential=DefaultAzureCredential(),
-        )
-
-    def _generate_questions(self, user_message: str) -> str:
-        response = self._client.inference.get_chat_completions(
-            model=AZURE_AI_MODEL_DEPLOYMENT,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_message},
-            ],
-        )
-        return response.choices[0].message.content
-
-    def _reflect_and_revise(self, draft_questions: str) -> tuple[str, float]:
-        """Self-reflection loop — revise questions if confidence is low."""
-        response = self._client.inference.get_chat_completions(
-            model=AZURE_AI_MODEL_DEPLOYMENT,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": f"Draft questions:\n{draft_questions}\n\n{REFLECTION_PROMPT}"},
-            ],
-        )
-        revised = response.choices[0].message.content
-        # Confidence heuristic: if revision changed the content meaningfully, score lower
-        confidence = 0.85 if len(revised) < len(draft_questions) * 0.9 else 0.95
-        return revised, confidence
+    AGENT_NAME = "assessment-agent"
 
     def run(self, req: AgentRequest) -> AgentResponse:
         learner = req.context["learner"]
@@ -77,23 +42,53 @@ class AssessmentAgent:
         user_message = (
             f"Generate 5 practice questions for a learner preparing for {learner['target_certification']}.\n"
             f"Role: {learner['role']}\n"
-            f"Focus on these skill gaps: {gap_str}\n"
-            f"Current practice score: {learner['practice_score_avg']}%\n"
-            f"Use content from the OWASP AI Top 10 and AI Security Certification Guide in the knowledge base."
+            f"Skill gaps to target: {gap_str}\n"
+            f"Current practice score: {learner['practice_score_avg']}%\n\n"
+            f"After generating, apply your self-review checklist and revise if needed.\n"
+            f"Use the OWASP AI Top 10 and AI Security Certification Guide as your knowledge sources."
         )
 
-        draft = self._generate_questions(user_message)
-        final, confidence = self._reflect_and_revise(draft)
+        with get_project_client() as client:
+            agent = client.agents.create_agent(
+                model=AZURE_AI_MODEL_DEPLOYMENT,
+                name=self.AGENT_NAME,
+                instructions=INSTRUCTIONS,
+            )
+            thread = client.agents.threads.create()
+            client.agents.messages.create(
+                thread_id=thread.id,
+                role="user",
+                content=user_message,
+            )
+            run = client.agents.runs.create_and_process(
+                thread_id=thread.id,
+                agent_id=agent.id,
+            )
+
+            messages = client.agents.messages.list(thread_id=thread.id)
+            response_text = next(
+                block.text.value
+                for msg in messages
+                if msg.role == "assistant"
+                for block in msg.content
+                if isinstance(block, MessageTextContent)
+            )
+
+            client.agents.delete_agent(agent.id)
+
+        needs_review = "[HUMAN REVIEW RECOMMENDED]" in response_text
+        confidence = 0.75 if needs_review else 0.92
 
         return AgentResponse(
             agent="AssessmentAgent",
             learner_id=req.learner_id,
-            output={"questions": final},
+            output={"questions": response_text},
             reasoning_trace=[
                 f"Skill gaps targeted: {gap_str}",
-                "Generated initial question set (Foundry IQ grounding)",
-                "Applied self-reflection loop — revised for accuracy and citation coverage",
-                f"Final confidence score: {confidence:.0%}",
+                "Generated questions with self-review loop (Critic/Verifier pattern)",
+                "Human review flag detected — confidence reduced" if needs_review else "All questions passed self-review",
+                f"Confidence: {confidence:.0%}",
+                f"Run ID: {run.id}",
             ],
             citations=["owasp_ai_top10.md", "ai_security_cert_guide.md"],
             confidence=confidence,
