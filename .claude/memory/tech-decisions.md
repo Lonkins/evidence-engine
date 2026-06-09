@@ -1,63 +1,87 @@
 ---
 name: tech-decisions
-description: Technical decisions made for the hackathon project — API patterns, agent architecture, dependencies
+description: All locked technical decisions for RiskRadar — stack, APIs, auth, data sources
 metadata:
   type: project
 ---
 
-## API Pattern: Azure AI Agents Service (not raw inference)
+## Track and Approach
 
-All agents use `client.agents.create_agent(...)` → `client.agents.threads.create()` → `client.agents.runs.create_and_process(...)`. This is the Foundry-native pattern that gives us built-in telemetry, run IDs in traces, and is what Microsoft judges expect to see.
+- Track: Enterprise Agents, Declarative Agent (DA) via Microsoft 365 Agents Toolkit
+- No custom AI compute — runs on M365 Copilot infrastructure
+- Zero Azure OpenAI cost
 
-**Why:** Raw `inference.get_chat_completions` would work but produces no Foundry telemetry and doesn't demonstrate the Agents Service. Judges value observability explicitly.
+## Knowledge Source: Azure AI Search via Foundry IQ (LOCKED)
 
-**How to apply:** Every agent creates a named agent, runs it on a thread, deletes it after. Run IDs go into `reasoning_trace` for traceability.
+Chosen over DA native knowledge for technical correctness and judge credibility.
 
-## Agent Client Pattern
+Path: Upload 4 knowledge docs to Azure AI Foundry → create knowledge base → index with Azure AI Search (free tier, 50MB, zero cost) → DA manifest references Azure AI Search connector.
 
-`get_project_client()` in `agents/base.py` returns `AIProjectClient` using `DefaultAzureCredential`. This requires `az login` to be run once locally. No credentials ever go in code.
+This is a legitimate Foundry IQ integration claim. The Azure AI Search free tier covers our 4 files with headroom.
 
-## Agent Lifecycle
+**Why:** More technically correct Foundry IQ claim than DA native sources. Engineer judge specifically values inspectable, honest integration. Free tier means no cost downside.
 
-Create-on-demand pattern: agent is created, used, and deleted per request. This is simpler than persistent agents for a demo and avoids quota accumulation on free tier.
+## Work IQ Integration
 
-## Foundry IQ Integration (TODO — needs Azure provisioned)
+Native in M365 Copilot context. DA automatically receives user's org signals (identity, role, tenant context) via Work IQ. No separate configuration needed beyond correct scoping in the manifest. In the agent instructions we explicitly surface Work IQ context (who is asking, what their org context is).
 
-Next step after credentials are wired:
-1. Upload `data/knowledge/*.md` files to Foundry project as knowledge base
-2. Connect knowledge base to `LearningPathCurator` and `AssessmentAgent` via `azure_ai_search` tool resource
-3. This gives real grounded citations with source metadata
+## MCP Server (TypeScript — bonus criteria)
 
-For now, citation strings are authored manually in each agent — accurate but not live retrieval.
+OAuth-protected. Three tools:
 
-## Work IQ: Synthetic Signals
+| Tool | Operation | Target |
+|------|-----------|--------|
+| `getAssessment` | Read | SharePoint list — Approved Tools registry |
+| `saveAssessment` | Write | SharePoint list — Approved Tools registry |
+| `vendorLookup` | Read | Common Sense Media EdTech Privacy ratings (public) |
 
-No M365 tenant available. Work IQ context injected as structured synthetic data from `data/synthetic/work_signals.json`. This is the pattern the brief recommends for demos. README will be explicit about this.
+**OAuth:** On the DA ↔ MCP Server connection. Satisfies the explicit OAuth bonus scoring tier.
+The Common Sense Media fetch is a public endpoint from the MCP server side — no API key needed for basic use.
 
-## Fabric IQ: Semantic Seed via JSON
+**Common Sense Media rationale:** Free, public, widely trusted, independently rates EdTech tools on privacy (A-F), COPPA/GDPR flags, data collection summaries. A real external data source that judges will recognise. Far stronger than a mocked vendor API.
 
-Fabric IQ represented by `data/synthetic/certifications.json` — the role-cert mapping, recommended hours, skill lists, prerequisites. This is passed as structured context to `StudyPlanGenerator` and `ManagerInsightsAgent`.
+## SharePoint List Schema (Approved Tools Registry)
 
-## Python Version and Tooling
+| Field | Type | Description |
+|-------|------|-------------|
+| ToolName | Text | AI tool being assessed |
+| VendorName | Text | Tool vendor |
+| AssessmentDate | Date | When assessed |
+| RiskScore | Number | Total score 5–25 |
+| RiskRating | Choice | Low / Medium / High / Critical |
+| DataPrivacyScore | Number | 1–5 |
+| AgeAppropriatenessScore | Number | 1–5 |
+| TransparencyScore | Number | 1–5 |
+| BiasScore | Number | 1–5 |
+| VendorAccountabilityScore | Number | 1–5 |
+| Decision | Choice | Approved / Approved with Controls / Not Approved / Escalate |
+| ReviewDate | Date | When to re-assess |
+| AssessedBy | Person | M365 user who ran assessment |
+| AUPClause | Multiline Text | Suggested AUP clause if approved |
+| Notes | Multiline Text | Additional context |
+| CommonSenseRating | Text | A/B/C/D/F from Common Sense Media |
+| ReassessmentTrigger | Boolean | Flagged for re-assessment |
 
-- Python 3.10+ (challenge requirement)
-- `azure-ai-projects>=1.0.0b11` — Agents API
-- `azure-identity>=1.19.0` — DefaultAzureCredential
-- `openai>=1.55.0` — required peer dependency
-- `pydantic>=2.0.0` — AgentRequest/AgentResponse models
-- `rich>=13.0.0` — CLI output display
+## DA Instructions Design
 
-## Entry Point
+Instructions live in `declarativeAgent.json`. Key sections:
+1. Persona: RiskRadar, school AI tool risk assessor
+2. Workflow: 6-question conversation → score → store via MCP → output
+3. Knowledge reference: ground scoring in risk_assessment_frameworks.md
+4. MCP tool invocation: when to call getAssessment, saveAssessment, vendorLookup
+5. Output format: scored assessment, risk rating, recommendation, AUP clause if approved
 
-`python main.py --learner L-1001` — runs full pipeline
-`python main.py --learner L-1001 --manager` — includes manager insights
-`python main.py --team` — team-level insights only
+Engineer judge noted ~8k token effective limit on DA instructions — keep concise.
 
-## Next Step Blocking on Tom
+## TypeScript Comfort
 
-Tom must complete Azure setup and provide .env before any agents can actually run:
-1. ai.azure.com → create Hub (East US) → create Project
-2. Deploy gpt-4o model
-3. Copy project endpoint to .env
-4. `brew install azure-cli && az login`
-5. `python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`
+Tom is comfortable with TypeScript. Claude agents write, Tom reviews and directs.
+
+## Build Order
+
+1. M365 tenant + ATK → scaffold DA project
+2. Azure AI Foundry → knowledge base → upload 4 docs → Azure AI Search index
+3. DA manifest: instructions + knowledge source connector + MCP reference
+4. TypeScript MCP server: scaffold → tools → SharePoint write → Common Sense Media fetch
+5. OAuth on MCP server
+6. End-to-end test → demo video → README
