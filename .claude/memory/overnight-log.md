@@ -30,3 +30,30 @@ metadata:
 1. **README.md for riskradar/** — Mermaid architecture diagram showing Work IQ + Foundry IQ + MCP tools + human-in-the-loop flow. Judges read READMEs. ~60 min, pure Markdown.
 2. **Knowledge document improvements** — Strengthen `data/knowledge/risk_assessment_frameworks.md` with more specific scoring criteria examples and clearer ICO Children's Code citation patterns.
 3. **Human required:** Fill in TODO values in declarativeAgent.json per KNOWLEDGE_SETUP.md, then `teamsapp provision`.
+
+---
+
+## Cycle 2 — June 9/10, 2026
+
+**What was worked on:** README.md replacement + ai-plugin.json runtime URL fix.
+
+**Persona recommendations:**
+- *Skeptical Microsoft Engineer (P1):* Critical infrastructure failure — LocalPlugin at `localhost:3000` is unreachable from Microsoft's servers; all 3 MCP tools silently fail in production demo. Fix: deploy server to public HTTPS, update ai-plugin.json URL.
+- *Competing Team (P2):* README is the biggest gap — generic ATK template makes the submission invisible at first glance. Single action: README with Mermaid diagram.
+- *Conservative Safety Judge (P3):* README first for reputational risk (template README with no child safety framing is embarrassing if submission wins Hack for Good). Then scoring criteria in knowledge doc. Also flagged HITL as a footer disclaimer, not a design principle.
+- *Prize Strategist (P4):* README moves +$800–1,200 across Overall/Enterprise/IQ Tools. Creativity (15%) + UX (15%) + Community Vote (10%) = 40% of score is presentation-driven. Clear recommendation: write the README now.
+
+**Tiebreaker:** All 4 agreed README first. P1's infrastructure concern partially addressed within the cycle.
+
+**What was built:**
+1. `riskradar/README.md` — Full replacement README: Mermaid architecture diagram (M365 Copilot → DA → Work IQ + Foundry IQ + MCP → registry + CSM), 6-step workflow summary, scoring rubric table, CSM coverage table, responsible AI principles section (HITL elevated to design principle, not disclaimer), project structure, full setup/provision guide with ngrok + deploy instructions, evaluation prompts, Hack for Good framing
+2. `appPackage/ai-plugin.json` — Replaced hardcoded `http://localhost:3000/api` with `${{MCP_SERVER_URL}}` ATK env var substitution — directly addresses P1's critical failure point
+3. `env/.env.dev` — Added `MCP_SERVER_URL=http://localhost:3000/api` as the default local value with comments explaining how to override with ngrok or Railway/Render for demo/production
+4. TypeScript build verified clean
+
+**Critical insight from P3:** Human-in-the-loop was a one-line footer disclaimer in instruction.txt. README now frames it as a named design principle with three specific commitments. This is the difference between "compliant" and "credible" for Reliability & Safety (20%).
+
+**Recommended next cycle priority:**
+1. **Knowledge document improvements** — Strengthen `data/knowledge/risk_assessment_frameworks.md` with more specific per-level scoring criteria (what makes a score 3 vs 4 for Data Privacy), concrete ICO Children's Code section citations (Age Appropriate Design Code standard numbers), and NIST AI RMF function citations. This is what makes grounded citations credible rather than performative — a judge who asks "why 3 not 2?" will catch weak knowledge docs.
+2. **Human required (highest impact):** Set `MCP_SERVER_URL` to a public HTTPS URL in `.env.dev`, then run `teamsapp provision`. This is the single action that makes the MCP tools work in the actual demo.
+3. **Human required:** Fill in SharePoint URL + Azure AI Search connection ID per KNOWLEDGE_SETUP.md.

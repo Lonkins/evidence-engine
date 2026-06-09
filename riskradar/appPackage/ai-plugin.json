@@ -111,7 +111,7 @@
         {
             "type": "LocalPlugin",
             "spec": {
-                "url": "http://localhost:3000/api"
+                "url": "${{MCP_SERVER_URL}}"
             },
             "run_for_functions": ["getAssessment", "saveAssessment", "vendorLookup"]
         }

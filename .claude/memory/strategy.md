@@ -51,12 +51,19 @@ Total reachable: ~$30,404
 ✅ `server/src/ratings.ts` — Expanded from 12 to 18 tools: added Notion AI (C), BrainPOP (B), Nearpod (B), Google Classroom (A), Microsoft Teams for Education (A), Turnitin (D)
 ✅ Build verified clean
 
+## Completed (Overnight Loop 2 — June 9/10)
+
+✅ `riskradar/README.md` — Full project README replacing generic ATK template: architecture with Mermaid diagram (Work IQ + Foundry IQ + MCP + HITL flow), scoring rubric table, CSM coverage table, responsible AI principles section, setup/provision guide, Hack for Good framing
+✅ `appPackage/ai-plugin.json` — Replaced hardcoded `http://localhost:3000/api` with `${{MCP_SERVER_URL}}` ATK env var substitution — human can now override for ngrok/Railway/Render without editing code
+✅ `env/.env.dev` — Added `MCP_SERVER_URL=http://localhost:3000/api` default + comments explaining ngrok/deploy override
+✅ Build verified clean
+
 ## Open Decisions
 - [ ] M365 Developer tenant confirmed and active → provision the DA (teamsapp provision)
 - [ ] Fill in TODO values in `declarativeAgent.json` using KNOWLEDGE_SETUP.md guide
 - [ ] Upload 4 knowledge docs to SharePoint + Azure AI Foundry per KNOWLEDGE_SETUP.md
+- [ ] Set MCP_SERVER_URL to a public HTTPS endpoint in .env.dev before provisioning (ngrok for demo, Railway/Render for persistent)
 - [ ] OAuth on MCP server — NOTE: persona analysis found this is ineffective on LocalPlugin/localhost runtime; correct OAuth requires HTTPS + OAuthPluginVault (needs Azure deployment)
-- [ ] README.md for riskradar/ with Mermaid architecture diagram
 - [ ] Demo video
 
 ## Build Schedule
