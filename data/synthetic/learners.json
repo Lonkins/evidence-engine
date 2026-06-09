@@ -1,0 +1,62 @@
+[
+  {
+    "learner_id": "L-1001",
+    "name": "Alex T.",
+    "role": "School IT Technician",
+    "institution": "Westfield Academy (Synthetic)",
+    "target_certification": "SC-900",
+    "practice_score_avg": 61,
+    "hours_studied": 8,
+    "exam_outcome": null,
+    "skill_gaps": ["Identity & Access Management", "Threat Protection concepts"],
+    "notes": "New to cloud security, strong practical networking background"
+  },
+  {
+    "learner_id": "L-1002",
+    "name": "Jordan M.",
+    "role": "Computer Science Teacher",
+    "institution": "Northgate College (Synthetic)",
+    "target_certification": "SC-900",
+    "practice_score_avg": 74,
+    "hours_studied": 15,
+    "exam_outcome": null,
+    "skill_gaps": ["Compliance & Privacy features"],
+    "notes": "Wants to embed AI security literacy into A-Level Computing curriculum"
+  },
+  {
+    "learner_id": "L-1003",
+    "name": "Sam R.",
+    "role": "IT Administrator",
+    "institution": "St. Andrews Primary (Synthetic)",
+    "target_certification": "CompTIA Security+",
+    "practice_score_avg": 55,
+    "hours_studied": 10,
+    "exam_outcome": "Fail",
+    "skill_gaps": ["Cryptography", "Network Security", "Incident Response"],
+    "notes": "First attempt failed; needs a revised study plan and targeted practice"
+  },
+  {
+    "learner_id": "L-1004",
+    "name": "Casey P.",
+    "role": "Sixth Form Student",
+    "institution": "Riverside Sixth Form (Synthetic)",
+    "target_certification": "CC (Certified in Cybersecurity)",
+    "practice_score_avg": 80,
+    "hours_studied": 22,
+    "exam_outcome": "Pass",
+    "skill_gaps": [],
+    "notes": "Ready for next certification step — SC-900 recommended"
+  },
+  {
+    "learner_id": "L-1005",
+    "name": "Morgan K.",
+    "role": "Network Manager",
+    "institution": "City Academy Trust (Synthetic)",
+    "target_certification": "AZ-500",
+    "practice_score_avg": 67,
+    "hours_studied": 19,
+    "exam_outcome": null,
+    "skill_gaps": ["Azure Key Vault", "Defender for Cloud", "RBAC fine-tuning"],
+    "notes": "Manages 3 school sites; limited study windows due to meeting load"
+  }
+]
