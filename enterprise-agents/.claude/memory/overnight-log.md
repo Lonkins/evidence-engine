@@ -5,6 +5,36 @@ metadata:
   type: project
 ---
 
+## Cycle 10 — June 10, 2026
+
+**What was worked on:** Creative Apps track — scaffolded the full Evidence Engine MCP server and detective case corpus. All 5 listed autonomous priorities for the enterprise track were already complete; this cycle opened the second prize vector.
+
+**Persona recommendations:**
+- *P1 (Skeptical Engineer):* Recommended continuing enterprise polish (port MCP server to real MCP protocol, fix TODO placeholder strings). Correctly identified that the enterprise server is HTTP REST, not stdio MCP — but this is correct for M365 Copilot DA plugins (LocalPlugin type). Did not recommend creative-apps.
+- *P2 (Competing Team):* Recommended Option A (start creative-apps) — "a rival team will not be afraid of your test coverage; they will be afraid of your second prize entry."
+- *P3 (Conservative Safety Judge):* Recommended enterprise polish — audit instruction.txt for decision-vs-recommendation framing. Did not recommend creative-apps.
+- *P4 (Prize Strategist, tiebreaker):* Recommended Option A (creative-apps) — enterprise track is saturated with autonomous value, all remaining items human-gated. Creative Apps at 0% probability now → 15–20% probability with a scaffold = ~$425+ EV. P4 broke the 2-2 split.
+
+**What was built:**
+1. `creative-apps/evidence-engine/server/` — Full TypeScript MCP server using `@modelcontextprotocol/sdk` (stdio transport). 4 tools: `load_case`, `interrogate`, `check_claim`, `accuse`. Local corpus fallback when Azure not configured. tsc build clean.
+2. `creative-apps/evidence-engine/server/src/foundry-client.ts` — Azure AI Search agentic retrieval client (preview API 2026-05-01-preview, `messages` input, `retrievalReasoningEffort: minimal`). Env var substitution. Local keyword search fallback.
+3. `creative-apps/evidence-engine/server/src/case-store.ts` — Game state, character list, correct suspect, required evidence keys for win condition.
+4. `creative-apps/evidence-engine/corpus/` — 15 hand-authored synthetic detective case documents: The Holbrooke Gallery Affair. One planted contradiction (Helena's statement says 7:45pm; security log records 20:47). Motive in a recovered draft email. All characters fully documented.
+5. `creative-apps/evidence-engine/.vscode/mcp.json` — VS Code MCP registration for GitHub Copilot (stdio transport, env var inputs for Azure).
+6. `creative-apps/evidence-engine/COPILOT_USAGE.md` — 6 specific Copilot interactions documented (architecture design, Foundry IQ API, corpus structure, TypeScript SDK, responsible AI framing, mcp.json config).
+7. `creative-apps/README.md` — Full README with Mermaid architecture diagram, setup guide, responsible AI section, playing guide.
+8. `creative-apps/.claude/memory/strategy.md` — Updated to reflect concept locked + MCP server built.
+
+**Responsible AI note:** The `check_claim` tool implements a structural citation integrity pattern (fetch document by `docKey` from the index, verify passage exists) per the strategy's mandatory guardrails. The `INSUFFICIENT_EVIDENCE` path returns a graceful refusal when retrieval is empty.
+
+**Recommended next cycle priority:**
+1. **Human required (most urgent — enterprise track):** `teamsapp provision` with public HTTPS MCP_SERVER_URL. Enterprise track needs a live demo.
+2. **Autonomous:** `creative-apps/evidence-engine/docs/demo-script.md` — shooting script for the 3-min Copilot Chat demo video.
+3. **Autonomous:** `creative-apps/evidence-engine/docs/discord-post.md` — community vote post templates for #creative-apps.
+4. **Human required — creative apps:** Run spike scripts 0-5 (in worktree `hungry-cannon-81b457`) to provision Azure AI Search free tier → upload corpus → fill .env.
+
+---
+
 ## Cycle 9 — June 10, 2026
 
 **What was worked on:** REDLINES eval coverage — added 3 new eval prompts to `riskradar/evals/prompts.json` specifically testing the REDLINES non-negotiable stops introduced in Cycle 8 instruction.txt enhancement. The knowledge base CompanionAI "Not Approved" sample (Part 9) was confirmed already complete from a prior cycle.

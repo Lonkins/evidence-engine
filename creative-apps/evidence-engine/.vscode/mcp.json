@@ -1,0 +1,16 @@
+{
+  "inputs": [],
+  "servers": {
+    "evidence-engine": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${workspaceFolder}/evidence-engine/server/dist/index.js"],
+      "env": {
+        "AZURE_SEARCH_ENDPOINT": "${input:azureSearchEndpoint}",
+        "AZURE_SEARCH_KEY": "${input:azureSearchKey}",
+        "AZURE_KNOWLEDGE_BASE_NAME": "evidence-kb",
+        "AZURE_SEARCH_INDEX_NAME": "evidence"
+      }
+    }
+  }
+}
