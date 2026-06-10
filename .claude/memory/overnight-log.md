@@ -5,6 +5,36 @@ metadata:
   type: project
 ---
 
+## Cycle 7 — June 10, 2026
+
+**What was worked on:** SharePoint Approved Tools Registry integration — PnP provisioning script, Microsoft Graph API store implementation, env example update; DPO/DSL cert pathways and escalation matrix in ai_security_cert_guide.md.
+
+**Persona recommendations:**
+- *Skeptical Microsoft Engineer (P1):* Chose SharePoint provisioning (Option A) — specifically flagged that `saveAssessment` writes to `server/data/assessments.json` while the pitch claims a SharePoint registry. Called this "the single fakest-looking claim in the submission." Recommended provisioning script to make the registry a tangible M365 artifact.
+- *Competing Team (P2):* Chose SharePoint provisioning (A) — "local file masquerading as M365" is exactly the vulnerability they'd exploit in Q&A. Would ask judges to see the registry write land in SharePoint during a live demo.
+- *Conservative Safety Judge (P3):* Chose cert guide (B) — DSL (Designated Safeguarding Lead) is the statutory UK child protection role and the cert guide had no pathway for them. Emphasised that adding DSL/DPO only helps if it includes escalation routing ("High/Critical → escalate to DSL/DPO"), not just listing certs.
+- *Prize Strategist (P4, tiebreaker):* Chose SharePoint provisioning (A) — ~$1,300 marginal EV vs ~$200 for cert guide. Moves Best Enterprise Agent most directly.
+
+**Synthesis:** 3-1 for SharePoint; P4 as tiebreaker also chose A. Both tasks completed: P3's concern fully addressed via escalation matrix and DPO/DSL pathways.
+
+**What was built:**
+1. `riskradar/sharepoint/provision-registry.ps1` — 17-column PnP PowerShell provisioning script with typed fields, decision choices including "Escalate to DPO/DSL", confirmation guard, post-run next-steps output
+2. `riskradar/sharepoint/README.md` — Full 4-step integration guide: provision → App Registration → env vars → one-line store.ts swap; column schema table; architecture diagram for the SharePoint-enabled data flow
+3. `riskradar/server/src/graph-store.ts` — Complete Microsoft Graph API store (195 lines): client_credentials token flow, site/list ID caching, `toSharePointFields`/`fromSharePointFields` mapping, exact + partial-match lookup, create/PATCH upsert for `saveAssessmentToSharePoint`
+4. `riskradar/server/.env.example` — Added SP_* vars with setup instructions and provisioning script reference
+5. `data/knowledge/ai_security_cert_guide.md` — Added DPO (CIPP/E pathway), DSL (NSPCC pathway), Head of IT (MS-500) role sections; Escalation Decision Matrix with specific trigger conditions for DPO/DSL involvement
+
+**Coverage result:** Build clean. 56/56 tests pass. No existing behaviour changed.
+
+**Recommended next cycle priority:**
+1. **Human required (most urgent):** `teamsapp provision` — set `MCP_SERVER_URL` to public HTTPS in `.env.dev`, then run `teamsapp provision`. This is the only remaining action that makes the full demo work end-to-end.
+2. **Human required:** Upload 4 knowledge docs to SharePoint + Foundry per `KNOWLEDGE_SETUP.md`, fill in TODO values in `declarativeAgent.json`.
+3. **Human required:** Run `provision-registry.ps1` against the M365 dev tenant, then set SP_* env vars and swap store.ts import to graph-store to enable the real SharePoint backend.
+4. **Human required:** Record demo video using `docs/demo-script.md`. Post to Discord using `docs/discord-post.md` Template A (June 12–13).
+5. **Autonomous option:** Add one more edge-case eval prompt: a tool that has already been "Approved with Controls" but where the vendor has since updated their privacy policy (reassessment trigger scenario), testing whether the agent correctly surfaces the `reassessmentTriggered` flag from a prior assessment.
+
+---
+
 ## Cycle 1 — June 9/10, 2026
 
 **What was worked on:** Knowledge source capabilities block, eval prompt expansion, CSM ratings expansion.

@@ -90,6 +90,23 @@ Total reachable: ~$30,404
 ✅ `env/.env.dev` — added `OAUTH_REFERENCE_ID=OAuthConfiguration-TODO-FILL-IN-AFTER-REGISTRATION` placeholder
 ✅ Build verified clean
 
+## Completed (Overnight Loop 7 — June 10, 2026)
+
+✅ `riskradar/sharepoint/provision-registry.ps1` — PnP PowerShell script that creates the SharePoint Approved Tools Registry list: 17 typed columns (choice fields for RiskRating + Decision with 'Escalate to DPO/DSL', Number 1–5 min/max, Person, DateTime, Multiline Text), confirmation prompt, post-run next-steps guide
+✅ `riskradar/sharepoint/README.md` — Step-by-step SharePoint integration guide: provision → App Registration → env vars → one-line store.ts swap; includes full column schema table and security notes
+✅ `riskradar/server/src/graph-store.ts` — Complete Microsoft Graph API store: client_credentials token flow, site/list ID resolution (cached per process), field mapping both directions, exact + partial-match lookup, create/PATCH upsert. Swap into store.ts in 1 line when env vars are set.
+✅ `riskradar/server/.env.example` — Added SP_SITE_URL, SP_LIST_NAME, SP_TENANT_ID, SP_CLIENT_ID, SP_CLIENT_SECRET with setup instructions
+✅ `data/knowledge/ai_security_cert_guide.md` — Added DPO (CIPP/E pathway) + DSL (NSPCC pathway) + Head of IT (MS-500) role sections; Escalation Decision Matrix mapping Low/Medium/High/Critical risk to DPO/DSL/SLT/Governor decision authority with specific trigger conditions
+✅ Build verified clean. Tests: 56/56 passing.
+
+**Personas:**
+- P1 (Skeptical Engineer): Chose SharePoint provisioning — closes the local-file/SharePoint credibility gap, the most exposed technical claim
+- P2 (Competing Team): Chose SharePoint provisioning — "local file masquerading as SharePoint" is the vulnerability a rival would exploit in judging Q&A
+- P3 (Safety Judge): Chose cert guide DPO/DSL pathways — child safety tool without DSL escalation path is marketing dressed as safety
+- P4 (Prize Strategist, tiebreaker): Chose SharePoint provisioning — ~$1,300 marginal EV vs ~$200 for cert guide
+
+**Synthesis:** 3-1 for SharePoint (P4 tiebreaker also chose SharePoint). Both actions completed; P3's concern addressed fully via escalation matrix and DPO/DSL cert pathways.
+
 ## Completed (Overnight Loop 6 — June 10, 2026)
 
 ✅ `server/src/__tests__/auth.test.ts` — 9 tests: dev-mode bypass (3), prod-mode 401 paths (5 incl. missing header, wrong prefix, invalid JWT, no-kid JWT, JWKS failure + jwt.verify failure)
