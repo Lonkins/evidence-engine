@@ -14,8 +14,33 @@ grounded, cited answers. Developers call it from Copilot Chat without leaving VS
 | 1 | Provision free-tier Azure AI Search | ✅ PASS | 2026-06-10 |
 | 2 | Create search index + upload 3 case docs | ✅ PASS | 2026-06-10 |
 | 3 | Create knowledge source + knowledge base (LLM-free) | ✅ PASS | 2026-06-10 |
-| 4 | Verify search query round-trip | ⏳ Pending | — |
+| 4 | Verify agentic retrieval with citations on free tier | ✅ PASS | 2026-06-10 |
 | 5 | MCP server scaffold + Copilot tool registration | ⏳ Pending | — |
+
+### Stage 4 Schema Notes — Locked API contract
+
+**API version locked:** `2026-05-01-preview`  
+**Winning request shape:** `intents` (messages requires effort > minimal)
+
+```json
+POST /knowledgebases/{name}/retrieve?api-version=2026-05-01-preview
+{
+  "intents": [{ "type": "semantic", "search": "<user query>" }]
+}
+```
+
+**Response shape** (extractiveData mode):
+```json
+{
+  "references": [
+    { "docKey": "case-001", "rerankerScore": 3.9889374, "title": "..." }
+  ]
+}
+```
+
+**Free tier verdict ✅** — agentic retrieval works on free tier. Upgrade to Basic **not required**.  
+**Fail-closed calibration** — out-of-corpus query returns `references: []` with `reasoningTokens: 0`.  
+**Evidence artifact:** `spike/evidence-of-pass.json`
 
 ### Stage 3 Schema Notes (2026-05-01-preview)
 
@@ -56,4 +81,7 @@ The `.env` file (gitignored) holds the admin key — never commit it.
 1. ~~Run stage 0 — confirm `az` CLI authenticated~~ ✅
 2. ~~Run stage 1 — provision search service~~ ✅
 3. ~~Run stage 2 — create search index schema (`evidence` index, semantic config)~~ ✅
-4. Run stage 3 — verify search query round-trip (keyword + semantic rerank)
+4. ~~Run stage 3 — create knowledge source + knowledge base~~ ✅
+5. ~~Run stage 4 — verify agentic retrieval with citations~~ ✅  
+   Free tier confirmed. Locked: API `2026-05-01-preview`, shape `intents`, type `semantic`.
+6. **Run stage 5 — MCP server scaffold + Copilot tool registration** ← next
