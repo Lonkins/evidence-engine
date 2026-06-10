@@ -421,7 +421,126 @@ assessment to support them.
 
 ---
 
-## Part 6: NIST AI RMF Sub-category Quick Reference
+## Part 6: Sample Scored Assessment — Grammarly for Education
+
+*This is a second worked example demonstrating RiskRadar scoring a writing assistance tool. It shows
+how the 5-dimension rubric applies differently to a tool with an education-specific tier versus
+a general-purpose AI system.*
+
+**Tool:** Grammarly (Grammarly Inc., using Grammarly for Education tier)
+**Assessed for:** Secondary school deployment, students aged 13–16, direct student access for
+written coursework and essay drafting. No use in formal graded assessments.
+
+---
+
+**Dimension 1: Data Privacy — Score: 3**
+*Framework: MEASURE 2.10, MAP 2.1, GOVERN 1.2*
+
+Justification: Grammarly processes written text content on its servers (US-based). The Grammarly
+for Education tier offers a Data Processing Agreement and does not use student work to train
+commercial models, reducing the training data risk. However, data is processed outside UK/EU
+jurisdiction without confirmed data residency in the UK/EU. Named account data (email, name) is
+collected for account creation. The DPA available under the Education tier satisfies the evidentiary
+anchor for score 3: "named student data collected but limited; DPA signed and available; data not
+used for model training."
+
+Score 4 would require: confirmed UK or EU data residency option, which Grammarly does not currently
+offer as a standard Education tier feature.
+
+---
+
+**Dimension 2: Age Appropriateness — Score: 3**
+*Framework: MAP 5.1, MAP 1.1, ICO Children's Code Standards 7, 8, 12*
+
+Justification: Grammarly is rated 13+ by age. The Education tier disables advertising and removes
+commercial profiling from the student experience, meeting Children's Code Standard 5 (no detrimental
+use of data) in the education context. Standard 7 (default protective settings) is substantially
+met in Education tier: commercial data use is off by default for education accounts. Standard 8
+(data minimisation) is partially met: text content is collected and processed but not retained
+for commercial model training. Standard 12 (profiling off by default) is met in Education mode.
+The tool is not designed specifically for under-13s — deployment to Year 9 (aged 13+) is within
+the tool's intended age range.
+
+Score 4 would require: a published ICO Children's Code compliance statement mapping all 15 standards,
+which Grammarly has not published for the Education tier.
+
+---
+
+**Dimension 3: Transparency and Explainability — Score: 4**
+*Framework: GOVERN 4.1, MEASURE 2.7, EU AI Act Article 50*
+
+Justification: Grammarly clearly identifies itself as an AI writing assistant at every interaction
+point — EU AI Act Article 50(1) transparency requirement is met. Suggestions are individually
+attributable: the tool shows which suggestion was made and why (grammar rule, style improvement,
+clarity). This meets the explanation-available criterion for score 4. Published privacy policy and
+education-specific terms are clear and accessible. No hidden AI decision-making — the tool's
+AI involvement is obvious by design.
+
+Score 5 would require: human review available for all AI-influenced outputs. As a writing tool
+used by students, human review is present by design (teachers review work); however, the tool
+does not require human review as part of its own workflow.
+
+---
+
+**Dimension 4: Bias and Fairness — Score: 3**
+*Framework: MEASURE 2.5, MEASURE 2.6, MAP 2.2*
+
+Justification: No public bias evaluation report has been published by Grammarly for its AI suggestions
+engine. The vendor does not publish demographic performance data. No known upheld regulatory
+complaints or documented reports of differential quality outputs across protected characteristics.
+Potential for bias exists in writing style suggestions that may penalise non-native English speakers
+or students whose first language or dialect is not standard British English — this is a documented
+class of issue with AI writing tools generally (MAP 2.2 scientific basis not established for this
+specific model). Schools should inform students that suggestions reflect one standard of written
+English and do not represent the only correct approach.
+
+Score 4 would require: published bias evaluation data specific to Grammarly's suggestions engine,
+or an explicit commitment to non-native English speaker fairness testing.
+
+---
+
+**Dimension 5: Vendor Accountability — Score: 4**
+*Framework: GOVERN 1.2, GOVERN 1.4, MANAGE 2.2, MANAGE 3.1*
+
+Justification: Grammarly holds SOC 2 Type II certification. DPA available for Education tier —
+GDPR Article 28 requirement can be met. Privacy policy names data protection contact processes.
+Breach notification procedures documented consistent with GDPR 72-hour requirement. The Education
+tier includes a school administrator dashboard for managing student accounts (MANAGE 3.1 ongoing
+monitoring supported). Common Sense Media EdTech Privacy rating: Grade B, Privacy Score 68 —
+independently verified, no data selling, Education tier rated appropriate for secondary school use.
+
+Score 5 would require: ISO 27001 certification (Grammarly has SOC 2 but not ISO 27001 as of 2024)
+and a published breach notification history.
+
+---
+
+**Total Score: 3 + 3 + 4 + 3 + 4 = 17 → Medium Risk**
+
+**Decision: Approved with Controls**
+
+**Required controls:**
+1. All student use must be via Grammarly for Education tier — DPA must be signed before deployment
+2. Students aged under 13 must not use this tool — Education tier minimum age is 13
+3. Students must not enter sensitive personal information (SEND status, medical details, home address) in text they submit to Grammarly
+4. Academic integrity disclosure required: students must declare if Grammarly has been used in submitted work, and to what extent (style suggestions vs substantive rewrites)
+5. Teachers should advise students that suggestions reflect standard written English and may not account for valid stylistic or linguistic diversity — critical evaluation of AI suggestions is expected
+6. DPO sign-off required before school-wide deployment; pilot with a single teacher's class is lower risk
+
+**Review date:** 6 months from assessment date, or immediately on any Grammarly privacy policy change.
+
+**Re-assessment triggers:** Change to Education tier data use policy; change in data residency arrangements; introduction of new AI features (e.g., AI-generated full paragraph rewrites); any ICO enforcement action against Grammarly; expiry or non-renewal of signed DPA.
+
+**Suggested AUP clause:**
+> Students may use Grammarly for Education for writing support and style improvement only. Students must not enter sensitive personal information about themselves or others in text submitted to Grammarly. All AI-assisted work must be declared clearly in academic submissions: specifically, whether Grammarly was used for grammar checking only, or for substantive content suggestions. The free or consumer version of Grammarly must not be used for school work — only the school-administered Education account under our Data Processing Agreement is permitted. This approval covers [subject areas] for students in Year [9–12] only and does not extend to students under 13.
+
+**Human-in-the-loop note:** This assessment is produced by RiskRadar as a structured input to
+human decision-making. Deployment approval must be confirmed by the school DPO or designated
+responsible lead. RiskRadar does not make deployment decisions — it provides evidence-based
+assessment to support them.
+
+---
+
+## Part 7: NIST AI RMF Sub-category Quick Reference
 
 Quick mapping of RiskRadar's 5 scoring dimensions to the NIST AI RMF sub-categories that
 each dimension primarily tests. Cite these sub-category IDs when justifying scores.
@@ -436,3 +555,26 @@ each dimension primarily tests. Cite these sub-category IDs when justifying scor
 
 **Full NIST AI RMF documentation:** https://airc.nist.gov/RMF/Overview
 **AI RMF Playbook (sub-category detail):** https://airc.nist.gov/Docs/2
+
+---
+
+## Part 8: Contrasting Assessment Patterns
+
+The two sample assessments above (ChatGPT and Grammarly) illustrate how the same rubric yields
+meaningfully different profiles for different tool types:
+
+| Factor | ChatGPT (Consumer tier) | Grammarly for Education |
+|--------|-------------------------|-------------------------|
+| Data Privacy | 3 — US servers, DPA available at Enterprise | 3 — US servers, DPA available at Education tier |
+| Age Appropriateness | 2 — default settings not age-protective | 3 — Education tier has default protective settings |
+| Transparency | 4 — strong AI disclosure and model cards | 4 — AI clearly identified; suggestion-level explanation |
+| Bias and Fairness | 3 — partial publication of bias testing | 3 — no published bias evaluation; non-native English risk |
+| Vendor Accountability | 4 — SOC 2, ISO 27001, Trust Portal | 4 — SOC 2, Education DPA, CSM Grade B |
+| **Total** | **16 — Medium Risk** | **17 — Medium Risk** |
+| **Key distinguishing factor** | Age appropriateness is the critical failure | Purpose-built for writing; narrower data surface |
+
+**Key insight for assessors:** Two tools can reach the same overall risk rating via different failure
+profiles. The dimension breakdown — not just the total score — drives the controls you specify.
+ChatGPT's Age Appropriateness score of 2 requires explicit teacher supervision and Education tier
+procurement as a precondition. Grammarly's score of 3 requires academic integrity controls instead.
+The right control depends on which dimensions failed and why.

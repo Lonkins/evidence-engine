@@ -68,6 +68,16 @@ Total reachable: ~$30,404
   - Part 5 added: Full ChatGPT sample scored assessment with all 5 dimensions, citations, risk rating (16/Medium), controls, AUP clause, and HITL disclaimer
   - Part 6 added: NIST AI RMF Sub-category Quick Reference table mapping all 5 dimensions to primary sub-categories
 ✅ Build verified clean
+
+## Completed (Overnight Loop 4 — June 10, 2026)
+
+✅ `docs/demo-script.md` — Full 3–4 minute video recording guide: pre-flight checklist, narration lines, 8-message Scenario A (Grammarly assessment, Medium Risk), 60-second Scenario B (EU AI Act prohibited tool — attention tracking), expected MCP tool calls at each step, scoring table with citations to show, editing notes, submission checklist
+✅ `docs/discord-post.md` — 3 Discord post templates (full, short, technical): compelling Hack for Good narrative, all four technical components called out, posting timing/strategy notes
+✅ `data/knowledge/risk_assessment_frameworks.md` — Extended to 580 lines: Grammarly sample assessment (17/Medium Risk, all 5 dimensions scored with citations, AUP clause, controls), Part 8 contrasting patterns table (ChatGPT vs Grammarly showing different failure profiles at same overall risk level)
+✅ `data/knowledge/owasp_ai_top10.md` — Major enhancement: generic cert-prep → school-specific grounded knowledge
+  - School-specific scenarios added to every LLM01–LLM10 entry (student jailbreaking, data leakage between students, gradebook write access, teacher overreliance, etc.)
+  - RiskRadar dimension mapping added to every entry (which of 5 dimensions each risk signals, what assessment question to ask)
+  - Summary mapping table added: all 10 OWASP risks mapped to primary RiskRadar dimension with key assessment question
 ✅ Build verified clean
 
 ## Open Decisions

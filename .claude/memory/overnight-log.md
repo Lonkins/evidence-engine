@@ -87,3 +87,31 @@ metadata:
 2. **Human required:** Upload the 4 knowledge docs to SharePoint + Azure AI Foundry per `KNOWLEDGE_SETUP.md`; fill in TODO values in `declarativeAgent.json`.
 3. **Autonomous cycle option:** Write a second sample assessment for a different tool (e.g. Grammarly or Khan Academy AI) to extend the knowledge base with more domain-specific grounding. Or improve `data/knowledge/owasp_ai_top10.md` with school-specific application notes per LLM risk.
 
+---
+
+## Cycle 4 — June 10, 2026
+
+**What was worked on:** Demo script, Discord post templates, Grammarly sample assessment, OWASP school-specific annotations.
+
+**Persona recommendations:**
+- *Skeptical Microsoft Engineer (P1):* OWASP school-specific annotations. Current document is generic cert-prep; adding per-entry school scenarios (student jailbreaking, data leakage between students, etc.) transforms it into knowledge Foundry IQ can actually cite in scored responses. Directly moves Accuracy & Relevance (20%).
+- *Competing Team (P2):* Demo script first. A rival team with a polished, narrated video beats this submission on UX/Presentation (15%) and Community Vote (10%) without needing a better agent. The script gives the human a shooting script for June 13 with zero improvisation.
+- *Conservative Safety Judge (P3):* Second sample assessment (Grammarly/Khan Academy AI). A second worked example with a different risk profile proves the rubric is calibrated, not just performatively cautious. A tool that can score both 16 and 17 with different failure profiles is more credible than a tool that only demonstrates Critical Risk scenarios.
+- *Prize Strategist (P4):* Demo script (#1, +$800–1,200 EV) + Discord post templates (+$400–600 EV) + Grammarly sample assessment (+$300–500 EV). P4 also executed autonomously, creating all three before returning. OWASP annotations ranked lower by P4 ("low marginal EV") but P1 flagged them as the highest technical credibility move.
+
+**Tiebreaker:** P4 executed demo script + Discord + Grammarly sample. P1's OWASP recommendation was then implemented as the remaining highest-value autonomous action.
+
+**What was built:**
+1. `docs/demo-script.md` — Full 203-line video recording guide: pre-flight checklist, narration script, 8-message Grammarly assessment dialogue (with expected responses and MCP tool calls at each step), 60-second EU AI Act prohibited-tool scenario, editing notes, submission checklist
+2. `docs/discord-post.md` — 3 Discord post templates: full narrative (Hack for Good angle, all 4 components named), short version, technical developer-audience version; timing and engagement strategy notes
+3. `data/knowledge/risk_assessment_frameworks.md` — Extended 438 → 580 lines: Grammarly sample assessment (17/Medium, all 5 dimensions with citations, AUP clause, 6 controls), Part 8 contrasting patterns table showing ChatGPT vs Grammarly different failure profiles at same overall risk level
+4. `data/knowledge/owasp_ai_top10.md` — Rewritten from generic cert-prep to school-specific grounded knowledge: 3 concrete school scenarios per LLM risk, RiskRadar dimension mapping per entry, summary mapping table for all 10 risks
+5. TypeScript build verified clean
+
+**Recommended next cycle priority:**
+1. **Human required (most urgent):** `teamsapp provision` with public HTTPS MCP_SERVER_URL. Remaining autonomous knowledge improvements have diminishing returns — the submission needs a live demo to win.
+2. **Human required:** Upload 4 knowledge docs to SharePoint + Foundry per `KNOWLEDGE_SETUP.md`, fill in declarativeAgent.json TODO values.
+3. **Human required:** Record demo video using `docs/demo-script.md` — Scenario A (Grammarly, 8 messages) + Scenario B (EU AI Act prohibited, 60 seconds).
+4. **Human required:** Post to Discord using `docs/discord-post.md` Template A on June 12–13.
+5. **Autonomous option (if another cycle runs):** Improve `data/knowledge/ai_security_cert_guide.md` with school-role-specific certification pathways (IT admin, DPO, safeguarding lead). Or write a third sample assessment for a high-risk tool (e.g. a consumer AI chatbot with no educational tier).
+
