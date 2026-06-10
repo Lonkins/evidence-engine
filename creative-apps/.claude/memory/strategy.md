@@ -29,8 +29,9 @@ Overnight loop 1 complete (June 10, 2026). MCP server scaffold, 15-document case
 | README | ✅ Done | Architecture Mermaid diagram, setup guide, responsible AI section |
 | COPILOT_USAGE.md | ✅ Done | 6 specific Copilot interactions documented |
 | .vscode/mcp.json | ✅ Done | stdio transport, env var inputs for Azure |
-| Demo script | ❌ Not started | Create next cycle |
-| Discord post | ❌ Not started | Create next cycle |
+| Demo script | ✅ Done | `docs/demo-script.md` — 3-min shooting script, 7 segments, pre-flight checklist |
+| Discord post | ✅ Done | `docs/discord-post.md` — 3 templates + timing strategy |
+| Game walkthrough | ✅ Done | `docs/game-walkthrough.md` — full transcript with exact tool calls + expected outputs |
 | Web UI | ❌ Not started | Optional polish layer |
 
 ## Prize Vectors
@@ -47,9 +48,7 @@ Creative Apps prize value TBC. Win probability est. 15–20% with a working Copi
 
 ## Autonomous Next Steps
 
-1. Demo script (`evidence-engine/docs/demo-script.md`) — shooting script for the 3-min video
-2. Discord post templates (`evidence-engine/docs/discord-post.md`)
-3. Add `docs/` subfolder with game walkthrough (for judges who don't run it locally)
+All autonomous actions complete. Remaining items are human-gated.
 
 ## Decisions Log
 
