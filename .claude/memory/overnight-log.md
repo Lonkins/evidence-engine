@@ -5,6 +5,30 @@ metadata:
   type: project
 ---
 
+## Cycle 8 — June 10, 2026
+
+**What was worked on:** Two high-value autonomous actions: (1) enhanced `instruction.txt` with explicit Work IQ context signals and a non-negotiable REDLINES section; (2) expanded `team_readiness_report.md` from 69 lines to a full synthetic UK school org profile with named contacts, AI tool inventory, DPO activity log, and staff certification progress. Bonus: Persona 4 agent created `docs/submission.md` — a pre-filled hackathon submission form.
+
+**Persona recommendations:**
+- *Skeptical Microsoft Engineer (P1):* Chose D (Work IQ + redlines in instruction.txt) — explicitly called out that the TODO capability block placeholders mean every IQ claim collapses without it; instruction.txt is the one file that can signal IQ intent without Azure deployment. Recommended D then A (expand team_readiness_report.md).
+- *Competing Team (P2):* Chose D — instruction.txt has zero M365 identity or Work IQ signals. A rival team's DA would explicitly reference Entra ID, user role, org context in its instructions. No Work IQ language = no IQ prize = $6,468 left on the table.
+- *Conservative Safety Judge (P3):* Chose D with emphasis on explicit redlines. Quoted: "Real safeguarding frameworks enumerate what cannot be bypassed, not just what is recommended." The HITL disclaimer was previously a footer note; it needed to be structural (6 numbered redlines covering EU AI Act, Critical Risk, data residency, no-DPA, headteacher override, and live Critical Risk deployment).
+- *Prize Strategist (P4, tiebreaker):* Went further — created `docs/submission.md` autonomously, then recommended D + A as both completable in 90 min. Submission.md pre-fills all form fields and includes prize-specific narrative sections.
+
+**What was built:**
+1. `riskradar/appPackage/instruction.txt` (149 lines, was 95): WORK IQ CONTEXT section, REDLINES section (6 numbered stops), ESCALATION AUTHORITY MATRIX table
+2. `data/knowledge/team_readiness_report.md` (196 lines, was 69): Full synthetic org profile for Northfield Academy Trust — DPO contacts, DSL, tool inventory (4 unassessed tools flagged), 3 incident records, staff certs, budget, procurement gate, escalation contact directory
+3. `docs/submission.md` (178 lines, new): Pre-filled hackathon submission form with Hack for Good narrative, IQ integration table, enterprise M365 table, tech stack, prize checklist, submission checklist
+4. Fixed stale eval count in `submission.md` (13 → 14 prompts)
+
+**Recommended next cycle priority:**
+1. **Human required (most urgent):** `teamsapp provision` — the DA cannot be demonstrated until this runs. Requires: (a) set `MCP_SERVER_URL` to a public HTTPS endpoint in `.env.dev`, (b) fill in SharePoint URL in `declarativeAgent.json` capabilities block, (c) run `teamsapp provision`. Outcome: TEAMS_APP_ID populated, DA live in M365 Copilot Chat.
+2. **Human required:** Upload 4 knowledge docs to SharePoint + Azure AI Foundry per `KNOWLEDGE_SETUP.md`. This is the gate for Foundry IQ grounding — every "cited answer" claim depends on it.
+3. **Human required:** Record demo video using `docs/demo-script.md`. Post to Discord using `docs/discord-post.md` Template A.
+4. **Autonomous option (next cycle):** The `evals/prompts.json` has 14 prompts — add 2–3 more specifically testing the REDLINES behaviour (e.g. a prompt that has the user claim the headteacher overrode a Critical Risk rating, and a prompt where the tool explicitly uses attention-tracking webcam — both should now produce clearly different responses given the enhanced instruction.txt).
+
+---
+
 ## Cycle 7 — June 10, 2026
 
 **What was worked on:** SharePoint Approved Tools Registry integration — PnP provisioning script, Microsoft Graph API store implementation, env example update; DPO/DSL cert pathways and escalation matrix in ai_security_cert_guide.md.

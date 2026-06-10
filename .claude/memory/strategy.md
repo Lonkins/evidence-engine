@@ -90,6 +90,32 @@ Total reachable: ~$30,404
 ✅ `env/.env.dev` — added `OAUTH_REFERENCE_ID=OAuthConfiguration-TODO-FILL-IN-AFTER-REGISTRATION` placeholder
 ✅ Build verified clean
 
+## Completed (Overnight Loop 8 — June 10, 2026)
+
+✅ `riskradar/appPackage/instruction.txt` — Major enhancement (95 → 149 lines):
+  - New **WORK IQ CONTEXT** section: explicit M365 caller identity signals (DPO/network manager/headteacher role detection), personalisation guidance, tenant-specific contact resolution, and org readiness signal surfacing from team_readiness_report.md
+  - New **REDLINES** section: 6 non-negotiable stops — EU AI Act Article 5 prohibition, Critical Risk without DPO notification, data outside UK/EU without adequacy, no DPA available, headteacher override handling, active deployment of Critical Risk tool
+  - New **ESCALATION AUTHORITY MATRIX**: table mapping Low/Medium/High/Critical to specific decision authorities with "cite in output" instruction
+✅ `data/knowledge/team_readiness_report.md` — Major expansion (69 → 196 lines):
+  - Full synthetic UK school org profile: Northfield Academy Trust, 2 sites, named DPO (Sarah Okonkwo), DSL (James Whitfield), IT Manager, headteachers
+  - AI tool inventory table: 8 tools listed with assessment status, 4 flagged as unassessed
+  - Incident log: 3 real-pattern incidents (SAR request, data residency query, FocusAI attention-tracking halted)
+  - Staff certification progress table with named staff, % scores, target dates
+  - DPO activity log with specific dates and outcomes
+  - Budget/procurement table with AI tool spend
+  - Escalation contact directory (DPO, DSL, trust solicitor, IT manager)
+  - Notes for RiskRadar agent on how to surface this document
+✅ `docs/submission.md` — Created by Persona 4 agent: pre-filled hackathon submission form (name, short/long description, IQ integration summary, enterprise M365 summary, Hack for Good rationale, tech stack, demo video section, prize checklist, submission checklist). Fixed: eval count corrected from 13 → 14.
+✅ No TypeScript changes — build status unchanged (56/56 tests, 97% coverage)
+
+**Personas:**
+- P1 (Skeptical Engineer): Chose D (instruction.txt Work IQ signals) first; explicitly flagged TODO placeholders in capabilities block as the most exposed claim. Recommended D then A (team_readiness_report.md expansion)
+- P2 (Competing Team): Chose D — `instruction.txt` has zero IQ signals; agent scores 0 on IQ Tools prize with an empty capability block and no IQ language in instructions
+- P3 (Safety Judge): Chose D with specific emphasis on explicit redlines — "what does this agent refuse to do?" Real safeguarding tools enumerate hard stops, not just soft disclaimers
+- P4 (Prize Strategist): Wrote submission.md autonomously (high-value discovery); synthesis recommended D + A both completable in 90 min
+
+**Synthesis:** 3/4 chose D; P1 recommended D then A. All completed. P4's submission.md artifact retained as bonus deliverable.
+
 ## Completed (Overnight Loop 7 — June 10, 2026)
 
 ✅ `riskradar/sharepoint/provision-registry.ps1` — PnP PowerShell script that creates the SharePoint Approved Tools Registry list: 17 typed columns (choice fields for RiskRating + Decision with 'Escalate to DPO/DSL', Number 1–5 min/max, Person, DateTime, Multiline Text), confirmation prompt, post-run next-steps guide
