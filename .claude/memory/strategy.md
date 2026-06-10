@@ -80,12 +80,22 @@ Total reachable: ~$30,404
   - Summary mapping table added: all 10 OWASP risks mapped to primary RiskRadar dimension with key assessment question
 ✅ Build verified clean
 
+## Completed (Overnight Loop 5 — June 10, 2026)
+
+✅ `server/src/auth.ts` — OAuth 2.0 Bearer token validation middleware: JWKS-based JWT verification against Azure AD, graceful dev-mode bypass when env vars absent, RS256 algorithm, issuer + audience validation
+✅ `server/src/index.ts` — middleware applied to all `/api/*` routes via `app.use("/api", requireBearerToken)`
+✅ `server/package.json` — added `jsonwebtoken` + `jwks-rsa` dependencies
+✅ `server/.env.example` — documented `OAUTH_TENANT_ID`, `OAUTH_AUDIENCE`, `PORT` with step-by-step Azure portal instructions
+✅ `appPackage/ai-plugin.json` — added `auth` block with `OAuthPluginVault` + `${{OAUTH_REFERENCE_ID}}` env var substitution to runtime spec (completes both sides of OAuth handshake)
+✅ `env/.env.dev` — added `OAUTH_REFERENCE_ID=OAuthConfiguration-TODO-FILL-IN-AFTER-REGISTRATION` placeholder
+✅ Build verified clean
+
 ## Open Decisions
 - [ ] M365 Developer tenant confirmed and active → provision the DA (teamsapp provision)
 - [ ] Fill in TODO values in `declarativeAgent.json` using KNOWLEDGE_SETUP.md guide
 - [ ] Upload 4 knowledge docs to SharePoint + Azure AI Foundry per KNOWLEDGE_SETUP.md
 - [ ] Set MCP_SERVER_URL to a public HTTPS endpoint in .env.dev before provisioning (ngrok for demo, Railway/Render for persistent)
-- [ ] OAuth on MCP server — NOTE: persona analysis found this is ineffective on LocalPlugin/localhost runtime; correct OAuth requires HTTPS + OAuthPluginVault (needs Azure deployment)
+- [ ] OAuth registration: create Azure App Registration for MCP server → Teams Developer Portal → register OAuth config → paste OAuthConfiguration-xxx into .env.dev OAUTH_REFERENCE_ID
 - [ ] Demo video
 
 ## Build Schedule

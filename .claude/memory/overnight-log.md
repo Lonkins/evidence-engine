@@ -115,3 +115,31 @@ metadata:
 4. **Human required:** Post to Discord using `docs/discord-post.md` Template A on June 12–13.
 5. **Autonomous option (if another cycle runs):** Improve `data/knowledge/ai_security_cert_guide.md` with school-role-specific certification pathways (IT admin, DPO, safeguarding lead). Or write a third sample assessment for a high-risk tool (e.g. a consumer AI chatbot with no educational tier).
 
+
+---
+
+## Cycle 5 — June 10, 2026
+
+**What was worked on:** OAuth 2.0 Bearer token validation on MCP server (both server-side middleware and ai-plugin.json auth block).
+
+**Persona recommendations:**
+- *Skeptical Microsoft Engineer (P1):* Recommended AGAINST OAuth middleware alone — argued server-side validation without the `auth` block in `ai-plugin.json` is "middleware theater" (only half the OAuth handshake). Recommended third sample assessment (high-risk chatbot) instead.
+- *Competing Team (P2):* Recommended OAuth middleware — argued it closes the only verifiable technical gap judges can read in code, moving from "mocked integration" to "production-ready security posture."
+- *Conservative Safety Judge (P3):* Recommended third sample assessment — argued both existing samples (ChatGPT, Grammarly) land at "Medium Risk, Approved with Controls" with no "Not Approved" example, which looks like the tool rubber-stamps every tool.
+- *Prize Strategist (P4, tiebreaker):* Recommended OAuth middleware — named bonus criterion, visible in code without deployment, moves Best Enterprise and Best Overall simultaneously.
+
+**Split:** 2-2. P4 as tiebreaker chose OAuth. P1's concern about "half handshake" was resolved by implementing BOTH server middleware AND ai-plugin.json auth block.
+
+**What was built:**
+1. `server/src/auth.ts` — JWKS-based JWT validation middleware (`jsonwebtoken` + `jwks-rsa`): Azure AD RS256 verification, issuer/audience checks, graceful dev-mode bypass when env vars absent
+2. `server/src/index.ts` — applied middleware to all `/api/*` routes
+3. `server/package.json` — added `jsonwebtoken` + `jwks-rsa` production deps; `@types/jsonwebtoken` dev dep
+4. `server/.env.example` — documented `OAUTH_TENANT_ID`, `OAUTH_AUDIENCE`, `PORT` with Azure portal instructions
+5. `appPackage/ai-plugin.json` — added `auth: { type: "OAuthPluginVault", reference_id: "${{OAUTH_REFERENCE_ID}}" }` to runtime spec
+6. `env/.env.dev` — added `OAUTH_REFERENCE_ID=OAuthConfiguration-TODO-FILL-IN-AFTER-REGISTRATION` placeholder
+7. TypeScript build verified clean
+
+**Recommended next cycle priority:**
+1. **Human required (most urgent):** teamsapp provision + OAuth registration (Azure App Registration → Teams Developer Portal → OAUTH_REFERENCE_ID).
+2. **Autonomous option:** Third sample assessment (Critical Risk / "Not Approved" verdict) for a consumer AI chatbot — P3's concern is valid that both existing samples produce "Approved with Controls," which looks like the tool rubber-stamps everything.
+3. **Human required:** Upload knowledge docs, record demo video, post to Discord.

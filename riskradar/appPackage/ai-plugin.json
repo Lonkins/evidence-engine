@@ -110,6 +110,10 @@
     "runtimes": [
         {
             "type": "LocalPlugin",
+            "auth": {
+                "type": "OAuthPluginVault",
+                "reference_id": "${{OAUTH_REFERENCE_ID}}"
+            },
             "spec": {
                 "url": "${{MCP_SERVER_URL}}"
             },

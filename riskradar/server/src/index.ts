@@ -1,11 +1,13 @@
 import express from "express";
 import cors from "cors";
+import { requireBearerToken } from "./auth";
 import { getAssessment, saveAssessment, getAllAssessments, Assessment } from "./store";
 import { lookupRating } from "./ratings";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use("/api", requireBearerToken);
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 
