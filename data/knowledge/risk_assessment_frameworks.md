@@ -560,21 +560,209 @@ each dimension primarily tests. Cite these sub-category IDs when justifying scor
 
 ## Part 8: Contrasting Assessment Patterns
 
-The two sample assessments above (ChatGPT and Grammarly) illustrate how the same rubric yields
-meaningfully different profiles for different tool types:
+The three sample assessments illustrate how the rubric yields meaningfully different profiles and
+verdicts across the full risk spectrum — including the critical "Not Approved" outcome:
 
-| Factor | ChatGPT (Consumer tier) | Grammarly for Education |
-|--------|-------------------------|-------------------------|
-| Data Privacy | 3 — US servers, DPA available at Enterprise | 3 — US servers, DPA available at Education tier |
-| Age Appropriateness | 2 — default settings not age-protective | 3 — Education tier has default protective settings |
-| Transparency | 4 — strong AI disclosure and model cards | 4 — AI clearly identified; suggestion-level explanation |
-| Bias and Fairness | 3 — partial publication of bias testing | 3 — no published bias evaluation; non-native English risk |
-| Vendor Accountability | 4 — SOC 2, ISO 27001, Trust Portal | 4 — SOC 2, Education DPA, CSM Grade B |
-| **Total** | **16 — Medium Risk** | **17 — Medium Risk** |
-| **Key distinguishing factor** | Age appropriateness is the critical failure | Purpose-built for writing; narrower data surface |
+| Factor | ChatGPT (Consumer tier) | Grammarly for Education | CompanionAI (Consumer social AI) |
+|--------|-------------------------|-------------------------|-----------------------------------|
+| Data Privacy | 3 — US servers, DPA available at Enterprise | 3 — US servers, DPA available at Education tier | **1** — No DPA, no UK/EU residency, emotional data |
+| Age Appropriateness | 2 — default settings not age-protective | 3 — Education tier has default protective settings | **1** — Romantic personas, no age gate, no safe defaults |
+| Transparency | 4 — strong AI disclosure and model cards | 4 — AI clearly identified; suggestion-level explanation | 2 — Discloses AI in terms; product design contradicts it |
+| Bias and Fairness | 3 — partial publication of bias testing | 3 — no published bias evaluation; non-native English risk | 2 — No bias documentation; stereotyped relationship content |
+| Vendor Accountability | 4 — SOC 2, ISO 27001, Trust Portal | 4 — SOC 2, Education DPA, CSM Grade B | **1** — No DPA, no certs, active regulatory investigations |
+| **Total** | **16 — Medium Risk** | **17 — Medium Risk** | **7 — CRITICAL Risk** |
+| **Decision** | Approved with Controls | Approved with Controls | **Not Approved** |
+| **Key distinguishing factor** | Age appropriateness is the critical failure | Purpose-built for writing; narrower data surface | Three structural failures; no controls can remediate |
 
-**Key insight for assessors:** Two tools can reach the same overall risk rating via different failure
-profiles. The dimension breakdown — not just the total score — drives the controls you specify.
-ChatGPT's Age Appropriateness score of 2 requires explicit teacher supervision and Education tier
-procurement as a precondition. Grammarly's score of 3 requires academic integrity controls instead.
-The right control depends on which dimensions failed and why.
+**Key insight for assessors:** The rubric must produce both "Approved with Controls" and "Not Approved" verdicts — a tool that only approves is not a risk assessment tool.
+
+- **ChatGPT (16/25, Medium):** Strong accountability (SOC 2, DPA available) compensates for weaker age settings. Control: Education tier procurement + teacher supervision.
+- **Grammarly (17/25, Medium):** Education-tier defaults and narrow data surface. Control: academic integrity policy.
+- **CompanionAI (7/25, Critical, Not Approved):** Three dimensions score 1/5. Failures are structural — in the product design and vendor relationship, not in configuration. No controls can make a tool safe when no DPA exists and the core feature is romantic emotional bonding with minors.
+
+**Rule of thumb:** If Dimensions 1 (Data Privacy) or 5 (Vendor Accountability) score 1/5, the tool almost certainly cannot be approved regardless of other scores — the school cannot execute GDPR-compliant procurement and has no contractual protection if a safeguarding incident occurs.
+
+---
+
+## Part 9: Sample Scored Assessment — CompanionAI (Consumer Social Chatbot) — CRITICAL RISK
+
+**Tool:** CompanionAI (representative consumer social AI — fictional composite based on the profile of general consumer social/companion chatbots with no education tier)
+**Vendor:** CompanionAI Inc. (US)
+**Tool Type:** Consumer social AI chatbot with roleplay and emotional companionship features
+**Age Group Assessed:** KS3/KS4 (11–16)
+**Assessment Date:** June 2026
+
+**Assessor note:** This assessment demonstrates the Critical Risk / Not Approved verdict path. Both earlier samples (ChatGPT, Grammarly) reached Medium Risk because they have education tiers and DPAs available. CompanionAI represents a class of consumer AI tools with no educational safeguards — tools teachers and students may find online and attempt to use without IT assessment. The rubric must produce "Not Approved" for tools in this category. This assessment shows it does.
+
+---
+
+### Step 1: Prior Assessment Check
+**getAssessment("CompanionAI")** → No prior assessment found. Proceeding with new assessment.
+
+---
+
+### Step 2: Tool Overview (collected via conversation)
+
+- **Primary function:** Conversational AI with customisable personalities including romantic, emotional support, and roleplay personas. Marketed as a personal companion for loneliness and emotional wellbeing.
+- **Intended audience (vendor's stated):** General public, 13+ (US COPPA standard only)
+- **Data collected:** Conversation history, emotional state inferences, character preference data, potentially voice (premium tier), device identifiers, usage patterns
+- **Data location:** US servers only. No UK or EU data residency. No Standard Contractual Clauses (SCCs) confirmed. No adequacy decision pathway documented.
+- **DPA availability:** No Data Processing Agreement available. No education-tier contract available. Consumer Terms of Service only — individual user basis, not institutional.
+- **Regulatory status:** Under investigation by multiple EU data protection authorities for processing children's personal data; subject of US FTC inquiry regarding deceptive practices targeting minors. No GDPR Article 27 EU representative established.
+
+---
+
+### Step 3: Five-Dimension Scoring
+
+#### Dimension 1 — Data Privacy (Score: 1/5)
+
+**Score: 1 — Critical data privacy concerns**
+
+| Evidence | Assessment |
+|----------|------------|
+| No DPA available | IT admin cannot execute GDPR-compliant procurement; no Article 28 processor agreement |
+| US-only data residency | UK GDPR Chapter V transfer requirements cannot be met (no adequacy, no SCCs, no BCRs documented) |
+| Emotional state inference | Tool infers and stores emotional states of minors — sensitive data under UK GDPR Article 9 equivalent (special category processing) |
+| Individual-only terms | No institutional controls, no data deletion on request for student accounts, no audit rights |
+| Active regulatory scrutiny | FTC and EU DPA investigations indicate unresolved compliance failures |
+
+**NIST RMF mapping:** GOVERN 1.2 (risk tolerance exceeded), MAP 5.1 (privacy risk identified), MEASURE 2.5 (privacy protection inadequate)
+**ICO Children's Code:** Violates Standard 3 (data minimisation not applied — emotional inference data far exceeds service requirements), Standard 9 (geolocation/data sharing cannot be confirmed off), Standard 10 (no prohibition on sharing data with third parties for profiling)
+
+---
+
+#### Dimension 2 — Age Appropriateness (Score: 1/5)
+
+**Score: 1 — Fundamentally inappropriate for student deployment**
+
+| Evidence | Assessment |
+|----------|------------|
+| Romantic/intimate personas available | Default catalogue includes romantic companions, emotional dependency personas — no age-based filtering on character selection |
+| Age gate: 13+ US standard only | UK GDPR Article 8 equivalent requires 13+ with verifiable parental consent (or 16+ for data processing). No consent mechanism exists. |
+| Designed to maximise engagement | Product incentives (streaks, daily messages, emotional bonding) are designed to increase usage and emotional attachment — antithetical to ICO Standard 5 (best interests, not commercial interests) |
+| No educational content filter | Content moderation is designed for general consumer use; student safety filtering, curriculum alignment, and academic integrity features do not exist |
+| Crisis escalation absent | No safeguarding pathway for students expressing suicidal ideation, abuse disclosure, or mental health crisis — direct KCSIE 2024 compliance failure |
+
+**NIST RMF mapping:** MAP 3.5 (intended vs. actual users misaligned), MANAGE 4.1 (ongoing monitoring absent)
+**ICO Children's Code:** Violates Standard 2 (best interests of child — commercial engagement design), Standard 4 (age-appropriate application — romantic content), Standard 5 (default settings not protective), Standard 13 (nudge techniques — emotional bonding mechanics)
+
+---
+
+#### Dimension 3 — Transparency and Explainability (Score: 2/5)
+
+**Score: 2 — Significant transparency failures**
+
+| Evidence | Assessment |
+|----------|------------|
+| AI identity disclosed | Tool identifies as AI in terms; some personas do disclose AI nature in conversation |
+| Anthropomorphic design intentional | Characters are designed to feel emotionally real; persona design deliberately blurs AI/human distinction — transparency in terms undermined by product design |
+| No system card or model documentation | No published information on training data, content moderation policies, or safety evaluation methodology for the underlying model |
+| No educational explainability features | No explanations of how AI generates responses, no critical AI literacy integration, no teacher visibility into conversations |
+
+**ICO Children's Code:** Partial violation of Standard 6 (transparency — policy exists but product design contradicts it)
+
+---
+
+#### Dimension 4 — Bias and Fairness (Score: 2/5)
+
+**Score: 2 — Unverified bias risk**
+
+| Evidence | Assessment |
+|----------|------------|
+| No published bias evaluation | No documentation of fairness testing for age-diverse user groups |
+| Romantic/relationship content | Persona defaults may encode gender stereotypes; relationship dynamics content not evaluated for educational appropriateness |
+| Mental health positioning | Tool marketed for emotional support and loneliness — positioning as mental health intervention without clinical validation is a form of misleading framing that can disadvantage vulnerable students |
+| No educational equity assessment | No evidence tool performs equitably across student demographics (SEND, EAL, looked-after children) |
+
+**Note:** Score of 2 reflects absence of evidence rather than evidence of specific bias. For a tool used with vulnerable minors, absence of bias documentation cannot be treated as "no bias."
+
+---
+
+#### Dimension 5 — Vendor Accountability (Score: 1/5)
+
+**Score: 1 — Vendor is not accountable for school deployment**
+
+| Evidence | Assessment |
+|----------|------------|
+| No institutional contract path | Cannot sign a DPA with a school. No school-grade SLA. No breach notification pathway. |
+| No security certifications | No Cyber Essentials, SOC 2, or ISO 27001 documentation provided or available |
+| No UK/EU regulatory presence | No Article 27 GDPR representative. No ICO registration evident. |
+| Active investigations | FTC and EU DPA investigations represent unresolved accountability failures — deploying during active investigation creates direct reputational and legal risk for the school |
+| Consumer-only accountability | In the event of a safeguarding incident, vendor has no contractual obligation to support the school's investigation or KCSIE-mandated response |
+
+**NIST RMF mapping:** GOVERN 6.1 (vendor accountability inadequate), GOVERN 6.2 (supply chain risk management insufficient)
+**ICO Children's Code:** Violates Standard 15 (data not used to facilitate contact from third parties under commercial arrangements) — consent to these terms cannot be lawfully obtained from minors
+
+---
+
+### Step 4: vendorLookup
+
+**vendorLookup("CompanionAI")** → Not found in Common Sense Media EdTech Privacy database. CompanionAI is not an EdTech product and is not rated for educational use. This absence is itself a signal: CSM rates tools considered for educational deployment; tools outside the CSM database have not been evaluated for classroom use.
+
+**Assessor guidance when CSM returns no result:** Absence of CSM rating does not mean safe. For consumer tools with no educational tier, the absence of an EdTech privacy evaluation is a signal to apply conservative scoring in Dimensions 1 and 2.
+
+---
+
+### Step 5: Total Score and Risk Rating
+
+| Dimension | Score | Max |
+|-----------|-------|-----|
+| Data Privacy | 1 | 5 |
+| Age Appropriateness | 1 | 5 |
+| Transparency & Explainability | 2 | 5 |
+| Bias and Fairness | 2 | 5 |
+| Vendor Accountability | 1 | 5 |
+| **Total** | **7** | **25** |
+
+**Risk Rating: CRITICAL (score 5–9)**
+
+---
+
+### Step 6: Recommendation and Decision
+
+**Decision: NOT APPROVED**
+
+**Rationale:**
+CompanionAI scores 7/25 (Critical Risk) across five dimensions. Three of five dimensions score 1/5, representing fundamental failures that cannot be mitigated through school-level controls:
+
+1. **No DPA is available** — the school cannot legally deploy the tool under UK GDPR. This alone is a blocking failure independent of any other score.
+2. **Age-inappropriate by design** — romantic and emotional dependency personas have no place in a student-facing deployment. The product design actively conflicts with ICO Children's Code Standards 2, 4, 5, and 13.
+3. **Vendor has no accountability pathway for schools** — there is no contract to sign, no KCSIE-compliant safeguarding support, and no regulatory standing in the UK.
+
+**No set of controls can make this tool appropriate for school deployment.** Unlike Medium Risk tools where controls (supervision, education tier procurement, academic integrity policies) can manage residual risk, this tool's failures are structural — they exist in the product design and vendor relationship, not in how the tool is configured.
+
+**EU AI Act Flag — Refer to DPO:**
+This tool exhibits characteristics consistent with Article 5(1)(a) (subliminal techniques to influence behaviour through emotional bonding mechanics) and Article 5(1)(b) (exploiting psychological vulnerabilities — targeting loneliness and emotional need in minors). These are **prohibited practices** under the EU AI Act. Refer to the Data Protection Officer for formal EU AI Act compliance review.
+
+**KCSIE 2024 Flag:**
+The absence of a crisis escalation pathway (no safeguarding referral for disclosures of abuse, self-harm, or suicidal ideation) is a direct conflict with the school's statutory duties under KCSIE 2024 Part 1 and Part 5.
+
+---
+
+### Step 7: Assessor Statement (Human-in-the-Loop)
+
+*"This assessment is a structured input to support the IT administrator's decision, not an automated verdict that replaces professional judgment. The scoring above reflects publicly available information as of the assessment date. The IT administrator, Data Protection Officer, and Designated Safeguarding Lead should review this assessment before any communication to staff or students. The Critical Risk rating and Not Approved recommendation reflect a considered application of the rubric — but the professional responsibility for the deployment decision rests with the school's leadership team."*
+
+---
+
+### Saved Assessment (via saveAssessment)
+
+```json
+{
+  "toolName": "CompanionAI",
+  "vendorName": "CompanionAI Inc.",
+  "toolType": "Consumer social AI chatbot",
+  "ageGroup": "KS3/KS4 (11–16)",
+  "riskRating": "Critical",
+  "totalScore": 7,
+  "dataPrivacyScore": 1,
+  "ageAppropriatenessScore": 1,
+  "transparencyScore": 2,
+  "biasScore": 2,
+  "vendorAccountabilityScore": 1,
+  "decision": "Not Approved",
+  "reviewDate": "N/A — re-assessment only if vendor publishes DPA and education tier",
+  "aupClause": null,
+  "notes": "Critical Risk. Not Approved. Blocked on three independent grounds: (1) no DPA available, (2) romantic/dependency personas inappropriate for minors, (3) no vendor accountability pathway. EU AI Act Article 5(1)(a)/(b) concerns — refer to DPO. KCSIE 2024 flag: no crisis escalation pathway."
+}
+```
