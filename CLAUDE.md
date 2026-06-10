@@ -162,7 +162,7 @@ All three tools tested and working. Server builds clean. File-persisted assessme
 | MCP Apps | ✅ Scaffolded via ATK MCP server path |
 | External MCP Server read | ✅ getAssessment implemented |
 | External MCP Server write | ✅ saveAssessment implemented |
-| OAuth on MCP | ❌ Not yet implemented — bonus scoring tier |
+| OAuth on MCP | ✅ Built | Bearer token middleware + OAuthPluginVault in ai-plugin.json |
 
 ---
 
@@ -171,16 +171,21 @@ All three tools tested and working. Server builds clean. File-persisted assessme
 | Component | Status | Notes |
 |-----------|--------|-------|
 | DA instructions | ✅ Complete | `instruction.txt` — full 6-step workflow |
-| DA manifest | ✅ Complete | Conversation starters, action linked |
-| MCP tool definitions | ✅ Complete | `ai-plugin.json` — all 3 tools |
-| MCP server | ✅ Built and tested | Express, TypeScript, file persistence |
-| Common Sense Media ratings | ✅ 12 tools | ChatGPT, Grammarly, Khan Academy, etc. |
-| Evaluation prompts | ✅ 7 prompts | `evals/prompts.json` |
+| DA manifest | ✅ Complete | Conversation starters, action linked, capabilities block |
+| MCP tool definitions | ✅ Complete | `ai-plugin.json` — all 3 tools + OAuthPluginVault auth block |
+| MCP server | ✅ Built and tested | Express, TypeScript, OAuth middleware, file persistence |
+| OAuth on MCP server | ✅ Built | Bearer token middleware (JWKS/Azure AD) + OAuthPluginVault |
+| Common Sense Media ratings | ✅ 18 tools | ChatGPT, Grammarly, Khan Academy, Turnitin, Notion AI, etc. |
+| Evaluation prompts | ✅ 14 prompts | `evals/prompts.json` — incl. Critical Risk, EU AI Act, edge cases |
+| Test suite | ✅ Built | Vitest, 56 tests, 97% coverage (auth/store/ratings/routes) |
+| README | ✅ Complete | `riskradar/README.md` with Mermaid architecture diagram |
+| Demo script | ✅ Complete | `docs/demo-script.md` — full narrated recording guide |
+| Discord post templates | ✅ Complete | `docs/discord-post.md` — 3 templates with Hack for Good angle |
+| Knowledge base docs | ✅ 4 documents, 750+ lines | `data/knowledge/` — 3 sample assessments incl. Critical Risk |
+| Knowledge source in DA manifest | ✅ Configured | TODO placeholders in place; fill in per KNOWLEDGE_SETUP.md |
 | DA provisioned in M365 | ❌ Not yet | Requires M365 dev tenant + `teamsapp provision` |
-| Foundry IQ knowledge base | ❌ Not yet | 4 docs exist, need uploading |
-| Knowledge source in DA manifest | ❌ Not yet | Blocked by Foundry IQ setup |
-| OAuth on MCP server | ❌ Not yet | Bonus criterion |
-| Demo video | ❌ Not yet | June 13 target |
+| Foundry IQ knowledge base live | ❌ Not yet | 4 docs exist, need uploading per KNOWLEDGE_SETUP.md |
+| Demo video | ❌ Not yet | June 13 target — use `docs/demo-script.md` |
 
 ---
 

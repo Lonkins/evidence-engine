@@ -141,11 +141,16 @@ app.get("/api/assessments", (_req, res) => {
 
 // ─── Start ────────────────────────────────────────────────────────────────────
 
-const PORT = process.env.PORT ?? 3000;
-app.listen(PORT, () => {
-  console.log(`\nRiskRadar MCP Server running on http://localhost:${PORT}`);
-  console.log(`  POST /api/getAssessment  — check prior assessment`);
-  console.log(`  POST /api/vendorLookup   — Common Sense Media privacy rating`);
-  console.log(`  POST /api/saveAssessment — write to Approved Tools Registry`);
-  console.log(`  GET  /api/assessments    — list all assessments (admin)\n`);
-});
+export { app };
+
+// Only start listening when run directly (not when imported by tests)
+if (require.main === module) {
+  const PORT = process.env.PORT ?? 3000;
+  app.listen(PORT, () => {
+    console.log(`\nRiskRadar MCP Server running on http://localhost:${PORT}`);
+    console.log(`  POST /api/getAssessment  — check prior assessment`);
+    console.log(`  POST /api/vendorLookup   — Common Sense Media privacy rating`);
+    console.log(`  POST /api/saveAssessment — write to Approved Tools Registry`);
+    console.log(`  GET  /api/assessments    — list all assessments (admin)\n`);
+  });
+}

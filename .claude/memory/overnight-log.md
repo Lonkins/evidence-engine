@@ -115,6 +115,39 @@ metadata:
 4. **Human required:** Post to Discord using `docs/discord-post.md` Template A on June 12–13.
 5. **Autonomous option (if another cycle runs):** Improve `data/knowledge/ai_security_cert_guide.md` with school-role-specific certification pathways (IT admin, DPO, safeguarding lead). Or write a third sample assessment for a high-risk tool (e.g. a consumer AI chatbot with no educational tier).
 
+---
+
+## Cycle 6 — June 10, 2026
+
+**What was worked on:** MCP server Vitest test suite + CLAUDE.md build status sync.
+
+**Persona recommendations:**
+- *Skeptical Microsoft Engineer (P1):* NO to tests — deployment and Foundry IQ upload are higher priority. P1's "Option A" (Critical Risk sample) was already done (CompanionAI exists in knowledge base from cycle 5 per HANDOFF_TEST_SUITE.md).
+- *Competing Team (P2):* NO to tests — tests don't move any judging criterion. Same analysis as P1. Both agreed deployment is the highest-priority remaining action.
+- *Conservative Safety Judge (P3):* YES to tests — a child-safety tool with zero tests has a credibility liability under Reliability & Safety (20%). Specifically endorsed testing auth middleware branches as safety-critical paths. Also flagged that auth success path and `reassessmentTriggered` round-trip should be tested.
+- *Prize Strategist (P4, tiebreaker):* Option A (Critical Risk / Not Approved sample) → ALREADY DONE. Given that, P4's next recommendation defaulted to tests, since they were the explicit human-prepared task in HANDOFF_TEST_SUITE.md and P3 validated credibility value.
+
+**Synthesis:** P4's first choice was already complete. HANDOFF_TEST_SUITE.md was the human-authored explicit task for this cycle. P3 provided positive validation for tests on a child-safety tool. Tests executed.
+
+**What was built:**
+1. `server/src/__tests__/auth.test.ts` — 9 tests; dev-mode bypass + prod-mode 401 cases (missing header, wrong prefix, non-JWT, no-kid JWT, JWKS failure, jwt.verify failure)
+2. `server/src/__tests__/store.test.ts` — 15 tests; full CRUD coverage incl. `reassessmentTriggered` round-trip and Critical Risk / Not Approved record
+3. `server/src/__tests__/ratings.test.ts` — 15 tests; case-insensitive lookup, partial match, 5 specific tool grades, shape validation
+4. `server/src/__tests__/routes.test.ts` — 17 tests; all 3 MCP tool routes + health check + admin list + review-date logic for Low vs Medium risk
+5. `server/vitest.config.ts` — v8 coverage provider with 80% line/function/statement thresholds
+6. `server/package.json` — vitest + @vitest/coverage-v8 + supertest deps + test scripts
+7. `server/tsconfig.json` — excluded `src/__tests__` from tsc build
+8. `server/src/index.ts` — exported `app` + wrapped `listen` in `require.main === module` guard
+9. `CLAUDE.md` — build status table synced: OAuth ✅, 18 CSM tools, 14 eval prompts, test suite ✅, README ✅, demo script ✅, Discord templates ✅
+
+**Coverage result:** 97.31% overall (auth.ts 100%, ratings.ts 100%, store.ts 93.9%, index.ts 92.94%). All 56 tests pass. `npm run build` clean.
+
+**Recommended next cycle priority:**
+1. **Human required (most urgent):** `teamsapp provision` — set `MCP_SERVER_URL` to public HTTPS in `.env.dev`, then run `teamsapp provision`. This is the only remaining action that makes the full demo work end-to-end.
+2. **Human required:** Upload 4 knowledge docs to SharePoint + Foundry per `KNOWLEDGE_SETUP.md`, fill in TODO values in `declarativeAgent.json`.
+3. **Human required:** Record demo video using `docs/demo-script.md`. Post to Discord using `docs/discord-post.md` Template A (June 12–13).
+4. **Autonomous option:** Improve `data/knowledge/ai_security_cert_guide.md` with school-role certification pathways (IT admin, DPO, safeguarding lead). Low marginal prize value but fills the last knowledge document gap.
+
 
 ---
 

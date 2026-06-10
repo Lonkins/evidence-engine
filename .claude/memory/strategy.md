@@ -90,6 +90,20 @@ Total reachable: ~$30,404
 ✅ `env/.env.dev` — added `OAUTH_REFERENCE_ID=OAuthConfiguration-TODO-FILL-IN-AFTER-REGISTRATION` placeholder
 ✅ Build verified clean
 
+## Completed (Overnight Loop 6 — June 10, 2026)
+
+✅ `server/src/__tests__/auth.test.ts` — 9 tests: dev-mode bypass (3), prod-mode 401 paths (5 incl. missing header, wrong prefix, invalid JWT, no-kid JWT, JWKS failure + jwt.verify failure)
+✅ `server/src/__tests__/store.test.ts` — 15 tests: getAssessment (5 cases), saveAssessment (7 cases incl. reassessmentTriggered + Critical Risk path), getAllAssessments (3 cases)
+✅ `server/src/__tests__/ratings.test.ts` — 15 tests: exact + case-insensitive + partial match + shape + 5 specific tool grades + getAllRatings
+✅ `server/src/__tests__/routes.test.ts` — 17 tests: health check, all 3 MCP tool routes (400 paths, found/not-found, valid payload), admin list, review date logic
+✅ `server/vitest.config.ts` — coverage provider v8, 80% thresholds
+✅ `server/package.json` — vitest + @vitest/coverage-v8 + supertest + @types/supertest added; test scripts added
+✅ `server/tsconfig.json` — `src/__tests__` excluded from tsc build
+✅ `server/src/index.ts` — `export { app }` added; `app.listen` wrapped in `require.main === module` guard for supertest
+✅ `CLAUDE.md` — Build Status table synced: OAuth ✅, 18 CSM ratings, 14 eval prompts, test suite ✅, README ✅, demo script ✅, Discord templates ✅
+✅ Coverage: 97.31% overall, 100% auth.ts, 100% ratings.ts
+✅ Build verified clean (tsc + npm test both pass)
+
 ## Open Decisions
 - [ ] M365 Developer tenant confirmed and active → provision the DA (teamsapp provision)
 - [ ] Fill in TODO values in `declarativeAgent.json` using KNOWLEDGE_SETUP.md guide
