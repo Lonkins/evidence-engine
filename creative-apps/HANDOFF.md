@@ -12,10 +12,17 @@ grounded, cited answers. Developers call it from Copilot Chat without leaving VS
 |-------|-------------|--------|----------|
 | 0 | Azure CLI login check | ✅ PASS | 2026-06-10 |
 | 1 | Provision free-tier Azure AI Search | ✅ PASS | 2026-06-10 |
-| 2 | Create search index schema | ⏳ Pending | — |
-| 3 | Ingest sample documents | ⏳ Pending | — |
+| 2 | Create search index + upload 3 case docs | ✅ PASS | 2026-06-10 |
+| 3 | Verify search query round-trip | ⏳ Pending | — |
 | 4 | Verify search query round-trip | ⏳ Pending | — |
 | 5 | MCP server scaffold + Copilot tool registration | ⏳ Pending | — |
+
+### Stage 2 Schema Notes
+
+- API `2026-05-01-preview` uses `semantic` (not `semanticSearch`) at index root
+- Content/keyword fields use `prioritizedContentFields` / `prioritizedKeywordsFields` (not `contentFields` / `keywordsFields`)
+- Semantic config registered: `evidence-semantic` with `rankingOrder: BoostedRerankerScore`
+- All 3 documents indexed with `statusCode: 201`, no errors or warnings
 
 ## Azure Resources
 
@@ -39,4 +46,5 @@ The `.env` file (gitignored) holds the admin key — never commit it.
 
 1. ~~Run stage 0 — confirm `az` CLI authenticated~~ ✅
 2. ~~Run stage 1 — provision search service~~ ✅
-3. Run stage 2 — create search index schema (`evidence` index, semantic config)
+3. ~~Run stage 2 — create search index schema (`evidence` index, semantic config)~~ ✅
+4. Run stage 3 — verify search query round-trip (keyword + semantic rerank)
