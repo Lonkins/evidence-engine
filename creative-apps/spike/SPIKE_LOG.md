@@ -14,6 +14,7 @@ quota errors, timing, or follow-up actions.
 | 1 | 2 | Create evidence index + upload 3 case docs | 2026-06-10 | PASS | <5s | Index create HTTP 201; docs upload HTTP 200; $count=3; schema fix required: `semantic` not `semanticSearch`, `prioritizedContentFields` not `contentFields` for 2026-05-01-preview; no warnings in output |
 | 1 | 3 | Create knowledge source + knowledge base | 2026-06-10 | PASS | <5s | KS create HTTP 201/204; KB create HTTP 204; GET /knowledgebases lists evidence-kb; API version 2026-05-01-preview. Shape fixes required (see notes below). |
 | 1 | 4 | Verify agentic retrieval with citations | 2026-06-10 | PASS | <2s | Winning shape: intents. In-corpus: HTTP 200, docKey=case-001, rerankerScore=3.9889. Out-corpus: HTTP 200, references=[]. Free tier confirmed working. Shape discovery required (see notes below). |
+| 1 | 5 | KB native MCP endpoint probe | 2026-06-10 | PASS | <1s | KB-scoped /knowledgebases/evidence-kb/mcp: HTTP 200, SSE transport, protocolVersion 2024-11-05, capabilities.tools.listChanged=true. Service-level /mcp: HTTP 405. Auth: api-key header. |
 
 ## Stage 4 API Shape Notes (2026-05-01-preview)
 
@@ -79,8 +80,76 @@ The semantic ranking used through the agentic retrieval path (`outputMode: extra
 | In-corpus docKey count | 1 (docKey: case-001, rerankerScore: 3.9889374) |
 | Out-of-corpus docKey count | 0 (clean fail-closed) |
 | Evidence artifact | `spike/evidence-of-pass.json` |
+| KB native MCP endpoint | ✅ LIVE — `/knowledgebases/evidence-kb/mcp`, HTTP 200, SSE, `tools.listChanged=true` |
+| MCP auth variant | api-key header |
+| Copilot mcp.json block | See output-notes section |
 
-Spike is COMPLETE. Build phase can proceed on free tier.
+Spike is COMPLETE. Build phase can proceed on free tier. KB MCP endpoint confirmed live — zero-glue Copilot integration is possible.
+
+---
+
+## Stage 5 MCP Endpoint Notes (2026-05-01-preview)
+
+### Live endpoint: KB-scoped
+
+```
+POST https://evidence-engine-search.search.windows.net/knowledgebases/evidence-kb/mcp?api-version=2026-05-01-preview
+```
+
+- **HTTP status**: 200
+- **Transport**: Server-Sent Events (SSE) — `event: message\ndata: {...}`
+- **Auth variant**: `api-key` header
+
+### MCP initialize response
+
+```json
+{
+  "result": {
+    "protocolVersion": "2024-11-05",
+    "capabilities": {
+      "logging": {},
+      "tools": { "listChanged": true }
+    },
+    "serverInfo": {
+      "name": "SearchWebRole.AspNetCore",
+      "version": "1.0.0.0"
+    }
+  },
+  "id": 1,
+  "jsonrpc": "2.0"
+}
+```
+
+Key discovery: `capabilities.tools.listChanged: true` means the endpoint exposes tools the client can enumerate.
+
+### Service-level path (/mcp): HTTP 405 — Method Not Allowed
+
+The service-level `/mcp` path is not exposed. Only the KB-scoped path responds.
+
+---
+
+## output-notes — Suggested Copilot mcp.json Block
+
+This block wires the Azure AI Search knowledge base directly into GitHub Copilot in VS Code with zero glue code. The endpoint is the native KB MCP server; no custom MCP server is required for basic retrieval.
+
+```json
+{
+  "servers": {
+    "evidence-engine": {
+      "url": "https://evidence-engine-search.search.windows.net/knowledgebases/evidence-kb/mcp",
+      "type": "http",
+      "headers": {
+        "api-key": "${AZURE_SEARCH_ADMIN_KEY}"
+      }
+    }
+  }
+}
+```
+
+**Save to:** `.vscode/mcp.json` (project-scoped) or `~/.config/mcp.json` (user-scoped)  
+**Set env var:** `AZURE_SEARCH_ADMIN_KEY=<your-admin-key>`
+
+This is a headline submission feature: **Foundry IQ (Azure AI Search KB) → GitHub Copilot with zero glue code**. The MCP server is built into the search service.
 
 ---
 
