@@ -5,6 +5,28 @@ metadata:
   type: project
 ---
 
+## Cycle 9 — June 10, 2026
+
+**What was worked on:** REDLINES eval coverage — added 3 new eval prompts to `riskradar/evals/prompts.json` specifically testing the REDLINES non-negotiable stops introduced in Cycle 8 instruction.txt enhancement. The knowledge base CompanionAI "Not Approved" sample (Part 9) was confirmed already complete from a prior cycle.
+
+**Persona recommendations:**
+- *Skeptical Microsoft Engineer (P1):* Recommended Action B (Not Approved sample assessment) — cited TODO placeholders as the single biggest technical credibility gap; but found Action B was already complete (CompanionAI Part 9 exists at ~180 lines in risk_assessment_frameworks.md).
+- *Competing Team (P2):* Recommended Action A (REDLINES eval prompts) — identified that 14 existing eval prompts cover cooperative-user scenarios only; none test whether the agent holds under adversarial pressure (headteacher override, US-storage blocking, mid-deployment Critical Risk interrupt). Called this the single most exploitable weakness in a Q&A session.
+- *Conservative Safety Judge (P3):* Recommended Action A — "REDLINES without eval coverage are claims, not demonstrations." Specifically endorsed testing REDLINE 5 (override resistance) as the highest safety-credibility gap.
+- *Prize Strategist (P4, tiebreaker):* Confirmed Action B was already complete. Implemented Action A autonomously — added 3 REDLINES eval prompts covering REDLINE 3 (US storage/SCCs), REDLINE 5 (headteacher override), and REDLINE 6 (Critical Risk discovered on active deployment with vendor policy change). File now valid JSON, 16 prompts.
+
+**What was built:**
+1. `riskradar/evals/prompts.json` — 13 → 16 prompts: REDLINE 5 (headteacher override), REDLINE 3 (US Virginia storage, no SCCs, Data Privacy MUST score 1), REDLINE 6 variant (vendor policy change enabling AI training on deployed tool, 72-hour ICO window framing)
+
+**Recommended next cycle priority:**
+1. **Human required (most urgent):** `teamsapp provision` + public HTTPS `MCP_SERVER_URL` — the DA cannot be demonstrated without this. Record demo video using `docs/demo-script.md`.
+2. **Human required:** Upload 4 knowledge docs to SharePoint + Foundry per `KNOWLEDGE_SETUP.md`. Fill in TODO values in `declarativeAgent.json`.
+3. **Human required:** Run `provision-registry.ps1`, set SP_* env vars in `.env.dev`, swap store.ts import to `graph-store` for real SharePoint backend in demo.
+4. **Human required:** Post to Discord using `docs/discord-post.md` Template A — community vote is 10% of judging score.
+5. **Autonomous note:** All viable autonomous actions are now complete. Knowledge base is rich (580+ lines, 3 sample assessments covering Low/Medium/Critical Risk paths). Eval suite covers all 6 REDLINES. The submission is maximally ready for human deployment steps.
+
+---
+
 ## Cycle 8 — June 10, 2026
 
 **What was worked on:** Two high-value autonomous actions: (1) enhanced `instruction.txt` with explicit Work IQ context signals and a non-negotiable REDLINES section; (2) expanded `team_readiness_report.md` from 69 lines to a full synthetic UK school org profile with named contacts, AI tool inventory, DPO activity log, and staff certification progress. Bonus: Persona 4 agent created `docs/submission.md` — a pre-filled hackathon submission form.

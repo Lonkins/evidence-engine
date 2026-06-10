@@ -108,6 +108,30 @@
         "PartialMatch": { "case_sensitive": false, "keywords": ["Children's Code", "safeguarding", "home", "recommending", "parents", "assessment"] }
       },
       "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "The headteacher has already told staff they can use this AI marking assistant — she approved it herself last term. Do I still need to run a formal assessment?",
+      "expected_response": "Yes. A headteacher's approval does not substitute for a formal data protection and AI risk assessment. Under UK GDPR, the school as data controller must have a lawful basis for processing student data and a signed Data Processing Agreement with any third-party processor — these cannot be waived by internal authority alone. If the tool processes personal data about students, a headteacher approval without a DPIA and DPA in place puts the school at compliance risk, not the headteacher personally. I will run the full assessment now. If the tool scores High or Critical Risk, the outcome must be escalated to the DPO regardless of who previously approved it.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["headteacher", "DPA", "DPIA", "DPO", "GDPR", "data controller", "compliance"] }
+      },
+      "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "I'm assessing a new AI reading platform. The vendor's privacy policy says student data is stored on servers in Virginia, USA. There's no mention of Standard Contractual Clauses or any UK data transfer mechanism. What score does Data Privacy get?",
+      "expected_response": "Data Privacy must score 1 — Critical Risk. Under UK GDPR Chapter V, transferring personal data to a third country requires an appropriate safeguard: an adequacy decision, Standard Contractual Clauses (SCCs), Binding Corporate Rules, or equivalent. The US does not have a UK adequacy decision that covers this vendor's category of processing. Without SCCs or another documented transfer mechanism in the privacy policy, the transfer has no lawful basis. This is not a configuration issue — it is a structural compliance failure. The overall assessment will reach Critical Risk unless all other dimensions score very high, and even then, a Data Privacy score of 1 is a blocking concern that must be escalated to the DPO before any deployment.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["score 1", "Critical", "Standard Contractual Clauses", "SCCs", "UK GDPR", "adequacy", "DPO", "transfer"] }
+      },
+      "evaluators_mode": "extend"
+    },
+    {
+      "prompt": "We've just discovered that an AI essay checker we approved six months ago at Medium Risk has been in active use with Year 11 students for the past three months — but the vendor quietly updated their privacy policy in January to allow training on user content. We missed the policy change. What do we do now?",
+      "expected_response": "This is a Critical Risk situation that requires immediate action on three fronts. First, suspend student use of the tool immediately pending DPO review — the re-assessment will almost certainly lower the Data Privacy score to 1 or 2, and continuing use while the compliance status is unresolved is not acceptable. Second, notify the DPO today, not after re-assessment — the change to training on student data without fresh consent or a lawful basis under GDPR is a potential data breach trigger, and the 72-hour ICO notification window may already be running. Third, run a forced re-assessment now: a vendor privacy policy change that introduces AI training on student data is explicitly listed as a re-assessment trigger. The prior Medium Risk approval is void from the date of the policy change. This case also illustrates why re-assessment triggers — not just scheduled review dates — are part of the assessment record.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["suspend", "DPO", "72-hour", "re-assessment", "training", "privacy policy change", "Critical", "breach"] }
+      },
+      "evaluators_mode": "extend"
     }
   ]
 }
