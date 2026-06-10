@@ -1,0 +1,34 @@
+{
+  "value": [
+    {
+      "@search.action": "upload",
+      "id": "case-001",
+      "title": "AI-Assisted Development Tools Reduce Bug Density by 23%",
+      "content": "A longitudinal study across 14 software teams (n=312 engineers) found that integrating AI code-completion and chat tools into the development workflow reduced post-release bug density by 23% over 18 months. Teams using AI assistants during code review caught an additional 18% of logic errors before merge. The strongest effect appeared in unfamiliar codebases: engineers new to a repository produced 31% fewer defects when AI context retrieval was available inline. The study controlled for team size, language, and prior test coverage. Effect sizes were largest for Python and TypeScript projects.",
+      "source": "Journal of Empirical Software Engineering, Vol. 41, 2025",
+      "category": "AI development tools",
+      "date": "2025-09",
+      "confidence": 0.91
+    },
+    {
+      "@search.action": "upload",
+      "id": "case-002",
+      "title": "Semantic Search Cuts Enterprise Document Discovery Time by 47%",
+      "content": "An enterprise deployment study across three Fortune 500 companies measured the time employees spent locating relevant internal documents before and after adopting semantic vector search. Pre-deployment, the median discovery time was 14.2 minutes per task. Post-deployment with semantic ranking enabled, median time dropped to 7.5 minutes — a 47% reduction. Recall at rank-5 improved from 61% to 84%. Employees in legal and compliance roles showed the largest gains, attributing the improvement to the system's ability to surface conceptually related documents even when exact terminology differed. Keyword-only fallback was retained for precision-critical queries.",
+      "source": "Microsoft Research Internal Report, Enterprise Search Effectiveness Study, Q1 2026",
+      "category": "semantic search",
+      "date": "2026-01",
+      "confidence": 0.87
+    },
+    {
+      "@search.action": "upload",
+      "id": "case-003",
+      "title": "MCP Servers in IDE Workflows Reduce Context-Switch Cost by 38%",
+      "content": "A controlled experiment with 48 professional developers measured cognitive load and task completion time when answering domain-specific questions (API documentation, policy lookups, codebase history) using three setups: browser tab switching, a sidebar panel, and an MCP server integrated into Copilot Chat within VS Code. The MCP-integrated group completed reference lookups 38% faster and self-reported significantly lower context-switch fatigue (Cohen's d = 0.72). Error rates on subsequent coding tasks were 19% lower in the MCP group compared to browser-tab switching. Participants rated the MCP integration 4.6/5 for workflow naturalness versus 2.9/5 for browser switching.",
+      "source": "CHI 2026 Conference Proceedings — Developer Tooling and Cognitive Load",
+      "category": "MCP servers",
+      "date": "2026-05",
+      "confidence": 0.94
+    }
+  ]
+}

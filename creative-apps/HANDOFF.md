@@ -1,0 +1,126 @@
+# Evidence Engine — Spike Status Board
+
+## Concept
+
+An MCP server for GitHub Copilot that retrieves cited evidence for any claim or question from a
+vector-indexed knowledge base. Azure AI Search (free tier) backs the index; Foundry IQ provides
+grounded, cited answers. Developers call it from Copilot Chat without leaving VS Code.
+
+## Spike Stages
+
+| Stage | Description | Status | Run Date |
+|-------|-------------|--------|----------|
+| 0 | Azure CLI login check | ✅ PASS | 2026-06-10 |
+| 1 | Provision free-tier Azure AI Search | ✅ PASS | 2026-06-10 |
+| 2 | Create search index + upload 3 case docs | ✅ PASS | 2026-06-10 |
+| 3 | Create knowledge source + knowledge base (LLM-free) | ✅ PASS | 2026-06-10 |
+| 4 | Verify agentic retrieval with citations on free tier | ✅ PASS | 2026-06-10 |
+| 5 | KB native MCP endpoint probe | ✅ PASS | 2026-06-10 |
+
+### Stage 4 Schema Notes — Locked API contract
+
+**API version locked:** `2026-05-01-preview`  
+**Winning request shape:** `intents` (messages requires effort > minimal)
+
+```json
+POST /knowledgebases/{name}/retrieve?api-version=2026-05-01-preview
+{
+  "intents": [{ "type": "semantic", "search": "<user query>" }]
+}
+```
+
+**Response shape** (extractiveData mode):
+```json
+{
+  "references": [
+    { "docKey": "case-001", "rerankerScore": 3.9889374, "title": "..." }
+  ]
+}
+```
+
+**Free tier verdict ✅** — agentic retrieval works on free tier. Upgrade to Basic **not required**.  
+**Fail-closed calibration** — out-of-corpus query returns `references: []` with `reasoningTokens: 0`.  
+**Evidence artifact:** `spike/evidence-of-pass.json`
+
+### Stage 3 Schema Notes (2026-05-01-preview)
+
+- Knowledge source kind `searchIndex` requires `searchIndexParameters.searchIndexName` (not `indexName` at root)
+- `outputMode` enum is `AgentOutputModality`: valid values are `extractiveData` (0) and `answerSynthesis` (1)
+  — the value `extractedData` does NOT exist in this API version (confirmed via `$metadata`)
+- `retrievalReasoningEffort` is a complex type `{ "kind": "minimal" | "low" | "medium" }`; `"minimal"` is the only LLM-free option
+- `knowledgeSources` array items reference the knowledge source by `name` (not `sourceId`)
+- Both objects created via `2026-05-01-preview`; no models/LLM block attached
+
+### Stage 2 Schema Notes
+
+- API `2026-05-01-preview` uses `semantic` (not `semanticSearch`) at index root
+- Content/keyword fields use `prioritizedContentFields` / `prioritizedKeywordsFields` (not `contentFields` / `keywordsFields`)
+- Semantic config registered: `evidence-semantic` with `rankingOrder: BoostedRerankerScore`
+- All 3 documents indexed with `statusCode: 201`, no errors or warnings
+
+## Azure Resources
+
+| Resource | Name | SKU | Region |
+|----------|------|-----|--------|
+| Resource group | `evidence-engine-rg` | — | eastus |
+| Azure AI Search | `evidence-engine-search` | free | eastus |
+
+## Teardown
+
+```bash
+az group delete --name evidence-engine-rg --yes --no-wait
+```
+
+## Cost Gate
+
+Free-tier Azure AI Search: **$0/month**. No billing risk while spike runs.
+The `.env` file (gitignored) holds the admin key — never commit it.
+
+## Next Actions
+
+1. ~~Run stage 0 — confirm `az` CLI authenticated~~ ✅
+2. ~~Run stage 1 — provision search service~~ ✅
+3. ~~Run stage 2 — create search index schema (`evidence` index, semantic config)~~ ✅
+4. ~~Run stage 3 — create knowledge source + knowledge base~~ ✅
+5. ~~Run stage 4 — verify agentic retrieval with citations~~ ✅  
+   Free tier confirmed. Locked: API `2026-05-01-preview`, shape `intents`, type `semantic`.
+6. ~~Run stage 5 — KB native MCP endpoint probe~~ ✅  
+   KB-scoped endpoint live: `protocolVersion: 2024-11-05`, `tools.listChanged: true`, SSE transport.  
+   Zero-glue Copilot integration confirmed — see output-notes in SPIKE_LOG.md for mcp.json block.
+
+---
+
+## SPIKE COMPLETE
+
+All 6 spike stages passed. The full technology stack is validated on the free tier with a locked API contract.
+
+### Free-Tier Verdict
+
+**✅ Azure AI Search free tier works end-to-end.**  
+Agentic retrieval via the knowledge base `/retrieve` endpoint succeeds on free tier. The traditional semantic ranker (on `/indexes/{name}/search`) is blocked by the free tier, but the KB `/retrieve` path with `retrievalReasoningEffort.kind: "minimal"` is not — and it returns `rerankerScore` via the agentic reasoning layer. No paid upgrade is required to ship.
+
+### Locked API Version
+
+`2026-05-01-preview` — used for index creation, knowledge source, knowledge base, retrieval, and MCP endpoint. Do not use an older API version; schema shapes changed significantly.
+
+### Retrieve Latency Observed
+
+- In-corpus query: **< 2 s** (including agentic reasoning, `reasoningTokens: 280`)
+- Activity trace shows `elapsedMs: 0` for search index phase — search latency is sub-millisecond on free tier with 3 docs
+
+### MCP Endpoint Verdict
+
+**✅ KB native MCP server is LIVE.**  
+- Path: `https://evidence-engine-search.search.windows.net/knowledgebases/evidence-kb/mcp`
+- HTTP 200, SSE transport, `protocolVersion: "2024-11-05"`, `capabilities.tools.listChanged: true`
+- Auth: `api-key` header
+- Service-level `/mcp` returns HTTP 405 — KB-scoped path is the correct one
+- The `mcp.json` block in SPIKE_LOG.md output-notes section wires Foundry IQ into GitHub Copilot with zero custom code — this is a **headline submission differentiator**
+
+### Recommended Next Build Step
+
+Per [`strategy.md`](.claude/memory/strategy.md) build order:
+
+1. **Case corpus authoring** — expand the evidence index from 3 to 20–30 documents in a focused domain (e.g. developer productivity research, AI coding tool benchmarks). Richer corpus = better demo recall and more impressive judge interaction.
+2. **Game MCP server** — build the custom MCP server (`src/mcp-server/`) that exposes the retrieval API as named Copilot tools. The KB-native MCP endpoint can be surfaced directly for the basic path; the custom server adds game-specific tools (score tracking, challenge generation, hint retrieval).
+3. **Lock the creative framing** — the concept (Evidence Engine as a game / citation challenge) needs a name, a demo script, and a Discord post before build accelerates.

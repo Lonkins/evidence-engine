@@ -17,6 +17,9 @@ Overnight loop 1 complete (June 10, 2026). MCP server scaffold, 15-document case
 | IQ layer | **Foundry IQ** (Azure AI Search knowledge base + agentic retrieval) | Only viable layer for this use case; Work IQ + Fabric IQ blocked behind enterprise accounts |
 | App shape | MCP server (stdio) for GitHub Copilot in VS Code | Explicitly called out in track brief as "especially welcomed" |
 | Scope | One hand-authored synthetic detective case — The Holbrooke Gallery Affair | Free tier: 3 indexes / 50MB cap; one great case > mediocre engine |
+| Azure Search tier | Free ($0/month) | Confirmed working in spike stages 0–5 |
+| API version | `2026-05-01-preview` | Locked in spike; schema shapes are non-obvious in older versions |
+| Retrieval request shape | `intents` (not `messages`) | `messages` unsupported at `minimal` effort; locked in spike stage 4 |
 
 ## Build Status
 
@@ -55,6 +58,7 @@ All autonomous actions complete. Remaining items are human-gated.
 | Date | Decision | Rationale |
 |------|----------|-----------|
 | June 10 | Track setup complete | Added as parallel track alongside Enterprise Agents |
+| June 10 | Spike stages 0–5 complete | Free tier confirmed; API contract locked; KB native MCP endpoint live (zero-glue Copilot integration) |
 | June 10 | IQ verification: Foundry IQ only viable layer | Work IQ + Fabric IQ blocked behind enterprise accounts |
 | June 10 | Concept locked: Evidence Engine (4/4 persona consensus) | Only concept with load-bearing IQ; highest differentiation |
 | June 10 | MCP server scaffold + corpus built (overnight loop 1) | Core playable game deliverable; Azure integration ready to wire |
