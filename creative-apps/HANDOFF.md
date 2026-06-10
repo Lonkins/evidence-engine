@@ -13,9 +13,18 @@ grounded, cited answers. Developers call it from Copilot Chat without leaving VS
 | 0 | Azure CLI login check | ✅ PASS | 2026-06-10 |
 | 1 | Provision free-tier Azure AI Search | ✅ PASS | 2026-06-10 |
 | 2 | Create search index + upload 3 case docs | ✅ PASS | 2026-06-10 |
-| 3 | Verify search query round-trip | ⏳ Pending | — |
+| 3 | Create knowledge source + knowledge base (LLM-free) | ✅ PASS | 2026-06-10 |
 | 4 | Verify search query round-trip | ⏳ Pending | — |
 | 5 | MCP server scaffold + Copilot tool registration | ⏳ Pending | — |
+
+### Stage 3 Schema Notes (2026-05-01-preview)
+
+- Knowledge source kind `searchIndex` requires `searchIndexParameters.searchIndexName` (not `indexName` at root)
+- `outputMode` enum is `AgentOutputModality`: valid values are `extractiveData` (0) and `answerSynthesis` (1)
+  — the value `extractedData` does NOT exist in this API version (confirmed via `$metadata`)
+- `retrievalReasoningEffort` is a complex type `{ "kind": "minimal" | "low" | "medium" }`; `"minimal"` is the only LLM-free option
+- `knowledgeSources` array items reference the knowledge source by `name` (not `sourceId`)
+- Both objects created via `2026-05-01-preview`; no models/LLM block attached
 
 ### Stage 2 Schema Notes
 
