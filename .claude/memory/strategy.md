@@ -23,7 +23,7 @@ metadata:
 | Common Sense Media ratings | ✅ 18 tools | ChatGPT/D, Grammarly/B, Khan Academy/A, Turnitin/D, Notion AI/C, etc. |
 | Evaluation prompts | ✅ 17 prompts | `evals/prompts.json` — covers EU AI Act Article 5, Critical Risk, DPA refusal, data residency, headteacher override edge cases |
 | Test suite | ✅ 56/56 | Vitest, 97% coverage (auth/store/ratings/routes) |
-| README | ✅ Accurate | Mermaid architecture diagram; grade table matches ratings.ts; no false claims about Foundry IQ being live |
+| README | ✅ Accurate | Mermaid diagram; grade table correct; Judging Evidence Map added; project structure shows auth.ts + graph-store.ts |
 | Knowledge base docs | ✅ 4 documents, 1,599 lines | `enterprise-agents/data/knowledge/` — NIST AI RMF, OWASP AI Top 10, AI Security Cert Guide, Synthetic Team Readiness Report |
 | KNOWLEDGE_SETUP.md | ✅ Complete | Step-by-step guide for human to provision SharePoint + Foundry IQ |
 | Demo script | ✅ Complete | `enterprise-agents/docs/demo-script.md` — narrated recording guide |
