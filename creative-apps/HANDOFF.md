@@ -151,6 +151,76 @@ Agentic retrieval via the knowledge base `/retrieve` endpoint succeeds on free t
 - Service-level `/mcp` returns HTTP 405 — KB-scoped path is the correct one
 - The `mcp.json` block in SPIKE_LOG.md output-notes section wires Foundry IQ into GitHub Copilot with zero custom code — this is a **headline submission differentiator**
 
+## WP9 — Live Interrogation (June 11, 2026) ✅
+
+**What it is:** open free-form chat with the three suspects in the web app ("Live Wire" mode).
+GitHub Models (free tier, gpt-4o-mini) plays the witnesses, grounded through a **live Foundry IQ
+retrieve on every turn** — and deliberately allowed to drift. Every sentence of testimony is
+indexed back into the same `evidence` index as a `testimony` document within seconds. The player
+challenges any claim; the engine runs two live retrieves (evidence partition + that speaker's own
+testimony partition) and stamps an evidence-relative verdict. A wiretap "engine tap" panel shows
+every live call (step, method, target path, latency, status) in real time — this is the
+integration proof for the demo video.
+
+**Verified end-to-end against the LIVE KB** (June 11): 3 questions → planted lie **CONTRADICTED**
+with citation → Helena cracks under the badge-log press → her new time → **SELF_CONTRADICTION**
+vs her indexed turn-2 statement → scorecard → session reset deleted all 13 testimony docs.
+Sanitized trace: [`evidence-engine/docs/live-mode-proof.json`](evidence-engine/docs/live-mode-proof.json).
+Also verified in-browser at 1440px (mode switch → live chat → challenge → CONTRADICTED stamp +
+citations → interrogation report).
+
+### Architecture (single index, partitioned by filter)
+
+- `spike/07-add-live-fields.sh` — additive schema migration ($0): `doc_type`, `case_id`,
+  `session_id`, `speaker`, `turn_no` (all filterable) + backfill `doc_type='evidence'` on the
+  15 corpus docs. Stays inside the ONE existing index — free-tier 3-index cap untouched.
+- `evidence-engine/live-server/` — small Node backend holding the only two secrets
+  (`AZURE_SEARCH_ADMIN_KEY`, `GITHUB_MODELS_TOKEN` — `$(gh auth token)` works). The browser
+  never sees either. Routes: `POST /api/session`, `/api/ask`, `/api/challenge`, `/api/reset`
+  (filter-deletes that session's testimony docs), `GET /api/health`.
+- KB retrieval uses `knowledgeSourceParams[0].filterAddOn` against knowledge source
+  `evidence-ks` (NOT `evidence-source`) — confirmed working on the live KB, api-version
+  `2026-05-01-preview`.
+- Web: `ModeSwitch` (Case File ⇄ Live Wire), `LiveDesk` (grid: suspect rail · live chat ·
+  engine tap), claim chips → challenge → stamped verdict cards with verbatim trigger passages,
+  end-of-session interrogation report. **Case File mode untouched and fully offline** — the
+  judge-without-keys path. If the backend is down, Live Wire shows "LINE DEAD" and never
+  silently falls back.
+
+### Threshold calibration (measured live, June 11 2026)
+
+Declarative claim queries rerank systematically lower than question-style queries:
+
+| Query shape | In-corpus / grounded | Out-of-corpus / fabricated | Threshold |
+|-------------|----------------------|----------------------------|-----------|
+| Question-style (turn retrieval) | ~3.8–4.0 | 0 refs | **3.5** (WP3) |
+| Declarative claim (challenge)   | 2.2–3.9  | 0.9–1.5 | **2.0** (`CLAIM_EVIDENCE_THRESHOLD`) |
+| Testimony sentences (self-check) | gated by time-conflict heuristic | — | **1.0** (`TESTIMONY_THRESHOLD`) |
+
+All fail closed. Verdict heuristics (port of cycle-13 `check_claim` fix) operate at
+**sentence/log-line level**: only segments sharing a term with the claim (speaker name included)
+can contribute a negation or clock-time conflict — a statement-header timestamp or a stray
+"was not unusual" elsewhere in the document cannot manufacture a contradiction.
+
+### Cost + teardown
+
+- $0 total: Azure Search free tier (additive fields + a handful of tiny testimony docs per
+  session, deleted on reset), GitHub Models free tier. No new Azure resources created.
+- Teardown unchanged: `az group delete --name evidence-engine-rg`. Orphaned testimony docs (if a
+  session is abandoned mid-run) can be purged with a filter delete on `doc_type eq 'testimony'`.
+
+### Run it
+
+```bash
+cd evidence-engine/live-server && npm install && npm run build
+cp .env.example .env   # search endpoint + admin key; GITHUB_MODELS_TOKEN=$(gh auth token)
+npm start              # :8787
+cd ../web && npm run dev   # :5173 → flip to LIVE WIRE
+npm run test:live      # (in live-server) full demo-path verification + proof artifact
+```
+
+---
+
 ### Recommended Next Build Step
 
 Per [`strategy.md`](.claude/memory/strategy.md) build order:

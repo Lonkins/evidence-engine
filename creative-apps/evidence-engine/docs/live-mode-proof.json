@@ -1,0 +1,417 @@
+{
+  "artifact": "live-mode-proof",
+  "generatedAt": "2026-06-11T21:28:43.569Z",
+  "description": "End-to-end Live Interrogation run against the LIVE Foundry IQ knowledge base (Azure AI Search free tier, api-version 2026-05-01-preview) and GitHub Models free tier. Every turn and every verdict originates from a live KB call — see the per-call engine traces below (path + latency + status; hosts and keys redacted).",
+  "demoPath": {
+    "suspect": "Helena Voss",
+    "turns": [
+      {
+        "turnNo": 1,
+        "question": "Walk me through your movements that evening, minute by minute.",
+        "reply": "It was a routine evening, like any other. I finished my day around 7:45 PM; the gallery was quieting down, and I had a few pressing matters to take care of — the catalogue deadline for the upcoming exhibition loomed large, and I needed to finalize the courier schedule. I made my way out promptly, ensuring all loose ends were tied up before I left. I walked to my car, turned on the engine at precisely 7:50 PM, and headed straight home. The streets were slick with rain, and I remember the headlights reflecting off the pavement, illuminating the evening mist.",
+        "claimCount": 5,
+        "retrievedDocs": [],
+        "engineTrace": [
+          {
+            "step": "kb.retrieve(evidence)",
+            "method": "POST",
+            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'evidence' and case_id eq 'gallery']",
+            "latencyMs": 288,
+            "status": 200,
+            "detail": "0 ref(s) ≥ 3.5"
+          },
+          {
+            "step": "llm.chat",
+            "method": "POST",
+            "target": "models.github.ai /inference/chat/completions",
+            "latencyMs": 2817,
+            "status": 200,
+            "detail": "openai/gpt-4o-mini, 562 chars"
+          },
+          {
+            "step": "index.upload(testimony)",
+            "method": "POST",
+            "target": "/indexes/evidence/docs/index",
+            "latencyMs": 111,
+            "status": 200,
+            "detail": "5 testimony claim(s) indexed"
+          }
+        ]
+      },
+      {
+        "turnNo": 2,
+        "question": "What time exactly did you leave the gallery? Be precise.",
+        "reply": "I left the gallery at precisely 7:45 PM. I had a well-rehearsed routine, you see, and I made sure to stick to it that evening. The exhibition was ever-present on my mind, and I didn't want to linger longer than necessary. With the last of my tasks completed, I exited the gallery, locked the door behind me, and made my way home.",
+        "claimCount": 4,
+        "retrievedDocs": [
+          {
+            "docKey": "gallery-15",
+            "title": "Detective's Case Notes — DI Ruth Sullivan",
+            "rerankerScore": 3.8275318
+          },
+          {
+            "docKey": "gallery-07",
+            "title": "Witness Statement — Felix Drummond",
+            "rerankerScore": 3.7957983
+          },
+          {
+            "docKey": "gallery-13",
+            "title": "Mobile Phone Records — 14 October 2025",
+            "rerankerScore": 3.650451
+          },
+          {
+            "docKey": "gallery-04",
+            "title": "Character File — Felix Drummond",
+            "rerankerScore": 3.5966582
+          }
+        ],
+        "engineTrace": [
+          {
+            "step": "kb.retrieve(evidence)",
+            "method": "POST",
+            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'evidence' and case_id eq 'gallery']",
+            "latencyMs": 171,
+            "status": 200,
+            "detail": "4 ref(s) ≥ 3.5, top 3.83"
+          },
+          {
+            "step": "llm.chat",
+            "method": "POST",
+            "target": "models.github.ai /inference/chat/completions",
+            "latencyMs": 2696,
+            "status": 200,
+            "detail": "openai/gpt-4o-mini, 329 chars"
+          },
+          {
+            "step": "index.upload(testimony)",
+            "method": "POST",
+            "target": "/indexes/evidence/docs/index",
+            "latencyMs": 104,
+            "status": 200,
+            "detail": "4 testimony claim(s) indexed"
+          }
+        ]
+      },
+      {
+        "turnNo": 3,
+        "question": "The badge log tells a different story. When did you REALLY leave, and what did you do before that?",
+        "reply": "Well, if the badge log states otherwise, I must concede I lingered a bit longer than 7:45 PM. I actually left around 8:10 PM. You know how it is — the pressure of the looming exhibition got to me, and I wanted to ensure every detail was perfect. I was in Victor's office discussing some final touches on the catalogue layout; we had some last-minute changes to address, and time just slipped away from me, you see.",
+        "claimCount": 4,
+        "retrievedDocs": [],
+        "engineTrace": [
+          {
+            "step": "kb.retrieve(evidence)",
+            "method": "POST",
+            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'evidence' and case_id eq 'gallery']",
+            "latencyMs": 823,
+            "status": 200,
+            "detail": "0 ref(s) ≥ 3.5"
+          },
+          {
+            "step": "llm.chat",
+            "method": "POST",
+            "target": "models.github.ai /inference/chat/completions",
+            "latencyMs": 2340,
+            "status": 200,
+            "detail": "openai/gpt-4o-mini, 414 chars"
+          },
+          {
+            "step": "index.upload(testimony)",
+            "method": "POST",
+            "target": "/indexes/evidence/docs/index",
+            "latencyMs": 131,
+            "status": 200,
+            "detail": "4 testimony claim(s) indexed"
+          }
+        ]
+      }
+    ],
+    "challenges": [
+      {
+        "claim": "I finished my day around 7:45 PM; the gallery was quieting down, and I had a few pressing matters to take care of — the catalogue deadline for the upcoming exhibition loomed large, and I needed to finalize the courier schedule.",
+        "evidenceVerdict": "UNSUPPORTED",
+        "citations": [],
+        "selfVerdict": "SELF_CONSISTENT",
+        "selfConflicts": [],
+        "engineTrace": [
+          {
+            "step": "kb.retrieve(evidence)",
+            "method": "POST",
+            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'evidence' and case_id eq 'gallery']",
+            "latencyMs": 214,
+            "status": 200,
+            "detail": "0 ref(s) ≥ 2"
+          },
+          {
+            "step": "kb.retrieve(testimony)",
+            "method": "POST",
+            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'testimony' and case_id eq 'gallery' and session_id eq '1d501e11-f6c8-424f-a70a-a452a67ec770' and speaker eq 'Helena Voss' and turn_no lt 1]",
+            "latencyMs": 100,
+            "status": 200,
+            "detail": "0 ref(s) ≥ 1"
+          },
+          {
+            "step": "index.scan(testimony)",
+            "method": "POST",
+            "target": "/indexes/evidence/docs/search [speaker partition]",
+            "latencyMs": 96,
+            "status": 200,
+            "detail": "0 earlier statement(s)"
+          }
+        ]
+      },
+      {
+        "claim": "I walked to my car, turned on the engine at precisely 7:50 PM, and headed straight home.",
+        "evidenceVerdict": "UNSUPPORTED",
+        "citations": [],
+        "selfVerdict": "SELF_CONSISTENT",
+        "selfConflicts": [],
+        "engineTrace": [
+          {
+            "step": "kb.retrieve(evidence)",
+            "method": "POST",
+            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'evidence' and case_id eq 'gallery']",
+            "latencyMs": 164,
+            "status": 200,
+            "detail": "0 ref(s) ≥ 2"
+          },
+          {
+            "step": "kb.retrieve(testimony)",
+            "method": "POST",
+            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'testimony' and case_id eq 'gallery' and session_id eq '1d501e11-f6c8-424f-a70a-a452a67ec770' and speaker eq 'Helena Voss' and turn_no lt 1]",
+            "latencyMs": 99,
+            "status": 200,
+            "detail": "0 ref(s) ≥ 1"
+          },
+          {
+            "step": "index.scan(testimony)",
+            "method": "POST",
+            "target": "/indexes/evidence/docs/search [speaker partition]",
+            "latencyMs": 88,
+            "status": 200,
+            "detail": "0 earlier statement(s)"
+          }
+        ]
+      },
+      {
+        "claim": "I left the gallery at precisely 7:45 PM.",
+        "evidenceVerdict": "CONTRADICTED",
+        "citations": [
+          "gallery-15",
+          "gallery-04"
+        ],
+        "selfVerdict": "SELF_CONSISTENT",
+        "selfConflicts": [],
+        "engineTrace": [
+          {
+            "step": "kb.retrieve(evidence)",
+            "method": "POST",
+            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'evidence' and case_id eq 'gallery']",
+            "latencyMs": 182,
+            "status": 200,
+            "detail": "4 ref(s) ≥ 2, top 2.80"
+          },
+          {
+            "step": "index.lookup(gallery-06)",
+            "method": "GET",
+            "target": "/indexes/evidence/docs/gallery-06",
+            "latencyMs": 89,
+            "status": 200
+          },
+          {
+            "step": "index.lookup(gallery-07)",
+            "method": "GET",
+            "target": "/indexes/evidence/docs/gallery-07",
+            "latencyMs": 85,
+            "status": 200
+          },
+          {
+            "step": "index.lookup(gallery-15)",
+            "method": "GET",
+            "target": "/indexes/evidence/docs/gallery-15",
+            "latencyMs": 88,
+            "status": 200
+          },
+          {
+            "step": "index.lookup(gallery-04)",
+            "method": "GET",
+            "target": "/indexes/evidence/docs/gallery-04",
+            "latencyMs": 88,
+            "status": 200
+          },
+          {
+            "step": "kb.retrieve(testimony)",
+            "method": "POST",
+            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'testimony' and case_id eq 'gallery' and session_id eq '1d501e11-f6c8-424f-a70a-a452a67ec770' and speaker eq 'Helena Voss' and turn_no lt 2]",
+            "latencyMs": 138,
+            "status": 200,
+            "detail": "1 ref(s) ≥ 1, top 3.86"
+          },
+          {
+            "step": "index.lookup(testimony)",
+            "method": "GET",
+            "target": "/indexes/evidence/docs/1d501e11-f6c8-424f-a70a-a452a67ec770-t1-c1",
+            "latencyMs": 85,
+            "status": 200
+          },
+          {
+            "step": "index.scan(testimony)",
+            "method": "POST",
+            "target": "/indexes/evidence/docs/search [speaker partition]",
+            "latencyMs": 89,
+            "status": 200,
+            "detail": "5 earlier statement(s)"
+          }
+        ]
+      },
+      {
+        "claim": "Well, if the badge log states otherwise, I must concede I lingered a bit longer than 7:45 PM.",
+        "evidenceVerdict": "UNSUPPORTED",
+        "citations": [],
+        "selfVerdict": "SELF_CONSISTENT",
+        "selfConflicts": [],
+        "engineTrace": [
+          {
+            "step": "kb.retrieve(evidence)",
+            "method": "POST",
+            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'evidence' and case_id eq 'gallery']",
+            "latencyMs": 185,
+            "status": 200,
+            "detail": "0 ref(s) ≥ 2"
+          },
+          {
+            "step": "kb.retrieve(testimony)",
+            "method": "POST",
+            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'testimony' and case_id eq 'gallery' and session_id eq '1d501e11-f6c8-424f-a70a-a452a67ec770' and speaker eq 'Helena Voss' and turn_no lt 3]",
+            "latencyMs": 138,
+            "status": 200,
+            "detail": "2 ref(s) ≥ 1, top 1.99"
+          },
+          {
+            "step": "index.lookup(testimony)",
+            "method": "GET",
+            "target": "/indexes/evidence/docs/1d501e11-f6c8-424f-a70a-a452a67ec770-t1-c1",
+            "latencyMs": 110,
+            "status": 200
+          },
+          {
+            "step": "index.lookup(testimony)",
+            "method": "GET",
+            "target": "/indexes/evidence/docs/1d501e11-f6c8-424f-a70a-a452a67ec770-t2-c0",
+            "latencyMs": 84,
+            "status": 200
+          },
+          {
+            "step": "index.scan(testimony)",
+            "method": "POST",
+            "target": "/indexes/evidence/docs/search [speaker partition]",
+            "latencyMs": 96,
+            "status": 200,
+            "detail": "9 earlier statement(s)"
+          }
+        ]
+      },
+      {
+        "claim": "I actually left around 8:10 PM.",
+        "evidenceVerdict": "CONTRADICTED",
+        "citations": [
+          "gallery-07",
+          "gallery-15",
+          "gallery-09"
+        ],
+        "selfVerdict": "SELF_CONTRADICTION",
+        "selfConflicts": [
+          {
+            "turnNo": 2,
+            "statement": "I left the gallery at precisely 7:45 PM."
+          },
+          {
+            "turnNo": 1,
+            "statement": "I finished my day around 7:45 PM; the gallery was quieting down, and I had a few pressing matters to take care of — the catalogue deadline for the upcoming exhibition loomed large, and I needed to finalize the courier schedule."
+          },
+          {
+            "turnNo": 1,
+            "statement": "I walked to my car, turned on the engine at precisely 7:50 PM, and headed straight home."
+          }
+        ],
+        "engineTrace": [
+          {
+            "step": "kb.retrieve(evidence)",
+            "method": "POST",
+            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'evidence' and case_id eq 'gallery']",
+            "latencyMs": 206,
+            "status": 200,
+            "detail": "4 ref(s) ≥ 2, top 2.49"
+          },
+          {
+            "step": "index.lookup(gallery-06)",
+            "method": "GET",
+            "target": "/indexes/evidence/docs/gallery-06",
+            "latencyMs": 85,
+            "status": 200
+          },
+          {
+            "step": "index.lookup(gallery-07)",
+            "method": "GET",
+            "target": "/indexes/evidence/docs/gallery-07",
+            "latencyMs": 83,
+            "status": 200
+          },
+          {
+            "step": "index.lookup(gallery-15)",
+            "method": "GET",
+            "target": "/indexes/evidence/docs/gallery-15",
+            "latencyMs": 88,
+            "status": 200
+          },
+          {
+            "step": "index.lookup(gallery-09)",
+            "method": "GET",
+            "target": "/indexes/evidence/docs/gallery-09",
+            "latencyMs": 86,
+            "status": 200
+          },
+          {
+            "step": "kb.retrieve(testimony)",
+            "method": "POST",
+            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'testimony' and case_id eq 'gallery' and session_id eq '1d501e11-f6c8-424f-a70a-a452a67ec770' and speaker eq 'Helena Voss' and turn_no lt 3]",
+            "latencyMs": 142,
+            "status": 200,
+            "detail": "1 ref(s) ≥ 1, top 1.01"
+          },
+          {
+            "step": "index.lookup(testimony)",
+            "method": "GET",
+            "target": "/indexes/evidence/docs/1d501e11-f6c8-424f-a70a-a452a67ec770-t2-c0",
+            "latencyMs": 85,
+            "status": 200
+          },
+          {
+            "step": "index.scan(testimony)",
+            "method": "POST",
+            "target": "/indexes/evidence/docs/search [speaker partition]",
+            "latencyMs": 88,
+            "status": 200,
+            "detail": "9 earlier statement(s)"
+          }
+        ]
+      }
+    ],
+    "scorecard": {
+      "hallucinationsCaught": 5,
+      "falseObjections": 0,
+      "selfContradictionsExposed": 1,
+      "turns": 3,
+      "challenges": 5
+    },
+    "sessionCleanup": {
+      "deletedTestimonyDocs": 13
+    }
+  },
+  "assertions": {
+    "everyTurnHadLiveKbRetrieve": true,
+    "hallucinationCaught": true,
+    "selfContradictionExposed": true,
+    "testimonyCleanedUp": true
+  }
+}

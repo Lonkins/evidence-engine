@@ -8,10 +8,13 @@ import { TitleCard } from "./components/briefing/TitleCard";
 import { EvidenceBoard } from "./components/evidence/EvidenceBoard";
 import { DocumentModal } from "./components/evidence/DocumentModal";
 import { AccusationModal } from "./components/accusation/AccusationModal";
+import { LiveDesk } from "./components/live/LiveDesk";
+import { ModeSwitch, type DeskMode } from "./components/live/ModeSwitch";
 import "./app.css";
 
 function Desk() {
   const { state } = useGame();
+  const [mode, setMode] = useState<DeskMode>("casefile");
   const [openDocKey, setOpenDocKey] = useState<string | null>(null);
   const [accusing, setAccusing] = useState(false);
 
@@ -21,20 +24,27 @@ function Desk() {
 
   return (
     <div className="desk">
-      <CaseHeader onAccuse={() => setAccusing(true)} />
-      <main className="desk-grid">
-        <SuspectRail />
-        {state.selectedSuspectId ? (
-          <InterrogationPanel onOpenDoc={setOpenDocKey} />
-        ) : (
-          <CaseBriefing />
-        )}
-        <EvidenceBoard onOpenDoc={setOpenDocKey} />
-      </main>
-      {openDocKey && (
-        <DocumentModal docKey={openDocKey} onClose={() => setOpenDocKey(null)} />
+      <ModeSwitch mode={mode} onSwitch={setMode} />
+      {mode === "live" ? (
+        <LiveDesk onBackToCaseFile={() => setMode("casefile")} />
+      ) : (
+        <>
+          <CaseHeader onAccuse={() => setAccusing(true)} />
+          <main className="desk-grid">
+            <SuspectRail />
+            {state.selectedSuspectId ? (
+              <InterrogationPanel onOpenDoc={setOpenDocKey} />
+            ) : (
+              <CaseBriefing />
+            )}
+            <EvidenceBoard onOpenDoc={setOpenDocKey} />
+          </main>
+          {openDocKey && (
+            <DocumentModal docKey={openDocKey} onClose={() => setOpenDocKey(null)} />
+          )}
+          {accusing && <AccusationModal onClose={() => setAccusing(false)} />}
+        </>
       )}
-      {accusing && <AccusationModal onClose={() => setAccusing(false)} />}
     </div>
   );
 }
