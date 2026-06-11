@@ -34,8 +34,8 @@ async function retrieveFromFoundry(query: string): Promise<RetrievalResult> {
   const url = `${AZURE_ENDPOINT}/knowledgebases/${AZURE_KB_NAME}/retrieve?api-version=2026-05-01-preview`;
 
   const body = {
-    messages: [{ role: "user", content: query }],
-    retrievalReasoningEffort: "minimal",
+    intents: [{ type: "semantic", search: query }],
+    retrievalReasoningEffort: { kind: "minimal" },
   };
 
   const response = await fetch(url, {
@@ -54,13 +54,15 @@ async function retrieveFromFoundry(query: string): Promise<RetrievalResult> {
 
   const data = (await response.json()) as {
     output?: string;
-    results?: Array<{ content: string; references?: Array<{ docKey: string }> }>;
-    references?: Array<{ docKey: string }>;
+    response?: Array<{ content?: Array<{ type: string; text: string }> }>;
+    activity?: Array<{ type: string; reasoningTokens?: number }>;
+    references?: Array<{ docKey: string; rerankerScore?: number; title?: string }>;
   };
 
   const references = (data.references ?? []).map((ref) => ({
     docKey: ref.docKey,
     excerpt: "",
+    score: ref.rerankerScore,
   }));
 
   return {

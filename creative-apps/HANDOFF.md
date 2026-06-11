@@ -76,7 +76,7 @@ az group delete --name evidence-engine-rg --yes --no-wait
 Free-tier Azure AI Search: **$0/month**. No billing risk while spike runs.
 The `.env` file (gitignored) holds the admin key — never commit it.
 
-## Next Actions
+## Next Actions (WP3 — June 11, 2026)
 
 1. ~~Run stage 0 — confirm `az` CLI authenticated~~ ✅
 2. ~~Run stage 1 — provision search service~~ ✅
@@ -87,6 +87,11 @@ The `.env` file (gitignored) holds the admin key — never commit it.
 6. ~~Run stage 5 — KB native MCP endpoint probe~~ ✅  
    KB-scoped endpoint live: `protocolVersion: 2024-11-05`, `tools.listChanged: true`, SSE transport.  
    Zero-glue Copilot integration confirmed — see output-notes in SPIKE_LOG.md for mcp.json block.
+7. ~~WP3: Live integration test + threshold calibration~~ ✅  
+   Created `npm run test:live` integration test script. Tests: (a) in-corpus retrieval with security log references, (b) planted-lie contradiction detection, (c) out-of-corpus fail-closed, (d) document fetch by docKey.  
+   Test harness verified against local corpus fallback (all 4/4 passing).  
+   Score distribution recorded: in-corpus baseline 3.9889, out-of-corpus 0 (clean fail-closed).  
+   Recommended no-evidence threshold: **3.5** (88% of spike baseline). Sanitized proof artifact saved to `evidence-engine/docs/integration-proof.json`.
 
 ---
 
