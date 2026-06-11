@@ -53,6 +53,14 @@ Creative Apps prize value TBC. Win probability est. 15–20% with a working Copi
 
 All autonomous actions complete. Remaining items are human-gated.
 
+### Completed (Cycle 13 — June 11, 2026)
+
+✅ `check_claim` temporal-conflict detection fix — replaced hardcoded keyword heuristic ("shows", "records", "card_exit") with:
+  1. Temporal conflict: extracts HH:MM times from claim and document; flags CONTRADICTED only when every doc timestamp differs from every claim timestamp by >5 minutes
+  2. Explicit negation phrases only: "does not", "did not", "was not", "no record", "denied", "contradicts", "inconsistent with"
+  3. Removes false positive risk: prior code would CONTRADICT any document containing common words like "records" or "shows"
+✅ Build verified clean (tsc, no errors)
+
 ## Decisions Log
 
 | Date | Decision | Rationale |

@@ -5,6 +5,34 @@ metadata:
   type: project
 ---
 
+## Cycle 13 — June 11, 2026
+
+**What was worked on:** Creative Apps track — fixed `check_claim` false-positive bug in Evidence Engine MCP server. All 5 enterprise-track priority items were already complete from prior cycles.
+
+**Persona recommendations:**
+- *P1 (Skeptical Engineer):* Option A (fix `check_claim`) — the contradiction detection using common words like "shows" and "records" is a correctness failure on the core game mechanic. A judge who gets a spurious CONTRADICTED verdict will classify this as a broken demo. Temporal-conflict logic is deterministic and testable.
+- *P2 (Competing Team):* Option A (fix `check_claim`) — the temporal contradiction mechanic is the demo centerpiece. The current keyword soup fires false positives on every document. 40 lines of TypeScript and a clear regression story would make this submission reproducibly correct for judges.
+- *P3 (Conservative Safety Judge):* Option A (fix `check_claim`) — a tool that labels supporting evidence as CONTRADICTED because of common words is a category error, not an edge case. This is the most credibility-damaging flaw remaining.
+- *P4 (Prize Strategist, tiebreaker):* Option A — Enterprise track fully blocked on human actions. Fixing a visible demo-breaking defect in the Creative Apps track ($5,000 prize pool) with 3 days remaining. Implemented fix autonomously, verified build clean.
+
+**Synthesis:** 4/4 unanimous consensus — Option A. P4 executed and committed as `536a01c`. No tie-breaking required.
+
+**What was built:**
+1. `creative-apps/evidence-engine/server/src/index.ts` — replaced hardcoded contradiction keyword list with two-stage logic:
+   - Temporal conflict: `extractTimes()` parses HH:MM timestamps; flags CONTRADICTED only when ALL document times differ from ALL claim times by >5 minutes
+   - Explicit negation only: "does not", "did not", "was not", "were not", "no record", "not present", "never arrived", "denied", "contradicts", "inconsistent with"
+   - Removed false positive signals: "shows", "records", "logged at", "card_exit"
+2. Build verified clean (tsc, no errors). Enterprise RiskRadar: 56/56 tests still passing.
+
+**Recommended next cycle priority:**
+1. **Human required (most urgent — both tracks):** Record demo video for enterprise track (use `docs/demo-script.md` and `docs/demo-transcript.md`). Post to Discord `#enterprise-agents` using `docs/discord-post.md` Template A. Community vote is 10% of judging score.
+2. **Human required:** `teamsapp provision` — set `MCP_SERVER_URL` to a public HTTPS endpoint in `.env.dev`, then run `teamsapp provision`. Fill in `[BRACKET]` values in `declarativeAgent.json` per `KNOWLEDGE_SETUP.md`.
+3. **Human required:** Upload 4 knowledge docs to SharePoint + Azure AI Foundry per `KNOWLEDGE_SETUP.md`. Run `provision-registry.ps1` against the M365 dev tenant.
+4. **Human required (creative apps):** Run spike scripts 0–5 in worktree `hungry-cannon-81b457` to provision Azure AI Search free tier. Upload corpus to the index. Fill in `.env` with Azure credentials. Record creative apps demo.
+5. **Autonomous note:** All viable autonomous actions for both tracks are now complete. Enterprise track: 56/56 tests, 97% coverage, OAuth, SharePoint integration, 17 eval prompts, full knowledge base, demo transcript, submission form. Creative Apps: MCP server, Foundry IQ client, 15-doc corpus, temporal-conflict detection, README, game walkthrough, demo script, Discord templates. The repo is maximally demo-ready within autonomous constraints.
+
+---
+
 ## Cycle 12 — June 11, 2026
 
 **What was worked on:** Enterprise track — annotated demo transcript, declarativeAgent.json TODO placeholder cleanup, 17th eval prompt (evasive-user refusal scenario), submission.md update.
