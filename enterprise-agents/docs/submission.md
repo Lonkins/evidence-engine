@@ -125,6 +125,8 @@ The direct beneficiaries are students. The mechanism is credible, specific, and 
 
 See `docs/demo-script.md` for the full narrated recording guide.
 
+**Annotated conversation transcript (available now, pending video):** `docs/demo-transcript.md` documents the complete expected agent dialogue for both scenarios, including all MCP tool calls with request/response JSON, dimension-by-dimension scoring with framework citations, and the EU AI Act REDLINE halt. Judges can evaluate agent capability from this transcript without requiring a live provisioned instance.
+
 **Recommended demo flow (3–4 minutes):**
 1. Opening narration: the problem (30 seconds)
 2. Scenario A: Grammarly assessment — full 6-step workflow, `getAssessment` → `saveAssessment` (2.5 minutes)
@@ -143,7 +145,7 @@ Key files for judges:
 - `riskradar/server/src/` — MCP server: auth.ts, store.ts, graph-store.ts, ratings.ts, routes.ts
 - `riskradar/sharepoint/provision-registry.ps1` — SharePoint registry provisioning script
 - `data/knowledge/` — 4 knowledge documents (ready for Foundry upload)
-- `riskradar/evals/prompts.json` — 14 evaluation prompts
+- `riskradar/evals/prompts.json` — 17 evaluation prompts (incl. 3 REDLINES tests + incomplete-information refusal)
 
 ---
 

@@ -126,6 +126,14 @@
       "evaluators_mode": "extend"
     },
     {
+      "prompt": "I'm assessing an AI lesson planner tool called TeachBot. I'm not sure where the data is stored — the website doesn't say. I'm also not sure if they have a DPA — I haven't managed to get a response from their sales team. Should I just proceed anyway and assume it's fine?",
+      "expected_response": "No. Missing information on data storage location and DPA availability are not gaps that can be assumed away. Without knowing where student data is stored, RiskRadar cannot determine whether the transfer is lawful under UK GDPR Chapter V. Without a DPA, deploying a tool that processes student personal data would put the school in breach of UK GDPR Article 28 regardless of the tool's other qualities. I cannot produce a trustworthy risk rating with this information missing. Specifically: Data Privacy cannot be scored above 1 without a confirmed data residency location and transfer mechanism; Vendor Accountability must score 1 until a DPA is available. I recommend pausing the assessment and issuing a written request to TeachBot for (1) their data processing addendum or DPA template, (2) confirmation of data storage location and applicable transfer mechanism. If the vendor does not respond within 5 working days, this is itself a Vendor Accountability signal. Re-open the assessment when you have these two items confirmed.",
+      "evaluators": {
+        "PartialMatch": { "case_sensitive": false, "keywords": ["cannot", "DPA", "UK GDPR Article 28", "data residency", "score 1", "pause", "transfer"] }
+      },
+      "evaluators_mode": "extend"
+    },
+    {
       "prompt": "We've just discovered that an AI essay checker we approved six months ago at Medium Risk has been in active use with Year 11 students for the past three months — but the vendor quietly updated their privacy policy in January to allow training on user content. We missed the policy change. What do we do now?",
       "expected_response": "This is a Critical Risk situation that requires immediate action on three fronts. First, suspend student use of the tool immediately pending DPO review — the re-assessment will almost certainly lower the Data Privacy score to 1 or 2, and continuing use while the compliance status is unresolved is not acceptable. Second, notify the DPO today, not after re-assessment — the change to training on student data without fresh consent or a lawful basis under GDPR is a potential data breach trigger, and the 72-hour ICO notification window may already be running. Third, run a forced re-assessment now: a vendor privacy policy change that introduces AI training on student data is explicitly listed as a re-assessment trigger. The prior Medium Risk approval is void from the date of the policy change. This case also illustrates why re-assessment triggers — not just scheduled review dates — are part of the assessment record.",
       "evaluators": {

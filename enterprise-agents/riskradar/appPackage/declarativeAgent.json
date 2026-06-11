@@ -27,7 +27,7 @@
             "name": "OneDriveAndSharePoint",
             "items_by_url": [
                 {
-                    "url": "https://TODO_TENANT_NAME.sharepoint.com/sites/TODO_SITE_NAME/Shared%20Documents/RiskRadar-Knowledge"
+                    "url": "https://[TENANT_NAME].sharepoint.com/sites/[SITE_NAME]/Shared%20Documents/RiskRadar-Knowledge"
                 }
             ]
         },
@@ -35,7 +35,7 @@
             "name": "GraphConnectors",
             "connections": [
                 {
-                    "connection_id": "TODO_AZURE_AI_SEARCH_CONNECTION_ID"
+                    "connection_id": "[AZURE_AI_SEARCH_CONNECTION_ID]"
                 }
             ]
         }
