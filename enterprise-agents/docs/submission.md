@@ -83,7 +83,7 @@ Both layers are active simultaneously. Foundry IQ provides the scoring criteria;
 |-----------|---------------|
 | **Declarative Agent** | DA manifest v1.7 with conversation starters, IQ capabilities, and action linked to MCP tools |
 | **SharePoint Approved Tools Registry** | PnP PowerShell provisioning script (`provision-registry.ps1`) creates a 17-column SharePoint list with choice fields for risk rating and decision, typed columns for all 5 dimension scores, and date fields for review scheduling |
-| **Microsoft Graph API store** | `graph-store.ts` — full client_credentials token flow, site/list ID resolution (cached), field mapping both directions, create/PATCH upsert. One-line swap from file store to live SharePoint |
+| **Microsoft Graph API store** | `graph-store.ts` — full client_credentials token flow, site/list ID resolution (cached), field mapping both directions, create/PATCH upsert. `store.ts` routes to SharePoint automatically when `SP_SITE_URL`, `SP_TENANT_ID`, `SP_CLIENT_ID`, `SP_CLIENT_SECRET` env vars are set; falls back to file persistence for local dev |
 | **OAuth 2.0 on MCP server** | Bearer token middleware (`auth.ts`) validates Azure AD–issued JWTs via JWKS; `OAuthPluginVault` declared in `ai-plugin.json`; `OAUTH_REFERENCE_ID` env var wires the Teams Developer Portal OAuth config |
 | **M365 Agents Toolkit** | DA scaffolded via ATK; `m365agents.yml` provision/publish pipeline; `MCP_SERVER_URL` env var substitution in `ai-plugin.json` for ngrok/Railway deploy |
 

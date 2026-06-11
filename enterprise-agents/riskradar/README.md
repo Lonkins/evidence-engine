@@ -88,17 +88,16 @@ Each dimension scored 1–5. Total 5–25. Risk rating bands:
 
 | Grade | Tools |
 |-------|-------|
-| A (Excellent) | Google Classroom, Microsoft Teams for Education |
-| B (Good) | Khan Academy, Duolingo, Nearpod, BrainPOP |
-| C (Pass) | Canva, Grammarly, Notion AI |
+| A (Excellent) | Google Classroom, Microsoft Teams for Education, Google Workspace for Education, Khan Academy, Seesaw |
+| B (Good) | Grammarly, Duolingo, Canva, Kahoot, Microsoft Copilot, Nearpod, BrainPOP |
+| C (Pass) | Gemini, Quizlet, Adobe Express, Notion AI |
 | D (Poor) | ChatGPT (OpenAI), Turnitin |
-| F (Fail) | Character.AI |
 
 ---
 
 ## Knowledge Base (Foundry IQ)
 
-Four documents uploaded to Azure AI Foundry and indexed via Azure AI Search:
+Four documents in `data/knowledge/` — ready to upload to Azure AI Foundry. See [`appPackage/KNOWLEDGE_SETUP.md`](appPackage/KNOWLEDGE_SETUP.md) for step-by-step provisioning instructions.
 
 | Document | Content |
 |----------|---------|
@@ -107,7 +106,7 @@ Four documents uploaded to Azure AI Foundry and indexed via Azure AI Search:
 | `ai_security_cert_guide.md` | AI security certification pathways for school roles |
 | `team_readiness_report.md` | Synthetic quarterly AI readiness report (demonstrates org-data surfacing) |
 
-The DA cites specific sections from these documents when justifying dimension scores.
+Once uploaded and indexed, the DA cites specific sections from these documents when justifying dimension scores.
 
 ---
 
@@ -136,7 +135,7 @@ riskradar/
 ├── env/
 │   └── .env.dev                # TEAMS_APP_ID, MCP_SERVER_URL (gitignored)
 ├── evals/
-│   └── prompts.json            # 14 evaluation prompts covering edge cases
+│   └── prompts.json            # 17 evaluation prompts covering edge cases
 ├── server/
 │   ├── src/
 │   │   ├── index.ts            # Express server, 3 MCP tool endpoints
@@ -214,7 +213,7 @@ Prerequisites:
 
 ## Evaluation
 
-14 evaluation prompts are included in `evals/prompts.json`, covering:
+17 evaluation prompts are included in `evals/prompts.json`, covering:
 
 - Standard new tool assessment (ChatGPT, Grammarly, Canva)
 - Tool already deployed to students (urgent escalation path)

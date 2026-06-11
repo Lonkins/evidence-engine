@@ -1,6 +1,13 @@
 import fs from "fs";
 import path from "path";
 
+import {
+  isSharePointConfigured,
+  getAssessmentFromSharePoint,
+  saveAssessmentToSharePoint,
+  getAllAssessmentsFromSharePoint,
+} from "./graph-store";
+
 export interface Assessment {
   id: string;
   toolName: string;
@@ -24,6 +31,8 @@ export interface Assessment {
   reassessmentReason?: string;
 }
 
+// ─── File-based fallback store (used when SharePoint env vars are not set) ─────
+
 const DATA_FILE = path.join(__dirname, "..", "data", "assessments.json");
 
 function loadFromDisk(): Assessment[] {
@@ -44,12 +53,17 @@ function saveToDisk(assessments: Assessment[]): void {
   fs.writeFileSync(DATA_FILE, JSON.stringify(assessments, null, 2), "utf-8");
 }
 
-let store: Assessment[] = loadFromDisk();
+let fileStore: Assessment[] = loadFromDisk();
 
-export function getAssessment(toolName: string): Assessment | null {
+// ─── Public API — routes to SharePoint when configured, file store otherwise ───
+
+export async function getAssessment(toolName: string): Promise<Assessment | null> {
+  if (isSharePointConfigured()) {
+    return getAssessmentFromSharePoint(toolName);
+  }
   const normalised = toolName.toLowerCase().trim();
   return (
-    store.find(
+    fileStore.find(
       (a) =>
         a.toolName.toLowerCase() === normalised ||
         a.toolName.toLowerCase().includes(normalised)
@@ -57,8 +71,8 @@ export function getAssessment(toolName: string): Assessment | null {
   );
 }
 
-export function saveAssessment(input: Omit<Assessment, "id" | "assessedBy" | "assessedAt">): Assessment {
-  const existing = getAssessment(input.toolName);
+export async function saveAssessment(input: Omit<Assessment, "id" | "assessedBy" | "assessedAt">): Promise<Assessment> {
+  const existing = await getAssessment(input.toolName);
 
   const record: Assessment = {
     ...input,
@@ -67,16 +81,24 @@ export function saveAssessment(input: Omit<Assessment, "id" | "assessedBy" | "as
     assessedAt: new Date().toISOString(),
   };
 
-  if (existing) {
-    store = store.map((a) => (a.id === existing.id ? record : a));
-  } else {
-    store = [...store, record];
+  if (isSharePointConfigured()) {
+    await saveAssessmentToSharePoint(record);
+    return record;
   }
 
-  saveToDisk(store);
+  if (existing) {
+    fileStore = fileStore.map((a) => (a.id === existing.id ? record : a));
+  } else {
+    fileStore = [...fileStore, record];
+  }
+
+  saveToDisk(fileStore);
   return record;
 }
 
-export function getAllAssessments(): Assessment[] {
-  return store;
+export async function getAllAssessments(): Promise<Assessment[]> {
+  if (isSharePointConfigured()) {
+    return getAllAssessmentsFromSharePoint();
+  }
+  return fileStore;
 }

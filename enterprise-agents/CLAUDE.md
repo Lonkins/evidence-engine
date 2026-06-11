@@ -173,10 +173,10 @@ All three tools tested and working. Server builds clean. File-persisted assessme
 | DA instructions | ✅ Complete | `instruction.txt` — full 6-step workflow |
 | DA manifest | ✅ Complete | Conversation starters, action linked, capabilities block |
 | MCP tool definitions | ✅ Complete | `ai-plugin.json` — all 3 tools + OAuthPluginVault auth block |
-| MCP server | ✅ Built and tested | Express, TypeScript, OAuth middleware, file persistence |
+| MCP server | ✅ Built and tested | Express, TypeScript, OAuth middleware; SharePoint via graph-store.ts when SP env vars set, file fallback otherwise |
 | OAuth on MCP server | ✅ Built | Bearer token middleware (JWKS/Azure AD) + OAuthPluginVault |
 | Common Sense Media ratings | ✅ 18 tools | ChatGPT, Grammarly, Khan Academy, Turnitin, Notion AI, etc. |
-| Evaluation prompts | ✅ 14 prompts | `evals/prompts.json` — incl. Critical Risk, EU AI Act, edge cases |
+| Evaluation prompts | ✅ 17 prompts | `evals/prompts.json` — incl. Critical Risk, EU AI Act, edge cases |
 | Test suite | ✅ Built | Vitest, 56 tests, 97% coverage (auth/store/ratings/routes) |
 | README | ✅ Complete | `riskradar/README.md` with Mermaid architecture diagram |
 | Demo script | ✅ Complete | `docs/demo-script.md` — full narrated recording guide |

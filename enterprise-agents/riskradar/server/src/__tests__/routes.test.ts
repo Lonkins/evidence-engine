@@ -81,7 +81,7 @@ describe("POST /api/getAssessment", () => {
   });
 
   it("returns found: false when no prior assessment exists", async () => {
-    vi.mocked(getAssessment).mockReturnValue(null);
+    vi.mocked(getAssessment).mockResolvedValue(null);
     const res = await request(app)
       .post("/api/getAssessment")
       .send({ toolName: "UnknownTool" });
@@ -91,7 +91,7 @@ describe("POST /api/getAssessment", () => {
   });
 
   it("returns found: true with the assessment when one exists", async () => {
-    vi.mocked(getAssessment).mockReturnValue(mockAssessment);
+    vi.mocked(getAssessment).mockResolvedValue(mockAssessment);
     const res = await request(app)
       .post("/api/getAssessment")
       .send({ toolName: "Grammarly" });
@@ -178,8 +178,8 @@ describe("POST /api/saveAssessment", () => {
   });
 
   it("returns 200 with the saved record on a valid payload", async () => {
-    vi.mocked(saveAssessment).mockReturnValue(mockAssessment);
-    vi.mocked(getAssessment).mockReturnValue(null); // new tool, no prior assessment
+    vi.mocked(saveAssessment).mockResolvedValue(mockAssessment);
+    vi.mocked(getAssessment).mockResolvedValue(null); // new tool, no prior assessment
 
     const res = await request(app)
       .post("/api/saveAssessment")
@@ -191,7 +191,7 @@ describe("POST /api/saveAssessment", () => {
   });
 
   it("returns a message confirming the decision in the response", async () => {
-    vi.mocked(saveAssessment).mockReturnValue(mockAssessment);
+    vi.mocked(saveAssessment).mockResolvedValue(mockAssessment);
     const res = await request(app)
       .post("/api/saveAssessment")
       .send(validPayload);
@@ -200,7 +200,7 @@ describe("POST /api/saveAssessment", () => {
 
   it("uses 6-month review date for Medium risk tools by default", async () => {
     let capturedInput: Parameters<typeof saveAssessment>[0] | undefined;
-    vi.mocked(saveAssessment).mockImplementation((input) => {
+    vi.mocked(saveAssessment).mockImplementation(async (input) => {
       capturedInput = input;
       return mockAssessment;
     });
@@ -218,7 +218,7 @@ describe("POST /api/saveAssessment", () => {
 
   it("uses 12-month review date for Low risk tools", async () => {
     let capturedInput: Parameters<typeof saveAssessment>[0] | undefined;
-    vi.mocked(saveAssessment).mockImplementation((input) => {
+    vi.mocked(saveAssessment).mockImplementation(async (input) => {
       capturedInput = input;
       return { ...mockAssessment, riskRating: "Low" };
     });
@@ -243,7 +243,7 @@ describe("POST /api/saveAssessment", () => {
 
 describe("GET /api/assessments", () => {
   it("returns an assessments array and total count", async () => {
-    vi.mocked(getAllAssessments).mockReturnValue([mockAssessment]);
+    vi.mocked(getAllAssessments).mockResolvedValue([mockAssessment]);
     const res = await request(app).get("/api/assessments");
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body.assessments)).toBe(true);
@@ -251,7 +251,7 @@ describe("GET /api/assessments", () => {
   });
 
   it("returns empty array when no assessments exist", async () => {
-    vi.mocked(getAllAssessments).mockReturnValue([]);
+    vi.mocked(getAllAssessments).mockResolvedValue([]);
     const res = await request(app).get("/api/assessments");
     expect(res.status).toBe(200);
     expect(res.body.assessments).toHaveLength(0);

@@ -22,27 +22,31 @@ app.get("/", (_req, res) => {
 
 // ─── MCP tool: getAssessment ──────────────────────────────────────────────────
 
-app.post("/api/getAssessment", (req, res) => {
+app.post("/api/getAssessment", async (req, res) => {
   const { toolName } = req.body as { toolName?: string };
   if (!toolName) {
     res.status(400).json({ error: "toolName is required" });
     return;
   }
 
-  const assessment = getAssessment(toolName);
-  if (!assessment) {
-    res.json({
-      found: false,
-      message: `No existing assessment found for "${toolName}". A new assessment is required.`,
-    });
-    return;
-  }
+  try {
+    const assessment = await getAssessment(toolName);
+    if (!assessment) {
+      res.json({
+        found: false,
+        message: `No existing assessment found for "${toolName}". A new assessment is required.`,
+      });
+      return;
+    }
 
-  res.json({
-    found: true,
-    assessment,
-    message: `Existing assessment found for "${assessment.toolName}" (${assessment.riskRating} Risk, score ${assessment.totalScore}/25). Assessed on ${new Date(assessment.assessedAt).toLocaleDateString("en-GB")}. Decision: ${assessment.decision}.`,
-  });
+    res.json({
+      found: true,
+      assessment,
+      message: `Existing assessment found for "${assessment.toolName}" (${assessment.riskRating} Risk, score ${assessment.totalScore}/25). Assessed on ${new Date(assessment.assessedAt).toLocaleDateString("en-GB")}. Decision: ${assessment.decision}.`,
+    });
+  } catch (err) {
+    res.status(500).json({ error: String(err) });
+  }
 });
 
 // ─── MCP tool: vendorLookup ───────────────────────────────────────────────────
@@ -83,7 +87,7 @@ app.post("/api/vendorLookup", (req, res) => {
 
 // ─── MCP tool: saveAssessment ─────────────────────────────────────────────────
 
-app.post("/api/saveAssessment", (req, res) => {
+app.post("/api/saveAssessment", async (req, res) => {
   const body = req.body as Partial<Assessment> & {
     toolName?: string;
     riskRating?: "Low" | "Medium" | "High" | "Critical";
@@ -104,7 +108,7 @@ app.post("/api/saveAssessment", (req, res) => {
   };
 
   try {
-    const record = saveAssessment({
+    const record = await saveAssessment({
       toolName: body.toolName,
       vendorName: body.vendorName ?? "Unknown",
       toolType: body.toolType ?? "Unknown",
@@ -135,8 +139,13 @@ app.post("/api/saveAssessment", (req, res) => {
 
 // ─── Admin: list all assessments ──────────────────────────────────────────────
 
-app.get("/api/assessments", (_req, res) => {
-  res.json({ assessments: getAllAssessments(), total: getAllAssessments().length });
+app.get("/api/assessments", async (_req, res) => {
+  try {
+    const assessments = await getAllAssessments();
+    res.json({ assessments, total: assessments.length });
+  } catch (err) {
+    res.status(500).json({ error: String(err) });
+  }
 });
 
 // ─── Start ────────────────────────────────────────────────────────────────────
