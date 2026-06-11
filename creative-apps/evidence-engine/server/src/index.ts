@@ -234,20 +234,57 @@ The evidence file is silent on this point. No documents were retrieved that spea
     const claimLower = claim.toLowerCase();
     const claimTerms = claimLower.split(/\W+/).filter((t) => t.length > 3);
 
+    // Extract HH:MM style times from a string (returns minutes since midnight for comparison)
+    function extractTimes(text: string): number[] {
+      const matches = text.match(/\b(\d{1,2}):(\d{2})\s*(am|pm)?\b/gi) ?? [];
+      return matches.map((t) => {
+        const parts = t.match(/(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+        if (!parts) return -1;
+        let hours = parseInt(parts[1], 10);
+        const mins = parseInt(parts[2], 10);
+        const meridiem = (parts[3] ?? "").toLowerCase();
+        if (meridiem === "pm" && hours !== 12) hours += 12;
+        if (meridiem === "am" && hours === 12) hours = 0;
+        return hours * 60 + mins;
+      }).filter((n) => n >= 0);
+    }
+
+    // Explicit contradiction phrases that genuinely negate a claim
+    const EXPLICIT_CONTRADICTION_PHRASES = [
+      "does not", "did not", "was not", "were not",
+      "no record", "not present", "never arrived", "denied",
+      "contradicts", "inconsistent with",
+    ];
+
+    const claimTimes = extractTimes(claimLower);
+
     const supporting: typeof fullTexts = [];
     const contradicting: typeof fullTexts = [];
 
     for (const doc of fullTexts) {
       const lower = doc.content.toLowerCase();
       const directMatch = claimTerms.some((term) => lower.includes(term));
-      if (directMatch) {
-        const contradictionSignals = ["does not", "contradicts", "shows", "records", "logged at", "card_exit"];
-        const isContradiction = contradictionSignals.some((s) => lower.includes(s));
-        if (isContradiction) {
-          contradicting.push(doc);
-        } else {
-          supporting.push(doc);
+      if (!directMatch) continue;
+
+      // 1. Explicit negation phrases are reliable contradiction signals
+      const hasExplicitContradiction = EXPLICIT_CONTRADICTION_PHRASES.some((s) => lower.includes(s));
+
+      // 2. Temporal conflict: claim asserts a time, document records a different time for the same entity
+      let hasTemporalConflict = false;
+      if (claimTimes.length > 0) {
+        const docTimes = extractTimes(lower);
+        if (docTimes.length > 0) {
+          // Flag a conflict only when every doc time differs from every claimed time by >5 minutes
+          hasTemporalConflict = claimTimes.every((ct) =>
+            docTimes.every((dt) => Math.abs(ct - dt) > 5)
+          ) && docTimes.length > 0;
         }
+      }
+
+      if (hasExplicitContradiction || hasTemporalConflict) {
+        contradicting.push(doc);
+      } else {
+        supporting.push(doc);
       }
     }
 
