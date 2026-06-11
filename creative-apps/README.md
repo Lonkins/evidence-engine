@@ -13,6 +13,13 @@ Evidence Engine is a detective game played inside GitHub Copilot Chat in VS Code
 
 The core mechanic: **citation integrity is the win condition.** One character lied. The security log proves it. Find it.
 
+### Two ways to play
+
+| Surface | Where | What it gives you |
+|---------|-------|-------------------|
+| **Copilot Chat (MCP)** | VS Code, via the four MCP tools below | Free-form interrogation with LLM-synthesised dialogue, grounded by Foundry IQ retrieval |
+| **Web experience** | [`evidence-engine/web/`](evidence-engine/web/) — static, hostable anywhere | A noir detective desk: pressable claim chips that flip to stamped VERIFIED / CONTRADICTED / NO RECORD verdicts, an evidence board that fills in as citations surface documents, and a full-screen accusation set-piece. Same corpus, same win condition, citation quotes verified verbatim by tests. |
+
 ---
 
 ## Architecture

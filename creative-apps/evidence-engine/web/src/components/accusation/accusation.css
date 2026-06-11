@@ -1,0 +1,265 @@
+.accusation {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+}
+
+.accusation__backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 30%, rgba(122, 38, 38, 0.16), transparent 70%),
+    rgba(4, 3, 2, 0.92);
+  backdrop-filter: blur(4px);
+}
+
+.accusation__stage {
+  position: relative;
+  width: min(880px, 96vw);
+  max-height: 92vh;
+  overflow-y: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  animation: accusation-in var(--duration-slow) var(--ease-out) both;
+}
+
+@keyframes accusation-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.accusation__eyebrow {
+  color: var(--crimson);
+}
+
+.accusation__title {
+  font-size: clamp(2rem, 1.2rem + 3vw, 3.4rem);
+  font-weight: 900;
+  font-style: italic;
+  color: var(--text);
+}
+
+.accusation__suspects {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.accused-card {
+  background: linear-gradient(165deg, var(--ink-2), var(--ink-1));
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  color: inherit;
+  transition: border-color var(--duration-fast), transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.accused-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--line-strong);
+}
+
+.accused-card--chosen {
+  border-color: var(--crimson);
+  box-shadow: 0 0 0 1px var(--crimson), 0 0 56px rgba(197, 48, 47, 0.18);
+}
+
+.accused-card__portrait {
+  width: 110px;
+  border-radius: 3px;
+  background: radial-gradient(ellipse at 30% 20%, #241d12, #0d0a07 75%);
+  overflow: hidden;
+}
+
+.accused-card__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-md);
+  color: var(--text);
+}
+
+.accused-card__role {
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.accusation__evidence {
+  text-align: left;
+}
+
+.accusation__docs {
+  margin-top: var(--space-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.attach-slip {
+  font-family: var(--font-type);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  color: var(--paper-ink);
+  background: linear-gradient(175deg, var(--paper), var(--paper-2));
+  border: none;
+  border-radius: 2px;
+  padding: 0.6em 1em 0.45em;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45);
+  opacity: 0.6;
+  transform: rotate(-0.5deg);
+  transition: opacity var(--duration-fast), transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast);
+}
+
+.attach-slip:nth-child(even) {
+  transform: rotate(0.5deg);
+}
+
+.attach-slip:hover {
+  opacity: 0.9;
+}
+
+.attach-slip--attached {
+  opacity: 1;
+  box-shadow: 0 0 0 2px var(--crimson), 0 6px 16px rgba(0, 0, 0, 0.5);
+  transform: rotate(0deg) translateY(-1px);
+}
+
+.accusation__actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.accusation__cancel {
+  font-family: var(--font-type);
+  font-size: var(--text-sm);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 0.8em 1.6em 0.65em;
+}
+
+.accusation__cancel:hover {
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+
+.accusation__submit {
+  font-family: var(--font-type);
+  font-size: var(--text-sm);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: linear-gradient(180deg, var(--crimson), var(--crimson-deep));
+  border: none;
+  border-radius: 2px;
+  padding: 0.85em 2em 0.7em;
+  box-shadow: 0 10px 30px rgba(197, 48, 47, 0.3);
+  transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast);
+}
+
+.accusation__submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(197, 48, 47, 0.42);
+}
+
+.accusation__submit:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ----- Verdict reveal ----- */
+
+.accusation__stage--verdict {
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.accusation__holding {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-lg);
+  color: var(--text-dim);
+  animation: holding-pulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes holding-pulse {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.accusation__verdict {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.accusation__accused-line {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: var(--text-sm);
+}
+
+.accusation__accused-line strong {
+  color: var(--text);
+}
+
+.accusation__narrative {
+  margin: 0;
+  max-width: 62ch;
+  font-size: var(--text-base);
+  line-height: 1.9;
+  color: var(--text);
+}
+
+.accusation__missing {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--silent);
+}
+
+.accusation__stats {
+  margin: 0;
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+@media (max-width: 720px) {
+  .accusation__suspects {
+    grid-template-columns: 1fr;
+  }
+}

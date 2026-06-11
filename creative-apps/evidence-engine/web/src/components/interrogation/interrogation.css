@@ -1,0 +1,366 @@
+.interrogation {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.interrogation__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+
+.interrogation__name {
+  font-size: var(--text-lg);
+  color: var(--text);
+}
+
+.interrogation__role {
+  font-family: var(--font-type);
+  font-size: var(--text-xs);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.interrogation__dossier-links {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.dossier-link {
+  font-family: var(--font-type);
+  font-size: var(--text-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 0.5em 0.9em 0.35em;
+  transition: color var(--duration-fast), border-color var(--duration-fast);
+}
+
+.dossier-link:hover {
+  color: var(--gold-bright);
+  border-color: var(--line-strong);
+}
+
+.interrogation__thread {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.interrogation__empty {
+  margin: auto;
+  max-width: 42ch;
+  text-align: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-md);
+  color: var(--text-faint);
+  line-height: 1.8;
+}
+
+/* ----- Testimony block ----- */
+
+.testimony {
+  animation: testimony-in var(--duration-normal) var(--ease-out) both;
+}
+
+@keyframes testimony-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.testimony__question {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-md);
+  color: var(--gold-bright);
+}
+
+.testimony__q-mark {
+  font-style: normal;
+  font-weight: 900;
+  margin-right: 0.6em;
+  color: var(--gold);
+}
+
+.testimony__answer {
+  font-size: var(--text-base);
+  line-height: 2;
+  color: var(--text);
+  max-width: 72ch;
+}
+
+/* ----- Claim chips ----- */
+
+.claim {
+  font: inherit;
+  line-height: inherit;
+  padding: 0.05em 0.15em;
+  border-radius: 2px;
+}
+
+.claim--unpressed {
+  position: relative;
+  display: inline;
+  background: rgba(201, 161, 74, 0.07);
+  border: none;
+  border-bottom: 1px dashed var(--gold);
+  color: var(--gold-bright);
+  text-align: left;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.claim--unpressed:hover {
+  background: rgba(201, 161, 74, 0.18);
+}
+
+.claim__press-hint {
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-left: 0.5em;
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+
+.claim--unpressed:hover .claim__press-hint {
+  opacity: 1;
+}
+
+.claim--pressed {
+  border-bottom: 1px solid currentColor;
+}
+
+.claim--supported {
+  color: var(--verified-bright);
+}
+
+.claim--contradicted {
+  color: var(--crimson);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(197, 48, 47, 0.7);
+}
+
+.claim--unsupported {
+  color: var(--silent);
+  border-bottom-style: dotted;
+}
+
+.claim__glyph {
+  margin-left: 0.45em;
+  font-weight: 700;
+}
+
+/* ----- Verdict card ----- */
+
+.verdict-card {
+  margin-top: var(--space-3);
+  max-width: 68ch;
+  background: linear-gradient(170deg, var(--ink-2), var(--ink-1));
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: 3px;
+  padding: var(--space-3);
+  box-shadow: var(--shadow-card);
+  animation: testimony-in var(--duration-normal) var(--ease-out) both;
+}
+
+.verdict-card--supported {
+  border-left-color: var(--verified);
+}
+
+.verdict-card--contradicted {
+  border-left-color: var(--crimson);
+  box-shadow: var(--shadow-card), 0 0 44px rgba(197, 48, 47, 0.08);
+}
+
+.verdict-card--unsupported {
+  border-left-color: var(--silent);
+  border-left-style: dashed;
+}
+
+.verdict-card__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.verdict-card__claim {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-sm);
+  color: var(--text-dim);
+}
+
+.verdict-card__note {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  color: var(--text);
+}
+
+/* The fail-closed beat: deliberate, quiet, final */
+.verdict-card__silence {
+  text-align: center;
+  padding: var(--space-3) var(--space-2);
+}
+
+.verdict-card__silence-line {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-md);
+  color: var(--silent);
+  margin: 0 0 var(--space-2);
+}
+
+.verdict-card__silence .verdict-card__note {
+  color: var(--text-dim);
+  max-width: 52ch;
+  margin: 0 auto;
+}
+
+/* ----- Citation slips ----- */
+
+.verdict-card__citations {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.citation-slip {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: linear-gradient(175deg, var(--paper), var(--paper-2));
+  color: var(--paper-ink);
+  border: none;
+  border-radius: 2px;
+  padding: var(--space-2) var(--space-3);
+  box-shadow: var(--shadow-paper);
+  transform: rotate(-0.3deg);
+  transition: transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.citation-slip:nth-child(even) {
+  transform: rotate(0.4deg);
+}
+
+.citation-slip:hover {
+  transform: rotate(0deg) translateY(-2px) scale(1.005);
+  box-shadow: var(--shadow-pop);
+}
+
+.citation-slip__doc {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--paper-ink);
+}
+
+.citation-slip__pin {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #e46a64, var(--crimson-deep));
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  align-self: center;
+}
+
+.citation-slip__kind {
+  margin-left: auto;
+  font-weight: 400;
+  color: var(--paper-ink-dim);
+}
+
+.citation-slip__quote {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  border-left: 2px solid var(--paper-3);
+  padding-left: var(--space-2);
+  color: #38291a;
+}
+
+/* ----- Question dock ----- */
+
+.interrogation__dock {
+  border-top: 1px solid var(--line);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  background: linear-gradient(0deg, rgba(201, 161, 74, 0.04), transparent);
+}
+
+.question-card {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-sm);
+  color: var(--text);
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 0.7em 1.1em;
+  transition: border-color var(--duration-fast), color var(--duration-fast),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.question-card:hover {
+  border-color: var(--gold);
+  color: var(--gold-bright);
+  transform: translateY(-1px);
+}
+
+.question-card--locked {
+  font-family: var(--font-type);
+  font-style: normal;
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  border-style: dashed;
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+}
+
+.question-card__lock {
+  color: var(--crimson-deep);
+}
+
+.interrogation__exhausted {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--text-faint);
+}

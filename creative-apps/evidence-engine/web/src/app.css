@@ -1,0 +1,39 @@
+.desk {
+  position: relative;
+  z-index: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.desk-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: clamp(250px, 21vw, 320px) minmax(0, 1fr) clamp(290px, 25vw, 380px);
+}
+
+.desk-grid > * {
+  min-height: 0;
+}
+
+.desk-grid > *:not(:first-child) {
+  border-left: 1px solid var(--line);
+}
+
+@media (max-width: 980px) {
+  body {
+    overflow: auto;
+  }
+  .desk {
+    height: auto;
+    min-height: 100vh;
+  }
+  .desk-grid {
+    grid-template-columns: 1fr;
+  }
+  .desk-grid > *:not(:first-child) {
+    border-left: none;
+    border-top: 1px solid var(--line);
+  }
+}

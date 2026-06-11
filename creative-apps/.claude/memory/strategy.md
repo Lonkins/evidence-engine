@@ -35,7 +35,7 @@ Overnight loop 1 complete (June 10, 2026). MCP server scaffold, 15-document case
 | Demo script | ✅ Done | `docs/demo-script.md` — 3-min shooting script, 7 segments, pre-flight checklist |
 | Discord post | ✅ Done | `docs/discord-post.md` — 3 templates + timing strategy |
 | Game walkthrough | ✅ Done | `docs/game-walkthrough.md` — full transcript with exact tool calls + expected outputs |
-| Web UI | ❌ Not started | Optional polish layer |
+| Web UI | ✅ Built + verified (June 11) | `evidence-engine/web/` — React/Vite noir detective desk. Pressable claim chips → stamped verdicts (VERIFIED/CONTRADICTED/NO RECORD) with verbatim citations; evidence board fills in via citations; sealed questions unlock on discovery; archive search fails closed ("the evidence is silent"); full-screen accusation set-piece. Fully static (no keys), 76 kB gz JS, 34 unit tests incl. citation-integrity (every quote verified verbatim vs corpus). Same win condition as MCP server. Playthrough verified in browser end-to-end. |
 
 ## Prize Vectors
 
@@ -46,7 +46,8 @@ Creative Apps prize value TBC. Win probability est. 15–20% with a working Copi
 - [ ] Run spike scripts 0-5 (in worktree `creative-apps/.claude/worktrees/hungry-cannon-81b457/creative-apps/spike/`) to provision Azure AI Search free tier — see HANDOFF.md in that worktree
 - [ ] Upload corpus documents to Azure AI Search index once provisioned
 - [ ] Fill in .env with AZURE_SEARCH_ENDPOINT and AZURE_SEARCH_KEY
-- [ ] Record demo video (3 min): 20s hook → 90s catch-the-lie moment → 40s MCP in Copilot Chat → 30s architecture
+- [ ] Record demo video (3 min): 20s title card → 90s web app catch-the-lie (press claim → CONTRADICTED stamp → board pins hot → accusation set-piece) → 40s MCP in Copilot Chat → 30s architecture
+- [ ] Host `evidence-engine/web/dist/` (GitHub Pages / Azure Static Web Apps) — build is static, `base: './'`, no keys needed
 - [ ] Post to Discord #creative-apps with video + GIF of lie-catching moment
 
 ## Autonomous Next Steps

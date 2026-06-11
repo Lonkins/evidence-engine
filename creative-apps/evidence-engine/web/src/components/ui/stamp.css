@@ -1,0 +1,78 @@
+.stamp {
+  display: inline-block;
+  font-family: var(--font-type);
+  font-size: var(--text-sm);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 0.2em 0.65em 0.12em;
+  border: 2px solid currentColor;
+  border-radius: 3px;
+  transform: rotate(-2.5deg);
+  position: relative;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.45' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0.25'/%3E%3CfeComposite operator='over' in2='SourceGraphic'/%3E%3C/filter%3E%3Crect width='120' height='40' fill='white' filter='url(%23r)'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.45' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0.25'/%3E%3CfeComposite operator='over' in2='SourceGraphic'/%3E%3C/filter%3E%3Crect width='120' height='40' fill='white' filter='url(%23r)'/%3E%3C/svg%3E");
+}
+
+.stamp--verified {
+  color: var(--verified-bright);
+}
+
+.stamp--contradicted {
+  color: var(--crimson);
+}
+
+.stamp--silent {
+  color: var(--silent);
+  border-style: dashed;
+}
+
+.stamp--gold {
+  color: var(--gold-bright);
+}
+
+.stamp--large {
+  font-size: clamp(1.4rem, 1rem + 2.4vw, 2.6rem);
+  border-width: 4px;
+  border-radius: 6px;
+  padding: 0.25em 0.8em 0.15em;
+  transform: rotate(-4deg);
+}
+
+.stamp--animate {
+  animation: stamp-in var(--duration-normal) var(--ease-stamp) both;
+}
+
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: rotate(-2.5deg) scale(2.1);
+  }
+  60% {
+    opacity: 1;
+    transform: rotate(-2.5deg) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-2.5deg) scale(1);
+  }
+}
+
+.stamp--large.stamp--animate {
+  animation-name: stamp-in-large;
+  animation-duration: var(--duration-slow);
+}
+
+@keyframes stamp-in-large {
+  0% {
+    opacity: 0;
+    transform: rotate(-4deg) scale(2.6);
+  }
+  55% {
+    opacity: 1;
+    transform: rotate(-4deg) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-4deg) scale(1);
+  }
+}
