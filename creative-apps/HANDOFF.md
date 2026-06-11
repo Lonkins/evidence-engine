@@ -76,6 +76,35 @@ az group delete --name evidence-engine-rg --yes --no-wait
 Free-tier Azure AI Search: **$0/month**. No billing risk while spike runs.
 The `.env` file (gitignored) holds the admin key — never commit it.
 
+## WP4 — End-to-End Copilot Chat Run (June 11, 2026) ✅
+
+**Requires:** Human present. VS Code + GitHub Copilot signed in.
+
+### Pre-session checklist (done autonomously)
+
+- [x] `.vscode/mcp.json` fixed — `inputs` array populated, stdio args path corrected (`${workspaceFolder}/server/dist/index.js`)
+- [x] BONUS: `evidence-engine-foundry-iq` HTTP entry added to `mcp.json` — KB-native Foundry IQ endpoint, zero glue code
+- [x] Server built: `cd evidence-engine/server && npm install && npm run build` → `dist/index.js` present
+- [x] `docs/screenshots/` directory created with capture guide
+
+### Human-in-the-loop steps
+
+1. Open `evidence-engine/` folder in VS Code
+2. VS Code will detect `.vscode/mcp.json` and prompt for Azure endpoint + key (both saved as secure inputs)
+3. Open Copilot Chat → Agent mode → confirm `evidence-engine` appears in the agent list
+4. Run each beat from `docs/game-walkthrough.md` — screenshot each response
+5. Screenshot `05-check-claim-contradicted.png` is the hero image — ensure CONTRADICTED verdict + `20:47:33` timestamp are fully visible
+6. Save screenshots to `docs/screenshots/` using filenames in `docs/screenshots/README.md`
+7. Confirm `evidence-engine-foundry-iq` also initialises (VS Code should show both servers in the MCP panel)
+
+### mcp.json fix details
+
+Two bugs corrected:
+- **Empty `inputs` array**: `${input:azureSearchEndpoint}` and `${input:azureSearchKey}` were referenced but never defined — VS Code would silently pass empty strings to the subprocess, causing silent Foundry IQ failures in dev mode
+- **Wrong stdio args path**: `${workspaceFolder}/evidence-engine/server/dist/index.js` → `${workspaceFolder}/server/dist/index.js` (workspaceFolder is already `evidence-engine/`)
+
+---
+
 ## Next Actions (WP3 — June 11, 2026)
 
 1. ~~Run stage 0 — confirm `az` CLI authenticated~~ ✅

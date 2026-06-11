@@ -69,11 +69,37 @@ Copilot provided the correct `.vscode/mcp.json` structure including the `type: "
 
 ---
 
+### 7. WP4 — End-to-End Live Session (Copilot Chat, Agent Mode)
+
+**Date:** 2026-06-11  
+**Session type:** Full demo run — all 4 tools exercised in Copilot Chat Agent Mode  
+**Evidence:** See `docs/screenshots/` for screen-captured tool responses
+
+The complete detective session was played inside Copilot Chat with the `evidence-engine` MCP server loaded from `.vscode/mcp.json`. Copilot invoked all four tools and synthesised character dialogue from the retrieved evidence context.
+
+**Tool invocations observed:**
+
+| Tool | Copilot behaviour | Notes |
+|------|------------------|-------|
+| `load_case` | Displayed case briefing verbatim; correctly showed "Foundry IQ" as evidence source | ✅ |
+| `interrogate Helena Voss` (departure) | Cited `06-helena-statement.md` and `01-case-overview.md`; synthesised Helena's 19:45 claim | ✅ |
+| `interrogate Felix Drummond` | Cited `09-security-log.md` and `07-felix-statement.md`; synthesised Felix alibi | ✅ |
+| `interrogate Helena Voss` (conversation) | Retrieved `14-provenance-dispute.md` draft email — contradiction seed visible | ✅ |
+| `check_claim` — Helena departure | **CONTRADICTED** verdict returned; `09-security-log.md` citation with `20:47:33` timestamp shown | ✅ hero shot |
+| `check_claim` — Victor confrontation | **SUPPORTED** verdict; `14-provenance-dispute.md` excerpt shown | ✅ |
+| `accuse Helena Voss` | **CASE SOLVED**; session summary (questions/claims count) shown | ✅ |
+
+**BONUS — Foundry IQ KB-native MCP endpoint:**
+
+The `evidence-engine-foundry-iq` server entry in `.vscode/mcp.json` wires the Azure AI Search knowledge base directly into Copilot Chat with zero custom code. VS Code initialised the HTTP MCP connection (`protocolVersion: 2024-11-05`, `tools.listChanged: true`) on first use. This demonstrates Foundry IQ in GitHub Copilot with no intermediary server — a headline submission differentiator.
+
+---
+
 ## Copilot Modes Used
 
 | Mode | Used for |
 |------|----------|
 | Inline suggestions | Function bodies, TypeScript types, API call patterns |
 | Copilot Chat | Architecture decisions, API research, responsible AI framing |
-| Agent mode | _(planned for Day 2 — polishing and multi-file refactoring)_ |
-| Plan mode | _(planned for Day 2 — breaking down web UI implementation)_ |
+| Agent mode | Full demo run — all 4 MCP tools invoked in Copilot Chat (WP4, 2026-06-11) |
+| Plan mode | Breaking down WP4 implementation tasks (mcp.json fixes, build, docs) |
