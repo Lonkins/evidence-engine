@@ -25,6 +25,24 @@ An IT admin opens M365 Copilot Chat, names an AI tool, and RiskRadar walks throu
 
 ---
 
+## Judging Evidence Map
+
+| Criterion | Weight | Where to look |
+|-----------|--------|--------------|
+| **Accuracy & Relevance** | 20% | `data/knowledge/` — 4 Foundry IQ documents; `docs/demo-transcript.md` — every score cites a NIST AI RMF sub-category, ICO Children's Code standard, or EU AI Act article |
+| **Reasoning & Multi-step** | 20% | `appPackage/instruction.txt` — 6-step conditional workflow, Work IQ personalisation, REDLINES logic; `docs/demo-transcript.md` — MCP tool chain shown with request/response JSON |
+| **Reliability & Safety** | 20% | `appPackage/instruction.txt` REDLINES section; `evals/prompts.json` — 17 prompts including EU AI Act prohibited category, incomplete-information refusal, and 72-hour breach window; human-in-the-loop framing is structural, not a disclaimer |
+| **Creativity & Originality** | 15% | School AI safety — no comparable submission in the track; REDLINES mechanic (halting assessment for prohibited tools) is a novel responsible-AI design pattern for Declarative Agents |
+| **UX & Presentation** | 15% | `docs/demo-script.md` — narrated recording guide; `docs/demo-transcript.md` — natural conversation, not a form; copy-paste AUP clause; tone adapts to role (DPO vs teacher vs headteacher) |
+| **Community Vote** | 10% | `docs/discord-post.md` — 3 post templates with Hack for Good framing; contact: babkek1337@gmail.com |
+
+**Bonus criteria:**
+- ✅ External MCP Server read: `getAssessment` reads from SharePoint Approved Tools Registry
+- ✅ External MCP Server write: `saveAssessment` writes to SharePoint via Microsoft Graph API
+- ✅ OAuth 2.0 on MCP server: `server/src/auth.ts` — Azure AD JWKS Bearer token validation; `OAuthPluginVault` in `ai-plugin.json`
+
+---
+
 ## Architecture
 
 ```mermaid
@@ -138,9 +156,11 @@ riskradar/
 │   └── prompts.json            # 17 evaluation prompts covering edge cases
 ├── server/
 │   ├── src/
-│   │   ├── index.ts            # Express server, 3 MCP tool endpoints
-│   │   ├── ratings.ts          # Common Sense Media EdTech privacy ratings
-│   │   └── store.ts            # File-persisted Approved Tools Registry
+│   │   ├── index.ts            # Express server, 3 MCP tool endpoints + OAuth middleware wiring
+│   │   ├── auth.ts             # OAuth 2.0 Bearer token validation (Azure AD JWKS) — bonus criterion
+│   │   ├── graph-store.ts      # Microsoft Graph API client — SharePoint list read/write via client_credentials
+│   │   ├── store.ts            # Approved Tools Registry — routes to SharePoint when SP env vars set, file fallback for dev
+│   │   └── ratings.ts          # Common Sense Media EdTech Privacy ratings (18 tools)
 │   ├── package.json
 │   └── tsconfig.json
 └── m365agents.yml              # ATK provision/publish pipeline
