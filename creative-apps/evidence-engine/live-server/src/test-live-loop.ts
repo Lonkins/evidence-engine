@@ -107,14 +107,19 @@ async function main(): Promise<void> {
     );
   }
 
+  // New scoring semantics (design-log entry 2): a catch needs positive
+  // evidence — CONTRADICTED or SELF_CONTRADICTION. UNSUPPORTED is flagged
+  // separately as unverifiable.
   const caught = challenges.filter(
-    (c) => c.evidence.verdict === "CONTRADICTED" || c.evidence.verdict === "UNSUPPORTED"
+    (c) => c.evidence.verdict === "CONTRADICTED" || c.self.verdict === "SELF_CONTRADICTION"
   );
+  const flagged = challenges.filter((c) => c.evidence.verdict === "UNSUPPORTED");
   const selfContradictions = challenges.filter((c) => c.self.verdict === "SELF_CONTRADICTION");
   const finalScore = challenges.at(-1)?.score;
 
   console.log("");
-  console.log(`Hallucinations caught: ${caught.length}`);
+  console.log(`Contradictions pinned (catches): ${caught.length}`);
+  console.log(`Flagged unverifiable (no collar): ${flagged.length}`);
   console.log(`Self-contradictions exposed: ${selfContradictions.length}`);
   console.log(`Scorecard: ${JSON.stringify(finalScore)}`);
 
@@ -155,7 +160,7 @@ async function main(): Promise<void> {
       everyTurnHadLiveKbRetrieve: turns.every((t) =>
         t.response.trace.some((e) => e.step.startsWith("kb.retrieve") && e.status === 200)
       ),
-      hallucinationCaught: caught.length > 0,
+      contradictionPinned: caught.length > 0,
       selfContradictionExposed: selfContradictions.length > 0,
       testimonyCleanedUp: true,
     },
@@ -166,8 +171,8 @@ async function main(): Promise<void> {
   if (!proof.assertions.everyTurnHadLiveKbRetrieve) {
     throw new Error("FAIL: a turn was missing a live KB retrieve");
   }
-  if (!proof.assertions.hallucinationCaught) {
-    throw new Error("FAIL: no hallucination caught on the demo path");
+  if (!proof.assertions.contradictionPinned) {
+    throw new Error("FAIL: no contradiction pinned on the demo path");
   }
   if (!proof.assertions.selfContradictionExposed) {
     console.warn(

@@ -14,9 +14,9 @@ const EVIDENCE_NOTE = {
   SUPPORTED:
     "The case file is consistent with this claim. Objection overruled — that one costs you.",
   CONTRADICTED:
-    "This claim conflicts with the case file. It isn't proof of lying — but the record disagrees.",
+    "This claim conflicts with the record — the conflicting passage is cited below, verbatim. A pin, not a verdict of lying.",
   UNSUPPORTED:
-    "The case file is silent on this point. The witness is speaking beyond the evidence — caught.",
+    "The case file is silent on this point. Flagged as unverifiable — no collar. Silence isn't proof of fabrication.",
 } as const;
 
 interface LiveClaimChipProps {
@@ -87,6 +87,14 @@ export function LiveVerdictCard({ result, onOpenDoc }: LiveVerdictCardProps) {
       </header>
 
       <p className="verdict-card__note">{EVIDENCE_NOTE[result.evidence.verdict]}</p>
+
+      {result.plant?.confirmed && (
+        <p className="live-verdict__plant" role="status">
+          <span className="live-verdict__plant-stamp">FABRICATION CONFIRMED</span>
+          This detail was planted — the witness was scripted to assert it falsely, and you
+          pinned it against the record. Ground truth, not heuristic opinion.
+        </p>
+      )}
 
       {result.evidence.citations.length > 0 && (
         <ul className="verdict-card__citations">

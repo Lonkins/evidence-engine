@@ -10,7 +10,7 @@ interface InterrogationReportProps {
 }
 
 function gradeFor(score: Scorecard): { stamp: string; line: string } {
-  const caught = score.hallucinationsCaught + score.selfContradictionsExposed;
+  const caught = score.contradictionsPinned + score.selfContradictionsExposed;
   if (caught >= 3 && score.falseObjections === 0) {
     return {
       stamp: "Relentless",
@@ -25,7 +25,7 @@ function gradeFor(score: Scorecard): { stamp: string; line: string } {
   }
   return {
     stamp: "Green",
-    line: "Every objection overruled or none raised. The file was ready; press harder.",
+    line: "No contradictions pinned this session. The file was ready; press harder.",
   };
 }
 
@@ -48,6 +48,15 @@ export function InterrogationReport({
           <p className="report__line">{grade.line}</p>
         </header>
 
+        <p className="report__plants">
+          Planted fabrications pinned:{" "}
+          <strong>
+            {score.plantsCaught} of {score.plantsTotal}
+          </strong>{" "}
+          — each witness was scripted to assert one specific false detail. These are
+          ground truth: catching one means it provably was fabricated.
+        </p>
+
         <dl className="report__grid">
           <div className="report__stat">
             <dt>Questions put</dt>
@@ -58,28 +67,32 @@ export function InterrogationReport({
             <dd>{score.challenges}</dd>
           </div>
           <div className="report__stat report__stat--gold">
-            <dt>Drift caught</dt>
-            <dd>{score.hallucinationsCaught}</dd>
+            <dt>Contradictions pinned</dt>
+            <dd>{score.contradictionsPinned}</dd>
           </div>
           <div className="report__stat report__stat--crimson">
             <dt>Self-conflicts exposed</dt>
             <dd>{score.selfContradictionsExposed}</dd>
           </div>
           <div className="report__stat">
-            <dt>Objections overruled</dt>
-            <dd>{score.falseObjections}</dd>
+            <dt>File silent (flagged)</dt>
+            <dd>{score.flaggedUnverifiable}</dd>
           </div>
           <div className="report__stat">
-            <dt>Testimony docs purged</dt>
-            <dd>{deletedTestimonyDocs}</dd>
+            <dt>Objections overruled</dt>
+            <dd>{score.falseObjections}</dd>
           </div>
         </dl>
 
         <p className="report__smallprint">
           Verdicts are evidence-relative: “unsupported by the case file” or “conflicts
-          with their earlier statement” — never a finding of fact. The witnesses are
-          played by a live model and were allowed to drift; the engine's job was to
-          show you where.
+          with their earlier statement” — never a finding of fact. “File silent” means
+          unverifiable, not false. The checks are bounded: paraphrased contradictions
+          and conflicts that carry no clock times go undetected, and the engine can
+          only see what this case file indexes. The witnesses were allowed to drift;
+          the engine's job was to show you where the record disagrees — with the
+          passage quoted, verbatim. ({deletedTestimonyDocs} testimony documents purged
+          from the live index on closing.)
         </p>
 
         <footer className="report__actions">

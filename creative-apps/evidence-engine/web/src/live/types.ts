@@ -7,6 +7,8 @@ export interface TraceEntry {
   latencyMs: number;
   status: number;
   detail?: string;
+  /** Which system did the work: live Azure call, GitHub Models, or local heuristic. */
+  origin: "azure" | "model" | "heuristic";
 }
 
 export interface LiveClaimRef {
@@ -46,16 +48,25 @@ export interface ChallengeResponse {
     verdict: SelfVerdict;
     conflicts: Array<{ turnNo?: number; statement: string }>;
   };
+  /** Present only when the player pinned a planted fabrication with a contradiction. */
+  plant?: { confirmed: boolean; assertion: string };
   score: Scorecard;
   trace: TraceEntry[];
 }
 
+/**
+ * Catches need positive evidence (CONTRADICTED / SELF_CONTRADICTION);
+ * UNSUPPORTED is flagged separately — unverifiable, never "caught".
+ */
 export interface Scorecard {
-  hallucinationsCaught: number;
-  falseObjections: number;
+  contradictionsPinned: number;
   selfContradictionsExposed: number;
+  flaggedUnverifiable: number;
+  falseObjections: number;
   turns: number;
   challenges: number;
+  plantsCaught: number;
+  plantsTotal: number;
 }
 
 export interface ResetResponse {

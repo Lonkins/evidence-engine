@@ -103,3 +103,29 @@ The `evidence-engine-foundry-iq` server entry in `.vscode/mcp.json` wires the Az
 | Copilot Chat | Architecture decisions, API research, responsible AI framing |
 | Agent mode | Full demo run — all 4 MCP tools invoked in Copilot Chat (WP4, 2026-06-11) |
 | Plan mode | Breaking down WP4 implementation tasks (mcp.json fixes, build, docs) |
+
+---
+
+## WP9 — Live Interrogation (June 12, 2026)
+
+How the new Live Wire mode relates to the GitHub Copilot requirement:
+
+- **Copilot Chat remains a playable surface.** The MCP server's `check_claim` is the same
+  verdict mechanic the web Live Wire mode uses — one game, two Copilot-adjacent runtimes.
+  The KB-native Foundry IQ MCP endpoint (`.vscode/mcp.json`) still wires the knowledge base
+  into Copilot Chat with zero custom code.
+- **GitHub platform auth end-to-end:** the live witnesses run on GitHub Models free tier,
+  authenticated with the same `gh` CLI token a Copilot developer already has
+  (`GITHUB_MODELS_TOKEN=$(gh auth token)`) — no new accounts, no Azure OpenAI.
+
+### ⚠️ Pre-submission checklist (human — capture real receipts)
+
+Judges weigh documented Copilot usage with evidence. Before submitting:
+
+- [ ] Re-run the WP4 Copilot Chat demo against the CURRENT server build and re-capture
+      screenshots (verdict copy changed June 12 — old screenshots show stale wording)
+- [ ] Log 2–3 real Copilot interactions from your own VS Code session on the WP9 code
+      (e.g. ask Copilot Chat to explain `verdict.ts`, use inline completions while
+      tweaking a character card) — with screenshots, prompts, and what it produced
+- [ ] Confirm `evidence-engine` AND `evidence-engine-foundry-iq` both initialise in the
+      VS Code MCP panel; screenshot the panel

@@ -44,6 +44,21 @@ const EXPLICIT_CONTRADICTION_PHRASES = [
 const TIME_CONFLICT_TOLERANCE_MINUTES = 5;
 const MIN_TERM_LENGTH = 4;
 
+/**
+ * Generic words that must not make a document segment "relevant" to a claim —
+ * without this, "that" or "with" links a claim to an unrelated sentence
+ * containing a negation phrase and manufactures a contradiction.
+ */
+const STOP_WORDS = new Set([
+  "that", "this", "with", "from", "have", "been", "were", "what", "when",
+  "where", "which", "would", "could", "should", "there", "their", "they",
+  "them", "then", "than", "your", "yours", "about", "after", "before",
+  "into", "over", "under", "just", "very", "really", "quite", "rather",
+  "some", "such", "only", "also", "more", "most", "much", "made", "make",
+  "well", "said", "says", "told", "around", "exactly", "precisely",
+  "evening", "morning", "afternoon", "night", "time", "moment",
+]);
+
 /** Extract HH:MM times as minutes since midnight. */
 export function extractTimes(text: string): number[] {
   const matches = text.match(/\b(\d{1,2}):(\d{2})\s*(am|pm)?\b/gi) ?? [];
@@ -66,7 +81,7 @@ function termsOf(text: string): string[] {
   return text
     .toLowerCase()
     .split(/\W+/)
-    .filter((term) => term.length >= MIN_TERM_LENGTH);
+    .filter((term) => term.length >= MIN_TERM_LENGTH && !STOP_WORDS.has(term));
 }
 
 /** Split a document into checkable segments: sentences and log lines. */

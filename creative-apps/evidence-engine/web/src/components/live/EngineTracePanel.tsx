@@ -9,6 +9,17 @@ interface EngineTracePanelProps {
   canEnd: boolean;
 }
 
+function totalCatches(score: Scorecard | null): number {
+  if (!score) return 0;
+  return score.contradictionsPinned + score.selfContradictionsExposed;
+}
+
+const ORIGIN_LABEL = {
+  azure: "AZURE",
+  model: "MODEL",
+  heuristic: "LOCAL",
+} as const;
+
 function stepGlyph(step: string): string {
   if (step.startsWith("kb.retrieve")) return "◉";
   if (step.startsWith("index.upload")) return "▲";
@@ -39,21 +50,30 @@ export function EngineTracePanel({ trace, score, onEndSession, canEnd }: EngineT
           Engine tap <span className="live-dot" aria-hidden="true" />
         </p>
         <p className="engine-tap__sub">
-          Every line is a live call — Foundry IQ retrieves, testimony indexing, model turns.
+          Every step, tagged by who did the work: AZURE = live Foundry IQ retrieval and
+          indexing, MODEL = GitHub Models turn, LOCAL = deterministic verdict heuristics
+          over the retrieved passages.
         </p>
       </header>
+
+      <p className="engine-tap__objective">
+        <span className="engine-tap__objective-label">Objective</span>
+        Crack the witnesses: pin{" "}
+        <strong>{Math.max(0, 3 - totalCatches(score))} more</strong> contradiction
+        {Math.max(0, 3 - totalCatches(score)) === 1 ? "" : "s"} against the record.
+      </p>
 
       {score && (
         <dl className="engine-tap__score" aria-label="Interrogation scorecard">
           <div className="tap-tally tap-tally--gold">
-            <dt>Drift caught</dt>
-            <dd>{score.hallucinationsCaught}</dd>
-          </div>
-          <div className="tap-tally tap-tally--crimson">
-            <dt>Self-conflicts</dt>
-            <dd>{score.selfContradictionsExposed}</dd>
+            <dt>Pinned</dt>
+            <dd>{score.contradictionsPinned + score.selfContradictionsExposed}</dd>
           </div>
           <div className="tap-tally">
+            <dt>File silent</dt>
+            <dd>{score.flaggedUnverifiable}</dd>
+          </div>
+          <div className="tap-tally tap-tally--crimson">
             <dt>Overruled</dt>
             <dd>{score.falseObjections}</dd>
           </div>
@@ -67,7 +87,12 @@ export function EngineTracePanel({ trace, score, onEndSession, canEnd }: EngineT
         {trace.map((entry, index) => (
           <li key={index} className={`tap-line ${entry.status >= 400 ? "tap-line--error" : ""}`}>
             <span className="tap-line__glyph" aria-hidden="true">{stepGlyph(entry.step)}</span>
-            <span className="tap-line__step">{entry.step}</span>
+            <span className="tap-line__step">
+              <span className={`tap-origin tap-origin--${entry.origin}`}>
+                {ORIGIN_LABEL[entry.origin]}
+              </span>
+              {entry.step}
+            </span>
             <span className="tap-line__meta">
               {entry.method} · {entry.latencyMs}ms · {entry.status}
             </span>

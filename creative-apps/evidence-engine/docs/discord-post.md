@@ -83,3 +83,27 @@ The game runs in **dev mode** (local corpus) without any Azure config. Set `AZUR
 **Tag the hackathon organiser** if the channel allows — visibility matters for community vote.
 
 **Engagement tip:** Ask a specific question at the end of the post — "What would you interrogate Helena about first?" — to encourage replies, which bumps Discord visibility.
+
+---
+
+## Template 4 — Live Wire launch (June 12, USE THIS ONE)
+
+> 🕵️ **Catch the AI lying — live.**
+>
+> Evidence Engine is a noir detective game where the suspects are played by a
+> live LLM, grounded through **Foundry IQ on every turn** — and deliberately
+> allowed to drift. Challenge any sentence and the engine checks it against
+> the case file in real time: **CONTRADICTED**, with the passage quoted
+> verbatim. Press hard enough and they contradict their own indexed testimony.
+>
+> Every witness hides one planted lie. The knowledge base already knows.
+>
+> 🎮 Play (no install): [hosted link]
+> 🎬 60-second kill shot: [video/GIF — challenge → stamp]
+> 🔧 MCP server for Copilot Chat + Azure AI Search free tier, $0 stack: [repo]
+>
+> Built with GitHub Copilot · Foundry IQ agentic retrieval · GitHub Models
+
+**Attach:** the challenge→CONTRADICTED GIF (cut from the demo video, <10s loop).
+**Timing:** post as soon as hosting + video exist — votes compound; don't wait
+for the deadline crowd.

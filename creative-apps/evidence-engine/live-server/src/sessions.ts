@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { Speaker } from "./characters.js";
+import { PLANTS, type Speaker } from "./characters.js";
 import type { ChatMessage } from "./llm.js";
 
 export interface StoredClaim {
@@ -10,12 +10,24 @@ export interface StoredClaim {
   challenged: boolean;
 }
 
+/**
+ * Scoring semantics (design-log entry 2, June 12):
+ * - A "catch" requires positive evidence: CONTRADICTED or SELF_CONTRADICTION.
+ * - UNSUPPORTED is "the file is silent" — flagged, never a catch. Counting it
+ *   would conflate *unverifiable* with *false* and make "challenge everything"
+ *   the dominant strategy.
+ * - plantsCaught counts ground-truthed fabrications (characters.ts PLANTS)
+ *   the player actually pinned with a contradiction.
+ */
 export interface Scorecard {
-  hallucinationsCaught: number;
-  falseObjections: number;
+  contradictionsPinned: number;
   selfContradictionsExposed: number;
+  flaggedUnverifiable: number;
+  falseObjections: number;
   turns: number;
   challenges: number;
+  plantsCaught: number;
+  plantsTotal: number;
 }
 
 export interface Session {
@@ -27,6 +39,8 @@ export interface Session {
   historyBySpeaker: Map<Speaker, ChatMessage[]>;
   claims: Map<string, StoredClaim>;
   score: Scorecard;
+  /** Plant ids the player has pinned with a contradiction this session. */
+  plantsCaught: Set<string>;
 }
 
 const MAX_SESSIONS = 50;
@@ -47,12 +61,16 @@ export function createSession(): Session {
     historyBySpeaker: new Map(),
     claims: new Map(),
     score: {
-      hallucinationsCaught: 0,
-      falseObjections: 0,
+      contradictionsPinned: 0,
       selfContradictionsExposed: 0,
+      flaggedUnverifiable: 0,
+      falseObjections: 0,
       turns: 0,
       challenges: 0,
+      plantsCaught: 0,
+      plantsTotal: PLANTS.length,
     },
+    plantsCaught: new Set(),
   };
   sessions.set(session.sessionId, session);
   return session;

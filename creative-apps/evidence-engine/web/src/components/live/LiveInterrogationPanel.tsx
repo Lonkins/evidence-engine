@@ -39,6 +39,9 @@ export function LiveInterrogationPanel({
   const turns = suspect ? live.transcripts[suspect.name] ?? [] : [];
   const turnCount = turns.length;
   const challengeCount = Object.keys(live.challenges).length;
+  // Guided first beat: until the player lands their first challenge anywhere,
+  // coach the move and pulse the chips so the loop teaches itself.
+  const isFirstChallengePending = challengeCount === 0 && turnCount > 0;
 
   useEffect(() => {
     threadRef.current?.scrollTo({
@@ -83,6 +86,10 @@ export function LiveInterrogationPanel({
         {suspect.name} is played by a live model, grounded in the case file through
         Foundry IQ on every turn — but free to drift beyond it. The drift is the game:
         challenge any sentence and the engine checks it against the evidence, live.
+        <span className="live-panel__scope">
+          The engine can only check claims against this case file — like real grounding,
+          it can't see what isn't indexed.
+        </span>
       </p>
 
       <div className="interrogation__thread" ref={threadRef}>
@@ -99,7 +106,11 @@ export function LiveInterrogationPanel({
               <span className="testimony__q-mark" aria-hidden="true">Q.</span>
               {turn.question}
             </p>
-            <div className="testimony__answer live-answer">
+            <div
+              className={`testimony__answer live-answer ${
+                isFirstChallengePending ? "live-answer--coached" : ""
+              }`}
+            >
               {turn.claims.length > 0 ? (
                 turn.claims.map((claim) => (
                   <span key={claim.claimId}>
@@ -122,6 +133,13 @@ export function LiveInterrogationPanel({
                     .join(", ")}`
                 : "No case-file passage cleared the retrieval threshold for this turn — the witness is on their own."}
             </p>
+            {isFirstChallengePending && turn.turnNo === turns[turns.length - 1].turnNo && (
+              <p className="live-panel__coach" role="status">
+                ↑ Every sentence is a claim. Challenge one you don't believe — exact
+                times are a good place to start. The engine will check it against the
+                case file, live.
+              </p>
+            )}
             {turn.claims
               .map((claim) => live.challenges[claim.claimId])
               .filter((result): result is NonNullable<typeof result> => Boolean(result))

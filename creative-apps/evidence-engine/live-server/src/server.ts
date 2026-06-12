@@ -8,7 +8,15 @@ import {
   checkSelfConsistency,
   type DocText,
 } from "./verdict.js";
-import { buildSystemPrompt, isSpeaker, CASE_ID, type Speaker } from "./characters.js";
+import {
+  buildSystemPrompt,
+  isSpeaker,
+  plantsFor,
+  CASE_ID,
+  type Speaker,
+} from "./characters.js";
+import { heuristicEntry } from "./trace.js";
+import { extractTimes } from "./verdict.js";
 import {
   appendHistory,
   createSession,
@@ -204,7 +212,15 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
       });
     }
   }
+  const evidenceStarted = Date.now();
   const evidence = checkAgainstEvidence(claim.text, evidenceDocs, [claim.speaker]);
+  trace.push(
+    heuristicEntry(
+      "verdict.heuristic(evidence)",
+      Date.now() - evidenceStarted,
+      `negation + clock-time conflicts over ${evidenceDocs.length} retrieved doc(s) → ${evidence.verdict}`
+    )
+  );
 
   // (b) Live retrieve against this speaker's earlier testimony in this session.
   const testimonyFilter =
@@ -252,19 +268,48 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
       });
     }
   }
+  const selfStarted = Date.now();
   const self = checkSelfConsistency(claim.text, earlierStatements);
+  trace.push(
+    heuristicEntry(
+      "verdict.heuristic(self)",
+      Date.now() - selfStarted,
+      `clock-time conflicts vs ${earlierStatements.length} earlier statement(s) → ${self.verdict}`
+    )
+  );
+
+  // A catch requires positive evidence — CONTRADICTED or SELF_CONTRADICTION.
+  // UNSUPPORTED is "the file is silent": flagged, never scored as a catch
+  // (counting it would make "challenge everything" the dominant strategy and
+  // conflate unverifiable with false). SUPPORTED costs a false objection.
+  const isCatch =
+    evidence.verdict === "CONTRADICTED" || self.verdict === "SELF_CONTRADICTION";
+
+  // Ground truth: was this claim one of the planted fabrications? A plant
+  // counts as caught only when the player pinned it with a contradiction.
+  const claimTimes = extractTimes(claim.text.toLowerCase());
+  const matchedPlant = plantsFor(claim.speaker).find((plant) =>
+    claimTimes.some((time) => Math.abs(time - plant.timeMinutes) <= 5)
+  );
+  const plantConfirmed = Boolean(matchedPlant) && isCatch;
 
   // Score the challenge once per claim.
   if (!claim.challenged) {
     claim.challenged = true;
     session.score.challenges += 1;
-    if (evidence.verdict === "CONTRADICTED" || evidence.verdict === "UNSUPPORTED") {
-      session.score.hallucinationsCaught += 1;
-    } else {
+    if (evidence.verdict === "CONTRADICTED") {
+      session.score.contradictionsPinned += 1;
+    } else if (evidence.verdict === "UNSUPPORTED") {
+      session.score.flaggedUnverifiable += 1;
+    } else if (evidence.verdict === "SUPPORTED" && self.verdict !== "SELF_CONTRADICTION") {
       session.score.falseObjections += 1;
     }
     if (self.verdict === "SELF_CONTRADICTION") {
       session.score.selfContradictionsExposed += 1;
+    }
+    if (matchedPlant && plantConfirmed && !session.plantsCaught.has(matchedPlant.id)) {
+      session.plantsCaught.add(matchedPlant.id);
+      session.score.plantsCaught = session.plantsCaught.size;
     }
   }
 
@@ -290,6 +335,11 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
         statement: doc.content,
       })),
     },
+    // Revealed only when the player pinned a planted fabrication with a
+    // contradiction — the "it provably was fabricated" moment.
+    plant: plantConfirmed
+      ? { confirmed: true, assertion: matchedPlant!.assertion }
+      : undefined,
     score: session.score,
     trace,
   });

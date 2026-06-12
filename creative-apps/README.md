@@ -7,6 +7,27 @@
 
 ---
 
+## Judge in 2 minutes
+
+1. **Play instantly (no keys, no backend):** open the hosted Case File mode
+   *(hosting link — pending)* or `cd evidence-engine/web && npm install && npm run dev`.
+   Press the claim *"I left at a quarter to eight"* → watch the CONTRADICTED stamp cite
+   the badge log, verbatim.
+2. **See Foundry IQ live (3 commands):**
+   ```bash
+   cd evidence-engine/live-server && npm install && npm run build
+   cp .env.example .env   # search endpoint+key; GITHUB_MODELS_TOKEN=$(gh auth token)
+   npm start              # then: cd ../web && npm run dev → flip to LIVE WIRE
+   ```
+   Ask Helena when she left. Challenge the time she gives you. The engine-tap panel
+   logs every live knowledge-base call — retrieval, testimony indexing, verdict — as
+   it happens.
+3. **Proof without running anything:** [`evidence-engine/docs/live-mode-proof.json`](evidence-engine/docs/live-mode-proof.json)
+   is a sanitized end-to-end trace against the live KB; the design reasoning is in
+   [`evidence-engine/docs/design-log.md`](evidence-engine/docs/design-log.md).
+
+---
+
 ## What It Is
 
 Evidence Engine is a detective game played inside GitHub Copilot Chat in VS Code. You interrogate suspects in a murder case. Every response is grounded in the actual case file via **Foundry IQ** (Azure AI Search agentic retrieval) — the characters cite their evidence, and you use those citations to catch them in lies.
@@ -183,6 +204,8 @@ cd evidence-engine/live-server && npm run test:live
 - The LLM (GitHub Copilot) synthesises character dialogue between retrieval and the player. Synthesis can misparaphrase retrieved evidence. **The citations are provided so players can verify against the source document, not because synthesis is infallible.**
 - Local dev mode uses keyword search, not semantic retrieval — results are less precise than Foundry IQ
 - **Live Wire mode is built around drift.** The witness model may invent details — that is the design, and the UI says so on screen. Verdicts are evidence-relative: "unsupported by the case file" or "conflicts with their earlier statement", never "false" or "lying" as findings of fact.
+- **Scoring requires positive evidence.** Only CONTRADICTED (with a cited passage) or a self-contradiction counts as a catch. "The case file is silent" is flagged as *unverifiable* — never scored as a caught hallucination, because unverifiable ≠ false. Challenging supported claims costs you.
+- **Ground truth exists where it matters.** Each witness is scripted to assert one specific planted fabrication; the report reveals how many plants you actually pinned. Catches against plants are provable, not heuristic opinion. The engine-tap trace tags every step `AZURE` (live Foundry IQ call), `MODEL` (GitHub Models), or `LOCAL` (deterministic verdict heuristics) — the split is disclosed, not discovered.
 - Live challenge verdicts combine live retrieval with deterministic heuristics (explicit negation phrases and clock-time conflicts within claim-relevant sentences). The heuristics can miss paraphrased contradictions and cannot weigh testimony that carries no times — the cited passages are shown verbatim so the player remains the judge.
 - The self-consistency check only fires on conflicting clock times; two semantically contradictory but time-free statements will read as consistent.
 - Retrieval thresholds are calibrated per query shape (question-style 3.5; declarative claims 2.0; testimony 1.0 — measured live, June 11 2026). Out-of-distribution phrasing can still fail closed ("the case file is silent") on claims the file does address.
