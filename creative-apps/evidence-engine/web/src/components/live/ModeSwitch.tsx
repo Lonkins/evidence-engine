@@ -8,20 +8,21 @@ interface ModeSwitchProps {
 }
 
 /**
- * The wiretap switch — flips the desk between the offline Case File (static,
- * judge-without-keys path) and the Live Wire (open interrogation through the
- * live backend). Honest labelling: each side says exactly what it talks to.
+ * The act switch — moves between Act I (scripted training case, fully offline,
+ * judge-without-keys path) and Act II (live interrogation: a real model on the
+ * stand via the backend). Honest labelling: each side says who is speaking.
  */
 export function ModeSwitch({ mode, onSwitch }: ModeSwitchProps) {
   return (
-    <div className="mode-switch" role="group" aria-label="Desk mode">
+    <div className="mode-switch" role="group" aria-label="Act selection">
       <button
         className={`mode-switch__side ${mode === "casefile" ? "mode-switch__side--on" : ""}`}
         onClick={() => onSwitch("casefile")}
         aria-pressed={mode === "casefile"}
-        title="Scripted case — fully offline, no keys, no backend"
+        title="Act I — training case: scripted answers, pre-checked verdicts, fully offline"
       >
-        Case file
+        Act I · Training case
+        <span className="mode-switch__sub">scripted · offline</span>
       </button>
       <button
         className={`mode-switch__side mode-switch__side--live ${
@@ -29,9 +30,10 @@ export function ModeSwitch({ mode, onSwitch }: ModeSwitchProps) {
         }`}
         onClick={() => onSwitch("live")}
         aria-pressed={mode === "live"}
-        title="Open interrogation — live Foundry IQ + GitHub Models via the backend"
+        title="Act II — live interrogation: a real AI witness, checked against Foundry IQ on every turn"
       >
-        <span className="live-dot" aria-hidden="true" /> Live wire
+        <span className="live-dot" aria-hidden="true" /> Act II · Live interrogation
+        <span className="mode-switch__sub">real AI witness</span>
       </button>
     </div>
   );

@@ -10,6 +10,7 @@ import { DocumentModal } from "./components/evidence/DocumentModal";
 import { AccusationModal } from "./components/accusation/AccusationModal";
 import { LiveDesk } from "./components/live/LiveDesk";
 import { ModeSwitch, type DeskMode } from "./components/live/ModeSwitch";
+import { TrainingBanner } from "./components/live/TrainingBanner";
 import "./app.css";
 
 function Desk() {
@@ -22,14 +23,16 @@ function Desk() {
     return <TitleCard />;
   }
 
+  const actSwitch = <ModeSwitch mode={mode} onSwitch={setMode} />;
+
   return (
     <div className="desk">
-      <ModeSwitch mode={mode} onSwitch={setMode} />
       {mode === "live" ? (
-        <LiveDesk onBackToCaseFile={() => setMode("casefile")} />
+        <LiveDesk onBackToCaseFile={() => setMode("casefile")} actions={actSwitch} />
       ) : (
         <>
-          <CaseHeader onAccuse={() => setAccusing(true)} />
+          <CaseHeader onAccuse={() => setAccusing(true)} actions={actSwitch} />
+          <TrainingBanner onEnterLive={() => setMode("live")} />
           <main className="desk-grid">
             <SuspectRail />
             {state.selectedSuspectId ? (

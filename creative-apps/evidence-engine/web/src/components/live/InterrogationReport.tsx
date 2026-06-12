@@ -43,7 +43,7 @@ export function InterrogationReport({
       <div className="doc-modal__backdrop" />
       <article className="doc-modal__paper report__paper">
         <header className="report__head">
-          <p className="micro-label">Camden CID · Live interrogation report</p>
+          <p className="micro-label">Camden CID · Act III — The Debrief</p>
           <Stamp tone="gold" large>{grade.stamp}</Stamp>
           <p className="report__line">{grade.line}</p>
         </header>
@@ -84,6 +84,26 @@ export function InterrogationReport({
           </div>
         </dl>
 
+        <div className="report__lesson">
+          <p className="report__lesson-head">What you just practised</p>
+          <ul className="report__lesson-list">
+            <li>
+              <strong>Fluent ≠ true.</strong> The witness answered confidently every
+              time — including the times the record disagreed.
+            </li>
+            <li>
+              <strong>A citation beats confidence.</strong> Every pin came from a
+              retrieved passage, quoted verbatim — never from how convincing the
+              answer sounded.
+            </li>
+            <li>
+              <strong>"Unverifiable" is not "false".</strong> When the file was
+              silent, the engine said so and refused to call it a lie. Demand the
+              same honesty from any AI tool you rely on.
+            </li>
+          </ul>
+        </div>
+
         <p className="report__smallprint">
           Verdicts are evidence-relative: “unsupported by the case file” or “conflicts
           with their earlier statement” — never a finding of fact. “File silent” means
@@ -97,10 +117,10 @@ export function InterrogationReport({
 
         <footer className="report__actions">
           <button className="report__action report__action--primary" onClick={onNewSession}>
-            Open a new line
+            Interrogate again
           </button>
           <button className="report__action" onClick={onBackToCaseFile}>
-            Back to the case file
+            Back to the training case
           </button>
         </footer>
       </article>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { SuspectRail } from "../suspects/SuspectRail";
 import { DocumentModal } from "../evidence/DocumentModal";
 import { useLiveSession } from "../../live/useLiveSession";
@@ -9,6 +10,8 @@ import "./live.css";
 
 interface LiveDeskProps {
   onBackToCaseFile: () => void;
+  /** Right-aligned slot for journey controls (the act switch). */
+  actions?: ReactNode;
 }
 
 /**
@@ -17,7 +20,7 @@ interface LiveDeskProps {
  * say so plainly and point back to Case File mode — we never substitute
  * local retrieval while claiming to be live.
  */
-export function LiveDesk({ onBackToCaseFile }: LiveDeskProps) {
+export function LiveDesk({ onBackToCaseFile, actions }: LiveDeskProps) {
   const { state, connect, askQuestion, challengeClaim, endSession } = useLiveSession();
   const [openDocKey, setOpenDocKey] = useState<string | null>(null);
 
@@ -80,12 +83,14 @@ export function LiveDesk({ onBackToCaseFile }: LiveDeskProps) {
             LIVE
           </span>
           <div>
-            <h1 className="case-header__title">The Holbrooke Gallery Affair — Live Wire</h1>
+            <h1 className="case-header__title">Act II — The Live Interrogation</h1>
             <p className="case-header__sub">
-              Open interrogation · Foundry IQ on every turn · witnesses may drift — catch them
+              A real AI plays the witnesses · Foundry IQ checks every turn · they will
+              drift — use what the briefing taught you
             </p>
           </div>
         </div>
+        {actions}
       </header>
       <main className="desk-grid live-grid">
         <SuspectRail />

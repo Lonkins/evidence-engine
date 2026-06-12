@@ -14,7 +14,7 @@
 ### Pre-flight (additional to v1 checklist below)
 
 - [ ] `live-server` running (`npm start`, health returns `"live": true`)
-- [ ] Web app open at 1440×900, Live Wire mode, Helena selected, fresh session
+- [ ] Web app open at 1440×900, Act II · Live Interrogation, Helena selected, fresh session
 - [ ] Engine tap panel visible on the right — this is the Foundry IQ proof on camera
 
 ### Shot list
@@ -24,7 +24,7 @@
 > noir detective game where the suspects ARE a live LLM… and your job is to
 > catch it drifting from the truth. Every check runs live against Foundry IQ."
 
-**0:15–0:60 — The kill shot (one unbroken take, Live Wire):**
+**0:15–0:60 — The kill shot (one unbroken take, Act II · Live Interrogation):**
 1. Type: *"What time exactly did you leave the gallery that evening?"*
 2. Helena answers in character — pause on *"I left the gallery at 19:45 sharp."*
    Point out the engine tap firing: `AZURE kb.retrieve(evidence)` → `MODEL llm.chat`

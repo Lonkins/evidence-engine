@@ -7,6 +7,54 @@ Strategist breaks ties.
 
 ---
 
+## Entry 3 — June 12, 2026: Three-act learning journey
+
+### Problem
+
+Even after Entry 2, the product presented **two sibling modes** ("Case File" /
+"Live Wire") with similar UIs and different mechanics, and no stated reason to
+choose either. A first-time player couldn't tell scripted from live, and the
+learning point — the product is a *learning tool* about LLM hallucination —
+was implicit in mechanics instead of taught. (User feedback: "I am not sure I
+follow the flow… this is supposed to be a learning tool.")
+
+### Decision
+
+Stop presenting modes; present **one journey** with three acts. No engine
+changes — copy, sequencing, and one banner component:
+
+- **Act I — The Briefing** (was "Case File"): the scripted desk, reframed as
+  training. Title card states the thesis up front ("AI assistants hallucinate…
+  you'll learn to catch one"). A training banner teaches the move
+  (question → press → read the stamp/citation) and, once the player presses
+  their first claim, offers "Act II · Put the live AI on the stand". The
+  scripted case remains the offline judge-without-keys path — unchanged
+  mechanically, still skippable.
+- **Act II — The Live Interrogation** (was "Live Wire"): unchanged mechanics;
+  header copy ties back to the briefing ("use what the briefing taught you").
+- **Act III — The Debrief** (was the report): adds "What you just practised" —
+  fluent ≠ true · a citation beats confidence · unverifiable ≠ false. The
+  P3 guardrails hold: lessons describe what the player did, not a general
+  hallucination-detection capability claim.
+- The toggle became an act switch with honest sublabels:
+  "Act I · Training case — scripted · offline" / "Act II · Live interrogation
+  — real AI witness". Moved from a fixed overlay into the headers' action slot
+  (the fixed overlay covered the accuse button at 1440px — caught in browser
+  verification).
+
+### Why
+
+The learning arc IS the product story for judges: problem (title card) →
+skill (Act I) → real stakes (Act II) → takeaway (Act III). It fixes the UX
+score's weakest point (no narrative, unexplained modes) without touching the
+verified engine two days before the deadline, and it gives the demo video its
+natural three-beat structure.
+
+Verified end-to-end in browser at 1440px: title → briefing → first press →
+CTA appears → Act II live turn + challenge (plant pinned) → Act III debrief.
+
+---
+
 ## Entry 2 — June 12, 2026: Judging-led redesign of Live Wire
 
 ### Problem statement

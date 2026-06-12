@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useGame } from "../../GameContext";
 import { contradictionsFound } from "../../engine/gameState";
 import { CLAIMS_BY_ID } from "../../data/caseData";
@@ -5,9 +6,11 @@ import "./header.css";
 
 interface CaseHeaderProps {
   onAccuse: () => void;
+  /** Right-aligned slot for journey controls (the act switch). */
+  actions?: ReactNode;
 }
 
-export function CaseHeader({ onAccuse }: CaseHeaderProps) {
+export function CaseHeader({ onAccuse, actions }: CaseHeaderProps) {
   const { state } = useGame();
   const contradictions = contradictionsFound(state, CLAIMS_BY_ID);
   const canAccuse = contradictions.length > 0;
@@ -51,6 +54,7 @@ export function CaseHeader({ onAccuse }: CaseHeaderProps) {
       >
         {canAccuse ? "Make the accusation" : "Accusation locked"}
       </button>
+      {actions}
     </header>
   );
 }

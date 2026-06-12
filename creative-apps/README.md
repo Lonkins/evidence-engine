@@ -9,15 +9,16 @@
 
 ## Judge in 2 minutes
 
-1. **Play instantly (no keys, no backend):** open the hosted Case File mode
-   *(hosting link — pending)* or `cd evidence-engine/web && npm install && npm run dev`.
+1. **Play instantly (no keys, no backend):** open the hosted app *(hosting link —
+   pending)* or `cd evidence-engine/web && npm install && npm run dev`. Act I is the
+   offline training case — it teaches the move in under a minute.
    Press the claim *"I left at a quarter to eight"* → watch the CONTRADICTED stamp cite
    the badge log, verbatim.
 2. **See Foundry IQ live (3 commands):**
    ```bash
    cd evidence-engine/live-server && npm install && npm run build
    cp .env.example .env   # search endpoint+key; GITHUB_MODELS_TOKEN=$(gh auth token)
-   npm start              # then: cd ../web && npm run dev → flip to LIVE WIRE
+   npm start              # then: cd ../web && npm run dev → switch to Act II · Live interrogation
    ```
    Ask Helena when she left. Challenge the time she gives you. The engine-tap panel
    logs every live knowledge-base call — retrieval, testimony indexing, verdict — as
@@ -39,8 +40,8 @@ The core mechanic: **citation integrity is the win condition.** One character li
 | Surface | Where | What it gives you | Talks to Foundry IQ? |
 |---------|-------|-------------------|----------------------|
 | **Copilot Chat (MCP)** | VS Code, via the four MCP tools below | Free-form interrogation with LLM-synthesised dialogue, grounded by Foundry IQ retrieval | **Yes — live**, when Azure env vars are set (local keyword fallback otherwise, clearly labelled) |
-| **Web: Case File mode** | [`evidence-engine/web/`](evidence-engine/web/) — static, hostable anywhere, no keys | A noir detective desk: pressable claim chips that flip to stamped VERIFIED / CONTRADICTED / NO RECORD verdicts, an evidence board, a full-screen accusation set-piece. Citation quotes verified verbatim by tests. | **No — fully offline by design.** This is the judge-without-keys path; the UI never claims otherwise |
-| **Web: Live Wire mode** | Same web app + [`evidence-engine/live-server/`](evidence-engine/live-server/) | **Open free-form chat with the suspects.** A live model plays each witness, grounded through a Foundry IQ retrieve on *every* turn — and deliberately allowed to drift. Every sentence becomes a challengeable claim, indexed into the knowledge base as testimony the moment it is spoken. Challenge any claim and the engine runs two live retrieves: one against the evidence partition, one against that witness's own earlier testimony. A wiretap-styled "engine tap" panel shows every live call (method, latency, status) in real time. | **Yes — live on every turn and every verdict.** If the backend is unreachable, the UI says "LINE DEAD" and points back to Case File mode — it never silently substitutes local retrieval |
+| **Web: Act I · Training Case** | [`evidence-engine/web/`](evidence-engine/web/) — static, hostable anywhere, no keys | A noir detective desk: pressable claim chips that flip to stamped VERIFIED / CONTRADICTED / NO RECORD verdicts, an evidence board, a full-screen accusation set-piece. Citation quotes verified verbatim by tests. | **No — fully offline by design.** This is the judge-without-keys path; the UI never claims otherwise |
+| **Web: Act II · Live Interrogation** | Same web app + [`evidence-engine/live-server/`](evidence-engine/live-server/) | **Open free-form chat with the suspects.** A live model plays each witness, grounded through a Foundry IQ retrieve on *every* turn — and deliberately allowed to drift. Every sentence becomes a challengeable claim, indexed into the knowledge base as testimony the moment it is spoken. Challenge any claim and the engine runs two live retrieves: one against the evidence partition, one against that witness's own earlier testimony. A wiretap-styled "engine tap" panel shows every live call (method, latency, status) in real time. | **Yes — live on every turn and every verdict.** If the backend is unreachable, the UI says "LINE DEAD" and points back to the Act I training case — it never silently substitutes local retrieval |
 
 ---
 
@@ -65,11 +66,11 @@ graph TD
 
 **Why Foundry IQ is load-bearing:** Remove the knowledge base and the game cannot function. There is no hardcoded "Helena is guilty." The `check_claim` tool retrieves the security log and surfaces the contradiction because the log is in the index. This is the only concept in our evaluation where the IQ layer was genuinely the game mechanic, not a decoration.
 
-### Live Interrogation architecture (Live Wire mode)
+### Live Interrogation architecture (Act II)
 
 ```mermaid
 graph TD
-    Browser["🕵️ Browser<br/>web app, Live Wire mode<br/>(no keys, ever)"]
+    Browser["🕵️ Browser<br/>web app, Act II<br/>(no keys, ever)"]
     Live["live-server<br/>(Node, holds both secrets:<br/>search admin key + GitHub Models token)"]
     KB["Foundry IQ<br/>knowledge base evidence-kb<br/>agentic /retrieve + filterAddOn"]
     Index["ONE shared index 'evidence'<br/>partitioned by doc_type:<br/>15 'evidence' docs + per-session 'testimony' docs"]
@@ -156,7 +157,7 @@ Configure VS Code (`.vscode/mcp.json` is already included). Open Copilot Chat an
 3. Upload the 15 corpus documents to the knowledge base (spike stage 2).
 4. Rebuild and restart: `npm run build && npm start`
 
-### Live Wire mode (web + live-server)
+### Act II · Live Interrogation (web + live-server)
 
 The live backend holds the two secrets; the browser never sees either.
 
@@ -173,7 +174,7 @@ npm start                  # http://localhost:8787
 
 # in another terminal
 cd evidence-engine/web && npm run dev
-# open http://localhost:5173 → flip the switch to LIVE WIRE
+# open http://localhost:5173 → press a claim in Act I, then switch to Act II
 ```
 
 Verify the full loop against the live KB (writes the sanitized proof artifact):
@@ -203,7 +204,7 @@ cd evidence-engine/live-server && npm run test:live
 
 - The LLM (GitHub Copilot) synthesises character dialogue between retrieval and the player. Synthesis can misparaphrase retrieved evidence. **The citations are provided so players can verify against the source document, not because synthesis is infallible.**
 - Local dev mode uses keyword search, not semantic retrieval — results are less precise than Foundry IQ
-- **Live Wire mode is built around drift.** The witness model may invent details — that is the design, and the UI says so on screen. Verdicts are evidence-relative: "unsupported by the case file" or "conflicts with their earlier statement", never "false" or "lying" as findings of fact.
+- **Act II (Live Interrogation) is built around drift.** The witness model may invent details — that is the design, and the UI says so on screen. Verdicts are evidence-relative: "unsupported by the case file" or "conflicts with their earlier statement", never "false" or "lying" as findings of fact.
 - **Scoring requires positive evidence.** Only CONTRADICTED (with a cited passage) or a self-contradiction counts as a catch. "The case file is silent" is flagged as *unverifiable* — never scored as a caught hallucination, because unverifiable ≠ false. Challenging supported claims costs you.
 - **Ground truth exists where it matters.** Each witness is scripted to assert one specific planted fabrication; the report reveals how many plants you actually pinned. Catches against plants are provable, not heuristic opinion. The engine-tap trace tags every step `AZURE` (live Foundry IQ call), `MODEL` (GitHub Models), or `LOCAL` (deterministic verdict heuristics) — the split is disclosed, not discovered.
 - Live challenge verdicts combine live retrieval with deterministic heuristics (explicit negation phrases and clock-time conflicts within claim-relevant sentences). The heuristics can miss paraphrased contradictions and cannot weigh testimony that carries no times — the cited passages are shown verbatim so the player remains the judge.
