@@ -48,3 +48,24 @@ Ranked viable autonomous actions by expected value:
 3. Post Discord (Template A, `docs/discord-post.md`)
 4. Enterprise: record RiskRadar demo video and post enterprise Discord
 5. Submit both tracks before June 14 EOD
+
+---
+
+## Cycle — June 12, 2026 (handoff execution: judge-credibility fixes)
+
+**Context:** Executed the open-ended handoff prompt (`open-ended-agent-prompt.md` in user memory). Verified each claimed blocker against the actual repo before acting — two of three were partially stale.
+
+**Findings vs. the assessment:**
+- Blocker #1 (MCP config): real, but the premise was wrong — VS Code `mcp.json` DOES support `inputs`/`promptString`. The actual problem was friction: every server entry demanded prompts before starting. Fixed properly.
+- Blocker #2 (Azure provisioning unverified): stale — the spike trail IS committed in this branch (`spike/SPIKE_LOG.md`, `spike/output/*.json` raw Azure responses, `evidence-of-pass.json`). What was missing was a judge-facing index of it. `spike/README.md` (referenced twice, never existed) now provides it. Azure CLI access denied in this session, so no live re-verification; committed artifacts are the proof.
+- Blocker #3 (demo narrative): already fixed in a prior cycle — `demo-script.md` v2 "KILL-SHOT SCRIPT" has the hero moment. No change needed.
+- Responsible AI reframing: already done in a prior cycle — README section is honest and detailed. No change needed.
+
+**Changes made:**
+1. `.vscode/mcp.json` — `evidence-engine` stdio server is now zero-config: no inputs, no env; `cwd: server/` so dotenv picks up `server/.env` when present (live mode) and falls back to local corpus otherwise. KB-native HTTP MCP entry keeps its single key prompt (only fires if started).
+2. `spike/README.md` — new judge-facing provisioning trail: 60-second proof table pointing at committed raw artifacts + reproduce-from-scratch script order. Fixes dead references in README.md:153 and server/.env.example.
+3. `README.md` — "Judge in 2 minutes" item 3 now links the provisioning trail; "Playing the Game" Option A documents zero-config behavior and the `.env` live switch.
+
+**Verification:** server build green; MCP stdio smoke test passes zero-config (initialize → 4 tools listed); `check_claim` on Helena's 7:45pm lie returns CONTRADICTED offline via the real protocol; web 34/34 tests, live-server 18/18 tests, both builds green.
+
+**Still human-gated (unchanged):** demo video recording, hosting, repo public, Discord posts, submission before June 14 EOD.

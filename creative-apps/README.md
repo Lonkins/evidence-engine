@@ -25,7 +25,10 @@
    it happens.
 3. **Proof without running anything:** [`evidence-engine/docs/live-mode-proof.json`](evidence-engine/docs/live-mode-proof.json)
    is a sanitized end-to-end trace against the live KB; the design reasoning is in
-   [`evidence-engine/docs/design-log.md`](evidence-engine/docs/design-log.md).
+   [`evidence-engine/docs/design-log.md`](evidence-engine/docs/design-log.md). The full
+   Azure provisioning trail — stage-by-stage run log plus the committed raw responses
+   from the live service (timestamped, `@odata.context` naming the endpoint and API
+   version) — is in [`spike/README.md`](spike/README.md).
 
 ---
 
@@ -106,7 +109,14 @@ The drift is the game: the witness model is instructed to ground in retrieved pa
 
 Add the MCP server to GitHub Copilot in VS Code:
 
-**Option A: Via `.vscode/mcp.json`** (included in this repo — open the workspace folder in VS Code)
+**Option A: Via `.vscode/mcp.json`** (included in this repo — open `evidence-engine/` as the workspace folder in VS Code)
+
+The bundled config is zero-configuration: the server starts immediately with no
+prompts and no keys, using the clearly-labelled local fallback. To switch every
+retrieval to live Foundry IQ, copy `server/.env.example` to `server/.env` and fill
+in the two Azure values — the server picks them up on next start. A second entry,
+`evidence-engine-foundry-iq`, exposes the knowledge base's **native MCP endpoint**
+(zero glue code) and prompts for the admin key only if you start it.
 
 **Option B: Manual** — add to your VS Code settings:
 
