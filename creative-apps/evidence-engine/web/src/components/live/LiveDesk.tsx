@@ -7,6 +7,7 @@ import { useLiveSession } from "../../live/useLiveSession";
 import { LiveInterrogationPanel } from "./LiveInterrogationPanel";
 import { EngineTracePanel } from "./EngineTracePanel";
 import { InterrogationReport } from "./InterrogationReport";
+import { LiveAccusation } from "./LiveAccusation";
 import "./live.css";
 
 interface LiveDeskProps {
@@ -28,6 +29,7 @@ export function LiveDesk({ onBackToCaseFile, actions }: LiveDeskProps) {
   // "Pull the plug": grounding on = Foundry IQ checks every claim; off = the
   // engine has nothing to check against, so the witness's word stands.
   const [grounding, setGrounding] = useState(true);
+  const [accusing, setAccusing] = useState(false);
   const coldOpenedRef = useRef(false);
   const connectedRef = useRef(false);
 
@@ -121,7 +123,16 @@ export function LiveDesk({ onBackToCaseFile, actions }: LiveDeskProps) {
             </p>
           </div>
         </div>
-        {actions}
+        <div className="live-header__tools">
+          <button
+            type="button"
+            className="surface-link surface-link--accuse"
+            onClick={() => setAccusing(true)}
+          >
+            Name the killer
+          </button>
+          {actions}
+        </div>
       </header>
       <main className="desk-grid live-grid">
         <SuspectRail />
@@ -142,6 +153,16 @@ export function LiveDesk({ onBackToCaseFile, actions }: LiveDeskProps) {
         />
         {openDocKey && <DocumentModal docKey={openDocKey} onClose={() => setOpenDocKey(null)} />}
       </main>
+      {accusing && (
+        <LiveAccusation
+          challenges={state.challenges}
+          onClose={() => setAccusing(false)}
+          onSolved={() => {
+            setAccusing(false);
+            void endSession(sessionId);
+          }}
+        />
+      )}
     </>
   );
 }

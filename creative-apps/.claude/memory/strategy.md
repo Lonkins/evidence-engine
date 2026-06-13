@@ -37,8 +37,13 @@ IQ citation + FABRICATION CONFIRMED. TitleCard CTA reworked ("Step into the
 interrogation"); ModeSwitch retired → "Offline demo · no keys" corner link (Act I
 = offline fallback). Fixed a StrictMode double-`connect()` session race. Verified
 in-browser at 1440 + 375. Web build green, 34 tests.
-**Next: A2 (OVERRULED accusation) · A3 (she adapts) · A7 (red herrings) · A4
-(full activity[] wiretap). Then C-track: host, record kill-shot, Copilot receipts.**
+**A2 done (June 13):** live accusation close. Crimson "Name the killer" trigger →
+`LiveAccusation` set-piece; verdict driven by what the player pinned live
+(`evaluateLiveAccusation`, tested): SOLVED (killer + pinned receipt → report),
+OVERRULED (caught-lying-but-innocent — "a contradiction is not a confession"),
+UNPROVEN (no receipt). Verified in-browser SOLVED end-to-end. 39 web tests.
+**Next: A3 (she adapts) · A7 (red herrings) · A4 (full activity[] wiretap). Then
+C-track: host, record kill-shot, Copilot receipts, Discord.**
 
 ---
 

@@ -48,6 +48,28 @@
   vertical-align: middle;
 }
 
+/* A2: the accusation trigger — the climax sits one crimson click away. */
+.surface-link--accuse {
+  color: var(--crimson);
+  border-color: rgba(197, 48, 47, 0.4);
+  font-weight: 600;
+}
+
+.surface-link--accuse:hover,
+.surface-link--accuse:focus-visible {
+  color: #ffd9d6;
+  border-color: var(--crimson);
+  background: rgba(197, 48, 47, 0.1);
+}
+
+.live-header__tools {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .desk-grid {
   flex: 1;
   min-height: 0;
