@@ -21,6 +21,7 @@ import {
   buildVerdictInstruction,
   parseIqAnswer,
   combineWithCrossCheck,
+  ungroundedVerdict,
   type IqVerdict,
 } from "./iq-verdict.js";
 import {
@@ -110,19 +111,38 @@ async function handleAsk(body: JsonBody, res: ServerResponse): Promise<void> {
     return send(res, 400, { error: "Question must be 1–600 characters" });
   }
   const speaker: Speaker = speakerRaw;
+  // Grounding defaults ON. `grounding: false` is the "pull the plug" demo —
+  // Foundry IQ is unplugged so the witness has nothing anchoring her answer.
+  const grounding = body.grounding !== false;
   const trace: TraceEntry[] = [];
 
   // 1. Live KB retrieve against the evidence partition — Foundry IQ is in the
   //    loop on every turn; the character only ever sees retrieved passages.
-  const retrieval = await search.kbRetrieve(
-    `${speaker}: ${question}`,
-    EVIDENCE_FILTER,
-    "kb.retrieve(evidence)"
-  );
-  trace.push(retrieval.entry);
+  //    With grounding OFF we retrieve nothing: the witness is ungrounded and
+  //    free to invent, and the engine has nothing to check her against.
+  let passages: Array<{ refId: number; title: string; content: string }> = [];
+  let retrievedRefs: Array<{ docKey: string; title: string; rerankerScore: number }> = [];
+  if (grounding) {
+    const retrieval = await search.kbRetrieve(
+      `${speaker}: ${question}`,
+      EVIDENCE_FILTER,
+      "kb.retrieve(evidence)"
+    );
+    trace.push(retrieval.entry);
+    passages = retrieval.data.passages;
+    retrievedRefs = retrieval.data.references;
+  } else {
+    trace.push(
+      heuristicEntry(
+        "kb.retrieve — DISABLED (grounding off)",
+        0,
+        "Foundry IQ unplugged — the witness is ungrounded and nothing checks her"
+      )
+    );
+  }
 
   // 2. In-character reply from GitHub Models, grounded but free to drift.
-  const systemPrompt = buildSystemPrompt(speaker, retrieval.data.passages);
+  const systemPrompt = buildSystemPrompt(speaker, passages);
   const history = getHistory(session, speaker);
   const llm = await chat(config, [
     { role: "system", content: systemPrompt },
@@ -179,7 +199,8 @@ async function handleAsk(body: JsonBody, res: ServerResponse): Promise<void> {
     turnNo,
     reply,
     claims: claims.map(({ claimId, text }) => ({ claimId, text })),
-    retrievedDocs: retrieval.data.references,
+    retrievedDocs: retrievedRefs,
+    grounding,
     trace,
   });
 }
@@ -194,6 +215,37 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
   if (!claim) return send(res, 404, { error: "Unknown claim" });
 
   const trace: TraceEntry[] = [];
+
+  // "Pull the plug" demo: grounding off → nothing is retrieved, so nothing can
+  // be checked and the witness's word stands. Re-challenging the same claim
+  // with grounding on is what produces the CONTRADICTED stamp — the thesis,
+  // made interactive. Not scored as a catch or a false objection.
+  const grounding = body.grounding !== false;
+  if (!grounding) {
+    trace.push(
+      heuristicEntry(
+        "kb.retrieve — DISABLED (grounding off)",
+        0,
+        "Foundry IQ unplugged — no evidence retrieved, the claim cannot be checked"
+      )
+    );
+    const combined = ungroundedVerdict();
+    if (!claim.challenged) {
+      claim.challenged = true;
+      session.score.challenges += 1;
+    }
+    return send(res, 200, {
+      claimId,
+      claimText: claim.text,
+      speaker: claim.speaker,
+      turnNo: claim.turnNo,
+      evidence: { verdict: combined.verdict, source: combined.source, agreement: false, citations: [], iq: null },
+      self: { verdict: "SELF_CONSISTENT", conflicts: [] },
+      plant: undefined,
+      score: session.score,
+      trace,
+    });
+  }
 
   // (a) Live retrieve against the evidence partition. Declarative claims
   // rerank lower than questions, so the challenge path uses its own

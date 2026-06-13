@@ -3,6 +3,7 @@ import {
   buildVerdictInstruction,
   parseIqAnswer,
   combineWithCrossCheck,
+  ungroundedVerdict,
   type IqReference,
 } from "./iq-verdict.js";
 import type { EvidenceCheck } from "./verdict.js";
@@ -97,5 +98,16 @@ describe("combineWithCrossCheck", () => {
     expect(combined.verdict).toBe("CONTRADICTED"); // IQ brain leads
     expect(combined.heuristic).toBe("UNSUPPORTED");
     expect(combined.agreement).toBe(false);
+  });
+});
+
+describe("ungroundedVerdict (pull the plug)", () => {
+  test("grounding off yields UNSUPPORTED, source ungrounded, never a catch", () => {
+    const v = ungroundedVerdict();
+    expect(v.verdict).toBe("UNSUPPORTED");
+    expect(v.source).toBe("ungrounded");
+    expect(v.citations).toEqual([]);
+    expect(v.citedPassage).toBeNull();
+    expect(v.iq).toBeNull();
   });
 });

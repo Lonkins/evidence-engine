@@ -48,14 +48,38 @@ export interface IqVerdict {
 /** Final verdict after reconciling the IQ brain with the deterministic check. */
 export interface CombinedVerdict {
   verdict: EvidenceVerdict;
-  /** Which system produced the leading verdict. */
-  source: "iq" | "heuristic";
+  /**
+   * Which system produced the leading verdict. `ungrounded` is the
+   * "pull the plug" demo state: grounding was switched off, so no evidence was
+   * retrieved and no verdict can be formed — the witness's word stands. This is
+   * the thesis made interactive: remove Foundry IQ and the catch collapses.
+   */
+  source: "iq" | "heuristic" | "ungrounded";
   /** True when the IQ verdict and the deterministic check agree. */
   agreement: boolean;
   iq: IqVerdict | null;
   heuristic: EvidenceVerdict;
   citedPassage: string | null;
   citations: IqReference[];
+}
+
+/**
+ * The verdict when grounding is switched OFF. Nothing is retrieved, so nothing
+ * can be checked: the claim is UNSUPPORTED ("the engine has nothing to check
+ * against") and — crucially — this is NOT a catch. Flipping grounding back on
+ * and re-challenging the same claim is what produces the CONTRADICTED stamp,
+ * proving Foundry IQ is load-bearing.
+ */
+export function ungroundedVerdict(): CombinedVerdict {
+  return {
+    verdict: "UNSUPPORTED",
+    source: "ungrounded",
+    agreement: false,
+    iq: null,
+    heuristic: "UNSUPPORTED",
+    citedPassage: null,
+    citations: [],
+  };
 }
 
 /**
