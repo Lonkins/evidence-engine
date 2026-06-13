@@ -51,3 +51,21 @@ export function heuristicEntry(step: string, latencyMs: number, detail: string):
     origin: "heuristic",
   };
 }
+
+/**
+ * Trace line for a Foundry IQ agentic reasoning sub-step, reported by the
+ * knowledge base's own `activity[]` (A4). These are the KB showing its work —
+ * query planning, index search, answer synthesis, agentic reasoning — not
+ * latency we inferred. Surfacing them makes "the IQ is reasoning" visible.
+ */
+export function iqActivityEntry(step: string, latencyMs: number, detail: string): TraceEntry {
+  return {
+    step,
+    method: "POST",
+    target: "Foundry IQ — agentic activity, reported by the knowledge base",
+    latencyMs,
+    status: 200,
+    detail,
+    origin: "azure",
+  };
+}

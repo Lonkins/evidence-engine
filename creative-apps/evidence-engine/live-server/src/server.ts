@@ -22,7 +22,7 @@ import {
   plantsFor,
   type Speaker,
 } from "./characters.js";
-import { heuristicEntry } from "./trace.js";
+import { heuristicEntry, iqActivityEntry } from "./trace.js";
 import {
   appendHistory,
   createSession,
@@ -399,14 +399,23 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
   let iqVerdict: IqVerdict | null = null;
   if (config.iqVerdictEnabled && config.reasoningEffort !== "minimal") {
     try {
+      // BYO corpora rerank on an uncalibrated scale; use a lower grounding floor
+      // so a real CONTRADICTED isn't silently downgraded to UNVERIFIABLE.
+      const verdictThreshold =
+        session.mode === "byo" ? config.byoVerdictThreshold : config.claimEvidenceThreshold;
       const reason = await search.kbReason(
         buildVerdictInstruction(claim.text, claim.speaker),
         evidenceFilter(session),
         "kb.reason(verdict)",
         config.reasoningEffort,
-        config.claimEvidenceThreshold
+        verdictThreshold
       );
       trace.push(reason.entry);
+      // A4: surface the KB's own agentic reasoning steps as engine-tap lines —
+      // the IQ visibly planning, searching, synthesising, and reasoning.
+      for (const act of reason.data.activity) {
+        trace.push(iqActivityEntry(act.label, act.elapsedMs, act.detail));
+      }
       iqVerdict = parseIqAnswer(reason.data.answer, reason.data.references);
     } catch (error) {
       // Disclosed degradation: log a heuristic trace line and keep the

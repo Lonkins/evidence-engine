@@ -9,6 +9,13 @@ export interface KbReference {
   rerankerScore: number;
 }
 
+/** A Foundry IQ agentic reasoning sub-step, distilled from the KB's activity[]. */
+export interface IqActivityStep {
+  label: string;
+  detail: string;
+  elapsedMs: number;
+}
+
 export interface KbRetrieveResult {
   /** References above the fail-closed threshold. */
   references: KbReference[];
@@ -135,7 +142,10 @@ export class SearchClient {
     step: string,
     effort: "low" | "medium",
     thresholdOverride?: number
-  ): Promise<{ data: { answer: string; references: KbReference[] }; entry: TraceEntry }> {
+  ): Promise<{
+    data: { answer: string; references: KbReference[]; activity: IqActivityStep[] };
+    entry: TraceEntry;
+  }> {
     const path = `/knowledgebases/${this.config.knowledgeBaseName}/retrieve`;
     return timed(step, "POST", `${path} [answerSynthesis · ${filterAddOn}]`, async () => {
       const response = await fetch(`${this.config.searchEndpoint}${path}?api-version=${API_VERSION}`, {
@@ -162,7 +172,7 @@ export class SearchClient {
       const body = (await response.json()) as {
         references?: Array<{ id: string; docKey: string; title?: string; rerankerScore?: number }>;
         response?: Array<{ content?: Array<{ type: string; text: string }> }>;
-        activity?: Array<{ type: string; reasoningTokens?: number; count?: number }>;
+        activity?: IqActivityRaw[];
       };
 
       const threshold = thresholdOverride ?? this.config.claimEvidenceThreshold;
@@ -177,13 +187,16 @@ export class SearchClient {
       // In answerSynthesis mode the response text is the synthesised prose
       // answer (not the extractive passage JSON).
       const answer = body.response?.[0]?.content?.find((c) => c.type === "text")?.text ?? "";
+      // The KB's own agentic activity steps (A4) — query planning, index search,
+      // answer synthesis, agentic reasoning — surfaced as engine-tap lines.
+      const activity = parseIqActivity(body.activity);
       const reasoning = (body.activity ?? []).find((a) => a.type === "agenticReasoning");
       const reasoningNote =
         reasoning?.reasoningTokens != null ? ` · IQ reasoning ${reasoning.reasoningTokens} tok` : "";
 
       return {
         status: response.status,
-        data: { answer, references },
+        data: { answer, references, activity },
         detail: `${references.length} grounding ref(s), answer ${answer.length} chars${reasoningNote}`,
       };
     });
@@ -438,6 +451,68 @@ export class SearchClient {
       return { status: response.status, data: response.ok };
     });
   }
+}
+
+interface IqActivityRaw {
+  type: string;
+  count?: number;
+  elapsedMs?: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  reasoningTokens?: number;
+  modelName?: string;
+  retrievalReasoningEffort?: { kind?: string };
+  searchIndexArguments?: { search?: string };
+}
+
+/**
+ * Turn the KB's native `activity[]` into human-readable engine-tap lines (A4).
+ * These are the knowledge base showing its agentic work — planning a query,
+ * searching the index, synthesising the answer, and reasoning — reported by the
+ * service itself, not inferred by us.
+ */
+function parseIqActivity(activity: IqActivityRaw[] | undefined): IqActivityStep[] {
+  const steps: IqActivityStep[] = [];
+  for (const item of activity ?? []) {
+    const elapsedMs = item.elapsedMs ?? 0;
+    switch (item.type) {
+      case "modelQueryPlanning":
+        steps.push({
+          label: "IQ ▸ plan retrieval",
+          detail: `${item.modelName ?? "model"} planned the search · ${item.outputTokens ?? 0} tok`,
+          elapsedMs,
+        });
+        break;
+      case "searchIndex": {
+        const query = item.searchIndexArguments?.search;
+        steps.push({
+          label: "IQ ▸ search the source",
+          detail: `${item.count ?? 0} passage(s) retrieved${query ? ` · “${query.slice(0, 48)}”` : ""}`,
+          elapsedMs,
+        });
+        break;
+      }
+      case "modelAnswerSynthesis":
+        steps.push({
+          label: "IQ ▸ synthesise verdict",
+          detail: `grounded answer written · ${item.outputTokens ?? 0} tok`,
+          elapsedMs,
+        });
+        break;
+      case "agenticReasoning":
+        steps.push({
+          label: "IQ ▸ agentic reasoning",
+          detail: `${item.reasoningTokens ?? 0} reasoning tok · effort ${
+            item.retrievalReasoningEffort?.kind ?? "?"
+          }`,
+          elapsedMs,
+        });
+        break;
+      default:
+        break;
+    }
+  }
+  return steps;
 }
 
 function parsePassages(

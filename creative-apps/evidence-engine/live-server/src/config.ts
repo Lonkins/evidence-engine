@@ -10,6 +10,15 @@ export interface Config {
   githubModelsModel: string;
   noEvidenceThreshold: number;
   claimEvidenceThreshold: number;
+  /**
+   * Grounding-reference floor for the IQ verdict call (kbReason) in a
+   * bring-your-own trial. The Holbrooke threshold is calibrated against that
+   * corpus; an arbitrary pasted source reranks on a different scale, so reusing
+   * it can silently downgrade a real CONTRADICTED to UNVERIFIABLE when every
+   * grounding ref scores below the Holbrooke floor. BYO uses a lower floor and
+   * trusts the KB's synthesised citation.
+   */
+  byoVerdictThreshold: number;
   testimonyThreshold: number;
   /**
    * When true, the challenge verdict is produced by the KB's grounded
@@ -51,6 +60,7 @@ export function loadConfig(): Config {
     // queries; calibrated live June 11 2026 — grounded claims ≥ 2.2, fabricated
     // ≤ 1.5 (see HANDOFF.md, Live Interrogation calibration table).
     claimEvidenceThreshold: parseFloat(process.env.CLAIM_EVIDENCE_THRESHOLD ?? "2.0"),
+    byoVerdictThreshold: parseFloat(process.env.BYO_VERDICT_THRESHOLD ?? "1.0"),
     // Testimony sentences are short; any hit is then gated by the temporal
     // conflict heuristic, so the retrieval bar can sit low without false alarms.
     testimonyThreshold: parseFloat(process.env.TESTIMONY_THRESHOLD ?? "1.0"),

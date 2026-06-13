@@ -47,6 +47,13 @@ export function ByoIntake({ onSubmit, onCancel }: ByoIntakeProps) {
         flagged as something the AI simply made up.
       </p>
 
+      <p className="byo-intake__notice" role="note">
+        Paste <strong>demo-safe text only</strong> — synthetic data, your own public
+        writing, or sample code. Your source is indexed only to run this trial and is
+        <strong> purged when you reset</strong>. Don't paste personal, confidential, or
+        copyrighted material.
+      </p>
+
       <div className="byo-intake__fields">
         <label className="byo-intake__field">
           <span className="micro-label">Your source</span>
