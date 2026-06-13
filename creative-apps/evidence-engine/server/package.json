@@ -5,12 +5,14 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
+    "prebuild": "npm --prefix ../verdict-core run build",
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "test:live": "tsx src/test-live.ts"
   },
   "dependencies": {
+    "@evidence-engine/verdict-core": "file:../verdict-core",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "dotenv": "^16.5.0"
   },

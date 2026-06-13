@@ -1,0 +1,25 @@
+{
+  "name": "@evidence-engine/verdict-core",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared, typed verdict engine for Evidence Engine — the single source of truth for SUPPORTED/CONTRADICTED/UNSUPPORTED, self-consistency, and the Foundry IQ answer-synthesis verdict. Consumed by live-server and the MCP server so every surface tells the identical story.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "prepare": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.8"
+  }
+}

@@ -7,6 +7,7 @@ import {
 import "dotenv/config";
 
 import { retrieve, fetchDocumentByKey, isFoundryConfigured } from "./foundry-client.js";
+import { checkAgainstEvidence, type DocText } from "@evidence-engine/verdict-core";
 import {
   getState,
   recordQuestion,
@@ -231,88 +232,44 @@ The evidence file is silent on this point. No documents were retrieved that spea
       })
     );
 
-    const claimLower = claim.toLowerCase();
-    const claimTerms = claimLower.split(/\W+/).filter((t) => t.length > 3);
+    // Single shared verdict-core (A5) — the same deterministic check the
+    // live-server runs as its disclosed cross-check. One copy, one behaviour:
+    // "her badge says 20:47, not 19:45" is detected identically on every surface.
+    const docs: DocText[] = fullTexts.map((d) => ({
+      docKey: d.docKey,
+      title: d.docKey,
+      content: d.content,
+    }));
+    const check = checkAgainstEvidence(claim, docs);
 
-    // Extract HH:MM style times from a string (returns minutes since midnight for comparison)
-    function extractTimes(text: string): number[] {
-      const matches = text.match(/\b(\d{1,2}):(\d{2})\s*(am|pm)?\b/gi) ?? [];
-      return matches.map((t) => {
-        const parts = t.match(/(\d{1,2}):(\d{2})\s*(am|pm)?/i);
-        if (!parts) return -1;
-        let hours = parseInt(parts[1], 10);
-        const mins = parseInt(parts[2], 10);
-        const meridiem = (parts[3] ?? "").toLowerCase();
-        if (meridiem === "pm" && hours !== 12) hours += 12;
-        if (meridiem === "am" && hours === 12) hours = 0;
-        return hours * 60 + mins;
-      }).filter((n) => n >= 0);
-    }
+    // UNSUPPORTED is "the file is silent" — surfaced as INSUFFICIENT EVIDENCE in
+    // the Copilot text, never as a contradiction (conflating unverifiable with
+    // false is the exact error the game teaches against).
+    const verdictLabel =
+      check.verdict === "UNSUPPORTED" ? "INSUFFICIENT EVIDENCE" : check.verdict;
 
-    // Explicit contradiction phrases that genuinely negate a claim
-    const EXPLICIT_CONTRADICTION_PHRASES = [
-      "does not", "did not", "was not", "were not",
-      "no record", "not present", "never arrived", "denied",
-      "contradicts", "inconsistent with",
-    ];
-
-    const claimTimes = extractTimes(claimLower);
-
-    const supporting: typeof fullTexts = [];
-    const contradicting: typeof fullTexts = [];
-
-    for (const doc of fullTexts) {
-      const lower = doc.content.toLowerCase();
-      const directMatch = claimTerms.some((term) => lower.includes(term));
-      if (!directMatch) continue;
-
-      // 1. Explicit negation phrases are reliable contradiction signals
-      const hasExplicitContradiction = EXPLICIT_CONTRADICTION_PHRASES.some((s) => lower.includes(s));
-
-      // 2. Temporal conflict: claim asserts a time, document records a different time for the same entity
-      let hasTemporalConflict = false;
-      if (claimTimes.length > 0) {
-        const docTimes = extractTimes(lower);
-        if (docTimes.length > 0) {
-          // Flag a conflict only when every doc time differs from every claimed time by >5 minutes
-          hasTemporalConflict = claimTimes.every((ct) =>
-            docTimes.every((dt) => Math.abs(ct - dt) > 5)
-          ) && docTimes.length > 0;
-        }
-      }
-
-      if (hasExplicitContradiction || hasTemporalConflict) {
-        contradicting.push(doc);
-      } else {
-        supporting.push(doc);
-      }
-    }
-
-    const verdict =
-      contradicting.length > 0
-        ? "CONTRADICTED"
-        : supporting.length > 0
-        ? "SUPPORTED"
-        : "INSUFFICIENT EVIDENCE";
-
-    const relevantDocs = verdict === "CONTRADICTED" ? contradicting : supporting;
-
-    const citationBlock = relevantDocs
-      .map(
-        (doc, i) =>
-          `**[${i + 1}] ${doc.docKey}**\n${doc.content.slice(0, 400).replace(/\n{3,}/g, "\n\n")}...`
-      )
+    // Cite the deciding docs: the contradicting passages (verbatim triggers) when
+    // CONTRADICTED, the matched supporting docs when SUPPORTED, nothing when silent.
+    const citationBlock = check.citations
+      .map((doc, i) => {
+        const triggers = check.triggers[doc.docKey];
+        const body =
+          triggers && triggers.length > 0
+            ? triggers.join("\n")
+            : `${doc.content.slice(0, 400).replace(/\n{3,}/g, "\n\n")}...`;
+        return `**[${i + 1}] ${doc.docKey}**\n${body}`;
+      })
       .join("\n\n---\n\n");
 
     return {
       content: [
         {
           type: "text",
-          text: `# Claim Check: ${verdict}
+          text: `# Claim Check: ${verdictLabel}
 
 **Claim:** "${claim}"
 
-**Verdict:** ${verdict}
+**Verdict:** ${verdictLabel}
 
 ## Supporting Documents
 
@@ -320,9 +277,9 @@ ${citationBlock || "_No specific passages retrieved._"}
 
 ---
 *${
-  verdict === "CONTRADICTED"
+  check.verdict === "CONTRADICTED"
     ? "The evidence contradicts this claim. Note the specific document and passage — this may be significant."
-    : verdict === "SUPPORTED"
+    : check.verdict === "SUPPORTED"
     ? "The evidence is consistent with this claim."
     : "The evidence file cannot confirm or refute this claim."
 }*`,

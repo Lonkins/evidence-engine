@@ -56,7 +56,7 @@ shallow retrieval call. Remove Foundry IQ and five of seven steps collapse.
 | **A2** | **`OVERRULED` accusation in the live close** | Replayability + Responsible AI (designer, rival) | M | Move the accusation set-piece into the live ending. Accuse a witness who lied but didn't do it → "a contradiction is not a confession." Live mode has no accusation flow yet — real feature. |
 | **A3** | **"She adapts" second turn** | Technical Excellence, "it's really reasoning" (engineer) | M | When a plant is pinned, the witness shifts her story and the shift is itself checkable — lying digs a deeper hole. Prompt work in `characters.ts` + a re-challenge beat. |
 | **A4** | **Full `activity[]` stream in the wiretap** | Best Use of IQ (engineer) | S | Beyond the token count: render the KB's `searchIndex` step(s) + `agenticReasoning` as their own engine-tap lines so the judge sees the reasoning, not just latency. |
-| **A5** | **Shared verdict-core** | Technical Excellence (strategist) | M | Extract one typed, tested verdict module consumed by live-server, the MCP server, and the offline path. Kills the three-engine drift. |
+| **A5** | ✅ **Shared verdict-core** (June 13) | Technical Excellence (strategist) | M | DONE. `evidence-engine/verdict-core/` — one typed, tested package (`@evidence-engine/verdict-core`, 25 tests) consumed by live-server and the MCP server via a `file:` dep. The MCP's drifted inline check (own `extractTimes`/`EXPLICIT_CONTRADICTION_PHRASES`, `INSUFFICIENT EVIDENCE` label) is gone — both surfaces now run the identical heuristic + IQ verdict. Offline-web Act I parity deferred (canned; Vite cross-root friction, low value). Builds green, behaviour unchanged end-to-end. |
 | **A6** | **MCP `check_claim` rewired to the IQ verdict** | GitHub Copilot + Best Use of IQ (rival) | M | So the Copilot surface tells the *identical* IQ-driven story — the rival's "your hero moment isn't in Copilot" attack. Depends on A5. |
 | **A7** | **Replayability: load-bearing red herrings** | Replayability (designer) | M | Make Felix/Nora plants matter — catching a true contradiction that points at the wrong person. Skill = catch the lie that puts someone alone with the body, not every lie. |
 
@@ -103,7 +103,7 @@ shallow retrieval call. Remove Foundry IQ and five of seven steps collapse.
 ## 5. Recommended sequence
 
 1. ✅ **B0 + B1 DONE (June 13)** — the IQ-brain verdict is live in the live-server; "Best Use of IQ" is now real on the hero surface.
-2. **A5 → A6** (shared verdict-core, then MCP parity) — makes the IQ claim true *across* surfaces and reclaims the Copilot axis. ← **next**
+2. ✅ **A5 DONE (June 13)** — shared `verdict-core` package; live-server + MCP consume one tested module. **A6 next** (rewire MCP `check_claim` to call the IQ answer-synthesis verdict, not just the shared heuristic) — reclaims the Copilot axis with the identical IQ story.
 3. **A1** (one-product flow + cold-open) — fixes the comprehension tax; the hero moment in seconds.
 4. **A2, A3, A7** (OVERRULED, adapts, red herrings) — depth, replayability, "it's really reasoning."
 5. **A4** (full activity stream) — cheap IQ-visibility polish.

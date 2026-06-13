@@ -4,7 +4,7 @@ import {
   checkSelfConsistency,
   extractTimes,
   segmentDocument,
-} from "./verdict.js";
+} from "./heuristic.js";
 
 const securityLog = {
   docKey: "gallery-09",

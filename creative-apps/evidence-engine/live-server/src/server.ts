@@ -6,8 +6,14 @@ import { segmentClaims } from "./claims.js";
 import {
   checkAgainstEvidence,
   checkSelfConsistency,
+  extractTimes,
+  buildVerdictInstruction,
+  parseIqAnswer,
+  combineWithCrossCheck,
+  ungroundedVerdict,
   type DocText,
-} from "./verdict.js";
+  type IqVerdict,
+} from "@evidence-engine/verdict-core";
 import {
   buildSystemPrompt,
   isSpeaker,
@@ -16,14 +22,6 @@ import {
   type Speaker,
 } from "./characters.js";
 import { heuristicEntry } from "./trace.js";
-import { extractTimes } from "./verdict.js";
-import {
-  buildVerdictInstruction,
-  parseIqAnswer,
-  combineWithCrossCheck,
-  ungroundedVerdict,
-  type IqVerdict,
-} from "./iq-verdict.js";
 import {
   appendHistory,
   createSession,

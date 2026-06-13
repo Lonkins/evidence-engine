@@ -4,9 +4,8 @@ import {
   parseIqAnswer,
   combineWithCrossCheck,
   ungroundedVerdict,
-  type IqReference,
-} from "./iq-verdict.js";
-import type { EvidenceCheck } from "./verdict.js";
+} from "./iq.js";
+import type { IqReference, EvidenceCheck } from "./types.js";
 
 const refs: IqReference[] = [
   { docKey: "gallery-09", title: "Electronic Access Log", rerankerScore: 3.2 },

@@ -15,7 +15,14 @@ citation; `source: iq` in the response, `kb.reason` in the engine tap. Regex is 
 disclosed, agreeing cross-check. Pull-the-plug OFF → `source: ungrounded`, her word
 stands. live-server `.env`: `IQ_VERDICT_ENABLED=true`, `KB_REASONING_EFFORT=medium`.
 Build green, 30 tests. Proof: `spike/output/08-retrieve-verdict.json`,
-`spike/08-answer-synthesis.sh`. **Next: A5 (shared verdict-core) → A6 (MCP parity) → A1.**
+`spike/08-answer-synthesis.sh`.
+
+**A5 done (June 13):** `evidence-engine/verdict-core/` — one tested package
+(`@evidence-engine/verdict-core`, 25 tests) consumed by live-server + MCP via a
+`file:` dep. The MCP's drifted inline verdict copy is gone; both surfaces run the
+identical heuristic + IQ verdict. Offline-web parity deferred (canned Act I).
+**Next: A6 (rewire MCP `check_claim` to the IQ answer-synthesis verdict) → A1
+(one-product flow + cold-open).**
 
 ---
 
