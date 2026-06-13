@@ -42,8 +42,17 @@ in-browser at 1440 + 375. Web build green, 34 tests.
 (`evaluateLiveAccusation`, tested): SOLVED (killer + pinned receipt → report),
 OVERRULED (caught-lying-but-innocent — "a contradiction is not a confession"),
 UNPROVEN (no receipt). Verified in-browser SOLVED end-to-end. 39 web tests.
-**Next: A3 (she adapts) · A7 (red herrings) · A4 (full activity[] wiretap). Then
-C-track: host, record kill-shot, Copilot receipts, Discord.**
+**CONCEPT PIVOT (June 13, design-log Entry 7):** owner flagged the game felt
+static/novelty (we scripted both the lie and the truth). Four-persona reckoning →
+locked: (1) keep it a game; (2) **grey band = first-class UNVERIFIABLE verdict**,
+all copy aligned to Foundry IQ's "grounded answers to reduce hallucination"
+(**Part 1 DONE**); (3) **"bring your own trial"** — user pastes their own
+story/notes/code, engine interrogates a witness grounded in *it* (Part 2 next);
+Holbrooke stays as the built-in example + deterministic video hero. Reuses the
+index/partition/upload plumbing. Deadline June 14 — timebox BYO, protect Section C
+(host/video/receipts/Discord), never break the verified Holbrooke path.
+**Next: Part 2 (BYO core: /api/case intake + per-session corpus + generic witness)
+→ Section C.**
 
 ---
 

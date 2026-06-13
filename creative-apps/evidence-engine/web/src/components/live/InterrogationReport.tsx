@@ -75,7 +75,7 @@ export function InterrogationReport({
             <dd>{score.selfContradictionsExposed}</dd>
           </div>
           <div className="report__stat">
-            <dt>File silent (flagged)</dt>
+            <dt>Unverifiable (flagged)</dt>
             <dd>{score.flaggedUnverifiable}</dd>
           </div>
           <div className="report__stat">

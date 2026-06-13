@@ -5,18 +5,20 @@ import "../interrogation/interrogation.css";
 import "./live.css";
 
 const EVIDENCE_STAMP = {
-  SUPPORTED: { tone: "verified", text: "Supported" },
+  SUPPORTED: { tone: "verified", text: "Grounded" },
   CONTRADICTED: { tone: "contradicted", text: "Contradicted" },
-  UNSUPPORTED: { tone: "silent", text: "Case file silent" },
+  UNSUPPORTED: { tone: "silent", text: "Unverifiable" },
 } as const;
 
 const EVIDENCE_NOTE = {
   SUPPORTED:
-    "The case file is consistent with this claim. Objection overruled — that one costs you.",
+    "Foundry IQ found this in the source and backs it — the record is consistent with the claim. (Objecting to a grounded statement costs you.)",
   CONTRADICTED:
-    "This claim conflicts with the record — the conflicting passage is cited below, verbatim. A pin, not a verdict of lying.",
+    "Foundry IQ found a passage that conflicts with this claim — cited below, verbatim. A grounded receipt, not an opinion of lying.",
+  // The grey band — the honest heart of the whole thing. Foundry IQ refuses to
+  // vouch for what it can't ground, and says so instead of guessing.
   UNSUPPORTED:
-    "The case file is silent on this point. Flagged as unverifiable — no collar. Silence isn't proof of fabrication.",
+    "Foundry IQ won't vouch for this: the source neither backs it nor knocks it down. That's not a miss — it's the engine refusing to bless a claim it can't ground. And it's the dangerous band: a confident claim with no receipt is exactly where hallucinations hide.",
 } as const;
 
 interface LiveClaimChipProps {

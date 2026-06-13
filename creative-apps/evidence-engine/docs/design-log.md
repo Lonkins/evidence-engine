@@ -7,6 +7,58 @@ Strategist breaks ties.
 
 ---
 
+## Entry 7 — June 13, 2026: Concept reckoning — the grey band, and "bring your own trial"
+
+The owner stepped back and named a real flaw: the game *felt static and
+novelty*. Diagnosis (validated by re-running the four personas): the demo
+**scripts both the lie and the truth** — planted `HH:MM` fabrications in the
+witness prompts vs. an authored corpus — so it's a closed-loop **consistency
+check dressed as hallucination detection**. Real hallucination is exactly the
+case where you *don't* have the source to check against.
+
+### What the four personas converged on
+- The **engine** (B0/B1/A5/A6 — Foundry IQ answer-synthesis verdict) is the real,
+  defensible asset and survives any pivot. The *wrapper* (scripted detective
+  case) is the novelty.
+- The honest, stronger thesis is the **grey band**: a grounding layer never
+  declares truth — it shows what your sources **back**, **contradict**, or
+  **can't speak to**, and the *unverifiable* band is where a confident model runs
+  unchecked. Name them **evidentiary states (GROUNDED / CONTRADICTED /
+  UNVERIFIABLE), never truth-states**. This is also exactly how the challenge
+  spec describes Foundry IQ: "cited, grounded answers **to reduce hallucination**."
+- **Emergent-lies rework and a full pivot are traps at T‑24h** (deadline June 14).
+  Prize strategist (tiebreaker): the concept is good enough to win at video speed;
+  the existential gap is the **submission surfaces** (host, video, Copilot
+  receipts, Discord) — Section C — which don't exist yet.
+
+### Decisions locked with the owner (June 13)
+1. **Keep it a game** (the track rewards creative/fun; "games" explicitly
+   welcomed). Don't pivot to a dry dev tool.
+2. **Grey band becomes a first-class, celebrated verdict** ("UNVERIFIABLE — the
+   source is silent"), and all copy aligns to Foundry IQ's "grounded answers to
+   reduce hallucination" framing. **(Part 1 — DONE, this entry.)**
+3. **"Bring your own trial" (the wow):** the user pastes their own story / notes /
+   **code** and the engine runs an interrogation grounded in *it* — Foundry IQ
+   checks the witness's claims against the user's own source. The Holbrooke case
+   stays as the polished built-in example + the deterministic video hero. This
+   matches the winning pattern the owner cited (insert your own work, the project
+   runs with it) and kills the "you scripted both sides" attack because the user
+   supplies the corpus. Reuses existing index/partition/upload plumbing — an
+   extension, not a rebuild. **(Part 2 — next.)**
+4. **Deadline guardrail:** timebox the BYO build; never break the verified
+   Holbrooke deterministic path; protect time for Section C. A submitted B+ beats
+   an unsubmitted A+.
+
+### Part 1 shipped (this entry)
+Promoted UNSUPPORTED → a first-class **UNVERIFIABLE** stamp + note across the live
+web verdict cards and the MCP `check_claim` output; reframed SUPPORTED→"Grounded"
+and all verdict copy to Foundry-IQ language. Verified in-browser: a genuinely
+off-corpus claim (Helena's breakfast) now lands a distinct UNVERIFIABLE grey-band
+verdict, alongside CONTRADICTED (with the grounded receipt) and GROUNDED. Builds
+green; 39 web tests pass.
+
+---
+
 ## Entry 6 — June 13, 2026: Foundry IQ becomes the brain (B0 + B1 landed)
 
 The hard dependency from Entries 4–5 is **done and verified live**. "Foundry IQ

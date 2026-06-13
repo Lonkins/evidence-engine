@@ -220,13 +220,13 @@ ${fallbackNote}
         content: [
           {
             type: "text",
-            text: `# Claim Check: INSUFFICIENT EVIDENCE
+            text: `# Claim Check: UNVERIFIABLE
 
 **Claim:** "${claim}"
 
-**Verdict:** INSUFFICIENT EVIDENCE
+**Verdict:** UNVERIFIABLE
 
-The evidence file is silent on this point. No documents were retrieved that speak to this claim. This does not mean the claim is false — only that the available evidence cannot confirm or refute it.`,
+Foundry IQ won't vouch for this — nothing in the source was retrieved that backs it or knocks it down. That is not a finding of falsehood; it is the engine refusing to bless a claim it can't ground. A confident claim with no receipt is exactly where hallucinations hide.`,
           },
         ],
       };
@@ -272,11 +272,12 @@ The evidence file is silent on this point. No documents were retrieved that spea
     }
     const combined = combineWithCrossCheck(iqVerdict, check);
 
-    // UNSUPPORTED is "the file is silent" — surfaced as INSUFFICIENT EVIDENCE,
-    // never as a contradiction (conflating unverifiable with false is the exact
-    // error the game teaches against).
+    // UNSUPPORTED -> UNVERIFIABLE: the grey band. Foundry IQ won't vouch for a
+    // claim it can't ground, and says so rather than guessing — never a
+    // contradiction (conflating unverifiable with false is the exact error this
+    // teaches against). This is where a confident model runs unchecked.
     const verdictLabel =
-      combined.verdict === "UNSUPPORTED" ? "INSUFFICIENT EVIDENCE" : combined.verdict;
+      combined.verdict === "UNSUPPORTED" ? "UNVERIFIABLE" : combined.verdict;
     const decidedBy =
       combined.source === "iq"
         ? `Foundry IQ — answer synthesis${
@@ -329,10 +330,10 @@ ${evidenceBlock || "_No specific passages retrieved._"}
 ---
 *${
   combined.verdict === "CONTRADICTED"
-    ? "The evidence contradicts this claim. Note the specific document and passage — this may be significant."
+    ? "Foundry IQ found a passage that contradicts this claim — the receipt is cited above, verbatim."
     : combined.verdict === "SUPPORTED"
-    ? "The evidence is consistent with this claim."
-    : "The evidence file cannot confirm or refute this claim."
+    ? "Foundry IQ grounded this claim in the source — the record backs it."
+    : "Foundry IQ won't vouch for this — your sources neither back it nor knock it down. A confident claim with no receipt is exactly where hallucinations hide."
 }*`,
         },
       ],
