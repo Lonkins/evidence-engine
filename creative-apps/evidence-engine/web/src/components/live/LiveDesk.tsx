@@ -34,6 +34,8 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
   // engine has nothing to check against, so the witness's word stands.
   const [grounding, setGrounding] = useState(true);
   const [accusing, setAccusing] = useState(false);
+  // Which inferred witness is on the stand, in a bring-your-own trial.
+  const [selectedWitness, setSelectedWitness] = useState<string | null>(null);
   const coldOpenedRef = useRef(false);
   const connectedRef = useRef(false);
 
@@ -55,10 +57,12 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
   useEffect(() => {
     if (state.status !== "ready" || !state.sessionId || coldOpenedRef.current) return;
     coldOpenedRef.current = true;
-    if (state.mode === "byo" && state.witness) {
+    if (state.mode === "byo" && state.witnesses.length > 0) {
+      const first = state.witnesses[0];
+      setSelectedWitness(first.name);
       void askQuestion(
         state.sessionId,
-        state.witness.name,
+        first.name,
         "In your own words — what is this about, and what are the most important facts?",
         grounding
       );
@@ -71,7 +75,7 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
         grounding
       );
     }
-  }, [state.status, state.sessionId, state.mode, state.witness, dispatch, askQuestion, grounding]);
+  }, [state.status, state.sessionId, state.mode, state.witnesses, dispatch, askQuestion, grounding]);
 
   if (state.status === "probing" || state.status === "idle") {
     return (
@@ -121,6 +125,9 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
   if (!sessionId) return null;
 
   const isByo = state.mode === "byo";
+  // The witness currently on the stand in a BYO trial (defaults to the first).
+  const activeWitness =
+    state.witnesses.find((w) => w.name === selectedWitness) ?? state.witnesses[0] ?? null;
 
   return (
     <>
@@ -134,9 +141,11 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
             <p className="case-header__sub">
               {isByo ? (
                 <>
-                  {state.witness?.name ?? "The witness"} is grounded in{" "}
+                  {state.witnesses.length > 1
+                    ? `${state.witnesses.length} witnesses grounded in`
+                    : "Grounded in"}{" "}
                   <em>“{state.sourceTitle ?? "your source"}”</em> · Foundry IQ checks every
-                  claim against it, live — catch what it can't back up
+                  claim against it, live — catch what they can't back up
                 </>
               ) : (
                 <>
@@ -170,14 +179,19 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
       </header>
       <main className="desk-grid live-grid">
         {isByo ? (
-          <WitnessStand witness={state.witness} sourceTitle={state.sourceTitle} />
+          <WitnessStand
+            witnesses={state.witnesses}
+            selectedName={activeWitness?.name ?? null}
+            onSelect={setSelectedWitness}
+            sourceTitle={state.sourceTitle}
+          />
         ) : (
           <SuspectRail />
         )}
         <LiveInterrogationPanel
           live={state}
           grounding={grounding}
-          witness={isByo ? state.witness ?? undefined : undefined}
+          witness={isByo ? activeWitness ?? undefined : undefined}
           onAsk={(speaker, question) => void askQuestion(sessionId, speaker, question, grounding)}
           onChallenge={(claimId) => void challengeClaim(sessionId, claimId, grounding)}
           onOpenDoc={setOpenDocKey}

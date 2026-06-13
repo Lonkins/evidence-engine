@@ -18,7 +18,6 @@ const MAX_CHARS = 24000;
 export function ByoIntake({ onSubmit, onCancel }: ByoIntakeProps) {
   const [source, setSource] = useState("");
   const [title, setTitle] = useState("");
-  const [witnessName, setWitnessName] = useState("");
 
   const trimmed = source.trim();
   const tooShort = trimmed.length > 0 && trimmed.length < MIN_CHARS;
@@ -26,11 +25,7 @@ export function ByoIntake({ onSubmit, onCancel }: ByoIntakeProps) {
 
   const submit = () => {
     if (!valid) return;
-    onSubmit({
-      source: trimmed,
-      title: title.trim() || undefined,
-      witnessName: witnessName.trim() || undefined,
-    });
+    onSubmit({ source: trimmed, title: title.trim() || undefined });
   };
 
   return (
@@ -72,28 +67,20 @@ export function ByoIntake({ onSubmit, onCancel }: ByoIntakeProps) {
           </span>
         </label>
 
-        <div className="byo-intake__row">
-          <label className="byo-intake__field">
-            <span className="micro-label">Title (optional)</span>
-            <input
-              className="byo-intake__input"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              placeholder="e.g. Aurora Service Notes"
-              maxLength={120}
-            />
-          </label>
-          <label className="byo-intake__field">
-            <span className="micro-label">Witness name (optional)</span>
-            <input
-              className="byo-intake__input"
-              value={witnessName}
-              onChange={(event) => setWitnessName(event.target.value)}
-              placeholder="e.g. The Author"
-              maxLength={60}
-            />
-          </label>
-        </div>
+        <label className="byo-intake__field">
+          <span className="micro-label">Title (optional)</span>
+          <input
+            className="byo-intake__input"
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            placeholder="e.g. Aurora Service Notes"
+            maxLength={120}
+          />
+        </label>
+        <p className="byo-intake__hint">
+          We'll read your source and find the witnesses to put on the stand — the
+          characters in a story, the author of a document, or the engineer behind some code.
+        </p>
       </div>
 
       <div className="byo-intake__actions">

@@ -31,7 +31,9 @@ import {
   getSession,
   nextTurn,
   type Session,
+  type Witness,
 } from "./sessions.js";
+import { extractWitnesses } from "./witnesses.js";
 import type { TraceEntry } from "./trace.js";
 
 const config = loadConfig();
@@ -169,33 +171,26 @@ async function handleNewSession(body: JsonBody, res: ServerResponse): Promise<vo
     typeof body.title === "string" && body.title.trim()
       ? body.title.trim().slice(0, 120)
       : "Your source";
-  const witnessName =
-    typeof body.witnessName === "string" && body.witnessName.trim()
-      ? body.witnessName.trim().slice(0, 60)
-      : "The Witness";
   const caseId = `byo-${randomUUID()}`;
-  const session = createSession({
-    caseId,
-    mode: "byo",
-    witness: { name: witnessName, role: "Witness" },
-    sourceTitle,
-    plantsTotal: 0,
-  });
+  const session = createSession({ caseId, mode: "byo", sourceTitle, plantsTotal: 0 });
 
   const docs = chunkSource(source, sourceTitle, caseId, session.sessionId);
   try {
-    const upload = await search.uploadCaseDocs(docs, "index.upload(source)");
+    await search.uploadCaseDocs(docs, "index.upload(source)");
+    // Infer the interrogatable cast from the source (Entry 8).
+    const cast = await extractWitnesses(config, source, sourceTitle);
+    session.witnesses = cast.data;
     send(res, 200, {
       sessionId: session.sessionId,
       createdAt: session.createdAt,
       mode: session.mode,
-      witness: session.witness,
+      witnesses: session.witnesses,
       sourceTitle,
-      chunks: upload.data,
+      chunks: docs.length,
     });
   } catch (error) {
     deleteSession(session.sessionId);
-    send(res, 502, { error: `Failed to index source: ${describe(error)}` });
+    send(res, 502, { error: `Failed to set up the trial: ${describe(error)}` });
   }
 }
 
@@ -210,11 +205,16 @@ async function handleAsk(body: JsonBody, res: ServerResponse): Promise<void> {
   }
 
   // Holbrooke mode interrogates one of the three suspects; a "bring your own"
-  // session has a single custom witness grounded in the user's source.
+  // session interrogates one of the witnesses inferred from the user's source.
   let speaker: string;
+  let byoWitness: Witness | undefined;
   if (session.mode === "byo") {
-    if (!session.witness) return send(res, 400, { error: "This session has no witness" });
-    speaker = session.witness.name;
+    if (session.witnesses.length === 0) {
+      return send(res, 400, { error: "This session has no witnesses" });
+    }
+    const requested = String(body.speaker ?? "").trim();
+    byoWitness = session.witnesses.find((w) => w.name === requested) ?? session.witnesses[0];
+    speaker = byoWitness.name;
   } else {
     const speakerRaw = String(body.speaker ?? "");
     if (!isSpeaker(speakerRaw)) return send(res, 400, { error: `Unknown speaker: ${speakerRaw}` });
@@ -252,8 +252,8 @@ async function handleAsk(body: JsonBody, res: ServerResponse): Promise<void> {
 
   // 2. In-character reply from GitHub Models, grounded but free to drift.
   const systemPrompt =
-    session.mode === "byo" && session.witness
-      ? buildByoSystemPrompt(session.witness.name, session.sourceTitle ?? "the source", passages)
+    session.mode === "byo" && byoWitness
+      ? buildByoSystemPrompt(byoWitness, session.sourceTitle ?? "the source", passages)
       : buildSystemPrompt(speaker as Speaker, passages);
   const history = getHistory(session, speaker);
   const llm = await chat(config, [

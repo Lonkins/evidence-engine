@@ -46,21 +46,25 @@ export async function probeHealth(): Promise<boolean> {
 export interface ByoConfig {
   source: string;
   title?: string;
-  witnessName?: string;
+}
+
+/** A witness inferred from the source (Entry 8). */
+export interface Witness {
+  name: string;
+  role: string;
+  hook: string;
 }
 
 export interface SessionInfo {
   sessionId: string;
   mode: "holbrooke" | "byo";
-  witness?: { name: string; role: string };
+  /** The witnesses inferred from the source, in byo mode. */
+  witnesses?: Witness[];
   sourceTitle?: string;
 }
 
 export function createSession(byo?: ByoConfig): Promise<SessionInfo> {
-  return post(
-    "/api/session",
-    byo ? { source: byo.source, title: byo.title, witnessName: byo.witnessName } : {}
-  );
+  return post("/api/session", byo ? { source: byo.source, title: byo.title } : {});
 }
 
 export function ask(

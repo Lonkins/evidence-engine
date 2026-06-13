@@ -12,10 +12,12 @@ export interface StoredClaim {
   challenged: boolean;
 }
 
-/** A custom witness for a "bring your own trial" (Part 2) session. */
+/** An interrogatable witness, inferred from the user's source (Entry 8). */
 export interface Witness {
   name: string;
   role: string;
+  /** One-line intriguing hook, shown on the witness card. */
+  hook: string;
 }
 
 export type SessionMode = "holbrooke" | "byo";
@@ -24,8 +26,8 @@ export interface NewSessionOptions {
   /** Evidence partition this session interrogates (case_id filter). */
   caseId?: string;
   mode?: SessionMode;
-  /** The single witness, for byo mode. */
-  witness?: Witness;
+  /** The witnesses inferred from the source, for byo mode. */
+  witnesses?: Witness[];
   /** Title of the user-supplied source, for byo mode. */
   sourceTitle?: string;
   /** Ground-truth plant count (0 for byo — lies there are emergent). */
@@ -58,8 +60,8 @@ export interface Session {
   /** Which evidence partition this session interrogates. */
   caseId: string;
   mode: SessionMode;
-  /** The single custom witness, for byo mode. */
-  witness?: Witness;
+  /** The witnesses inferred from the source, for byo mode. */
+  witnesses: Witness[];
   /** Title of the user-supplied source, for byo mode. */
   sourceTitle?: string;
   /** Per-speaker turn counter (turn numbers are per speaker). */
@@ -88,7 +90,7 @@ export function createSession(options: NewSessionOptions = {}): Session {
     createdAt: new Date().toISOString(),
     caseId: options.caseId ?? CASE_ID,
     mode: options.mode ?? "holbrooke",
-    witness: options.witness,
+    witnesses: options.witnesses ?? [],
     sourceTitle: options.sourceTitle,
     turnsBySpeaker: new Map(),
     historyBySpeaker: new Map(),

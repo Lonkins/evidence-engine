@@ -108,11 +108,7 @@
   line-height: 1.6;
 }
 
-/* Bring-your-own single witness card (mirrors the suspect card, no SVG portrait) */
-.witness-card {
-  cursor: default;
-}
-
+/* Bring-your-own witness card (mirrors the suspect card, no SVG portrait) */
 .witness-card__portrait {
   display: flex;
   align-items: center;

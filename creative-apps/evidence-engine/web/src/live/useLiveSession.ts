@@ -1,6 +1,6 @@
 import { useCallback, useReducer } from "react";
 import * as api from "./api";
-import type { ByoConfig, SessionInfo } from "./api";
+import type { ByoConfig, SessionInfo, Witness } from "./api";
 import type {
   ChallengeResponse,
   LiveTurn,
@@ -15,8 +15,8 @@ export interface LiveSessionState {
   sessionId: string | null;
   /** 'holbrooke' = the built-in case; 'byo' = the user's own source on trial. */
   mode: "holbrooke" | "byo";
-  /** The single custom witness, in byo mode. */
-  witness: { name: string; role: string } | null;
+  /** The witnesses inferred from the source, in byo mode. */
+  witnesses: Witness[];
   sourceTitle: string | null;
   /** Transcript per speaker name. */
   transcripts: Record<string, LiveTurn[]>;
@@ -35,7 +35,7 @@ const initialState: LiveSessionState = {
   status: "idle",
   sessionId: null,
   mode: "holbrooke",
-  witness: null,
+  witnesses: [],
   sourceTitle: null,
   transcripts: {},
   challenges: {},
@@ -76,7 +76,7 @@ function reducer(state: LiveSessionState, action: LiveAction): LiveSessionState 
         status: "ready",
         sessionId: action.info.sessionId,
         mode: action.info.mode,
-        witness: action.info.witness ?? null,
+        witnesses: action.info.witnesses ?? [],
         sourceTitle: action.info.sourceTitle ?? null,
         error: null,
       };

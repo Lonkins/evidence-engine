@@ -65,12 +65,14 @@ green; 39 web + 30 server tests.
 for both paths (same header, "On the stand" rail — 3 suspect cards for Holbrooke,
 1 `WitnessStand` card for BYO, same panel/engine-tap). Verified both in-browser.
 
-**NEXT BUILD (spec locked, design-log Entry 8) — inference-driven multi-persona
-BYO:** on ingest, an LLM proposes 1–3 witnesses from the source (story characters
-/ the author / 'the assistant that wrote the code'); show them in the same
-selectable rail as Holbrooke; drop the manual witness-name field; code → grill the
-assistant-behind-the-code (the Receipts idea). Build in a fresh context. Full spec
-+ backend/web changes + build order in design-log Entry 8.
+**Inference-driven multi-persona BYO — DONE (June 13, design-log Entry 8).** On
+ingest, an LLM (`witnesses.ts` `extractWitnesses`) infers 1–3 witnesses from the
+source (story characters / the author / code-witnesses); they show in the same
+selectable rail as Holbrooke (`WitnessStand`); the manual witness-name field is
+gone. Sessions hold `witnesses[]`; `handleAsk` resolves the selected witness;
+`buildByoSystemPrompt` plays that persona. Verified in-browser: story → 3
+witnesses → switch to Tom → CONTRADICTED with grounded citation. Builds green;
+tests pass.
 
 **Also queued:** the "Receipts" Copilot rework (rival's idea, v2 headline).
 **Section C (host/video/receipts/Discord) is owned by the user. Deadline June 14.**

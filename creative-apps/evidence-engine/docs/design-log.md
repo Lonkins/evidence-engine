@@ -7,11 +7,15 @@ Strategist breaks ties.
 
 ---
 
-## Entry 8 — June 13, 2026: Inference-driven multi-persona BYO (SPEC — build next session)
+## Entry 8 — June 13, 2026: Inference-driven multi-persona BYO
 
-Decision locked with the user. Status: **spec only, not built.** Build this in a
-fresh context (this session was very long). Implements the answers to four
-questions the user raised about the bring-your-own scenario.
+Status: **BUILT & verified end-to-end (June 13).** Implements the answers to four
+questions the user raised about the bring-your-own scenario. Verified in-browser:
+pasted a short story → 3 inferred witnesses (Elena/Tom/Iris) in a selectable rail
+matching Holbrooke; switched to Tom; he drifted ("Elena asleep 22:15"); challenge
+→ CONTRADICTED with the grounded citation ("…places Elena asleep at 23:00, not
+22:15"). Also verified via API that code yields grounded code-witnesses. The
+witness-name field is gone (inference replaces it). Spec/notes below are as built.
 
 ### The questions and the answers
 - **One cast or many?** Level BYO *up* to a selectable witness rail (1–3

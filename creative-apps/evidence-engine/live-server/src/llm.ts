@@ -20,11 +20,20 @@ function sleep(ms: number): Promise<void> {
  * are tight, so 429/5xx are retried with backoff (honouring Retry-After)
  * rather than surfacing as a raw error mid-demo.
  */
+export interface ChatOptions {
+  maxTokens?: number;
+  temperature?: number;
+  /** Trace step label, so distinct calls read clearly in the engine tap. */
+  step?: string;
+}
+
 export async function chat(
   config: Config,
-  messages: ChatMessage[]
+  messages: ChatMessage[],
+  options: ChatOptions = {}
 ): Promise<{ data: string; entry: TraceEntry }> {
-  return timed("llm.chat", "POST", "models.github.ai /inference/chat/completions", async () => {
+  const step = options.step ?? "llm.chat";
+  return timed(step, "POST", "models.github.ai /inference/chat/completions", async () => {
     let response: Response | null = null;
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
       response = await fetch(GITHUB_MODELS_URL, {
@@ -36,8 +45,8 @@ export async function chat(
         body: JSON.stringify({
           model: config.githubModelsModel,
           messages,
-          max_tokens: 300,
-          temperature: 0.9,
+          max_tokens: options.maxTokens ?? 300,
+          temperature: options.temperature ?? 0.9,
         }),
       });
 

@@ -152,7 +152,7 @@ Rules of the performance:
 `;
 
 export function buildByoSystemPrompt(
-  witnessName: string,
+  witness: { name: string; role: string; hook: string },
   sourceTitle: string,
   passages: Array<{ title: string; content: string }>
 ): string {
@@ -163,7 +163,8 @@ export function buildByoSystemPrompt(
           .join("\n\n")
       : "(The source has nothing directly relevant to this question.)";
 
-  const persona = `You are ${witnessName}. You speak with the authority of someone who knows "${sourceTitle}" intimately — but you are being cross-examined, and you paper over any gap with confident, specific invention rather than admit ignorance.`;
+  const role = witness.role && witness.role !== "Witness" ? `, ${witness.role}` : "";
+  const persona = `You are ${witness.name}${role}. ${witness.hook} Everything you know comes from "${sourceTitle}" — speak with the authority of someone who knows it intimately. You are being cross-examined, and you paper over any gap with confident, specific invention rather than admit ignorance.`;
 
   return `${BYO_RULES}\n${persona}\n\nSOURCE PASSAGES (retrieved for this question):\n\n${evidenceBlock}`;
 }
