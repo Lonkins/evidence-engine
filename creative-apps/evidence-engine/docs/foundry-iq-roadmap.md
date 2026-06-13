@@ -57,7 +57,7 @@ shallow retrieval call. Remove Foundry IQ and five of seven steps collapse.
 | **A3** | **"She adapts" second turn** | Technical Excellence, "it's really reasoning" (engineer) | M | When a plant is pinned, the witness shifts her story and the shift is itself checkable — lying digs a deeper hole. Prompt work in `characters.ts` + a re-challenge beat. |
 | **A4** | **Full `activity[]` stream in the wiretap** | Best Use of IQ (engineer) | S | Beyond the token count: render the KB's `searchIndex` step(s) + `agenticReasoning` as their own engine-tap lines so the judge sees the reasoning, not just latency. |
 | **A5** | ✅ **Shared verdict-core** (June 13) | Technical Excellence (strategist) | M | DONE. `evidence-engine/verdict-core/` — one typed, tested package (`@evidence-engine/verdict-core`, 25 tests) consumed by live-server and the MCP server via a `file:` dep. The MCP's drifted inline check (own `extractTimes`/`EXPLICIT_CONTRADICTION_PHRASES`, `INSUFFICIENT EVIDENCE` label) is gone — both surfaces now run the identical heuristic + IQ verdict. Offline-web Act I parity deferred (canned; Vite cross-root friction, low value). Builds green, behaviour unchanged end-to-end. |
-| **A6** | **MCP `check_claim` rewired to the IQ verdict** | GitHub Copilot + Best Use of IQ (rival) | M | So the Copilot surface tells the *identical* IQ-driven story — the rival's "your hero moment isn't in Copilot" attack. Depends on A5. |
+| **A6** | ✅ **MCP `check_claim` rewired to the IQ verdict** (June 13) | GitHub Copilot + Best Use of IQ (rival) | M | DONE. `foundry-client.ts` gains `reasonVerdict()` (answer-synthesis `messages` call, `doc_type eq 'evidence'`, same shape as live-server's `kbReason`); `check_claim` runs `buildVerdictInstruction → parseIqAnswer → combineWithCrossCheck` and renders the IQ-led verdict + cited passage + reasoning-token count in the Copilot output, disclosing "Decided by: Foundry IQ". Degrades to the shared heuristic when Azure/answerSynthesis is off (never fakes IQ). Verified against the live KB: Helena's 19:45 → `source: iq`, CONTRADICTED, 29,995 reasoning tokens, verbatim badge-log citation. Closes the rival's "your hero moment isn't in Copilot" attack. |
 | **A7** | **Replayability: load-bearing red herrings** | Replayability (designer) | M | Make Felix/Nora plants matter — catching a true contradiction that points at the wrong person. Skill = catch the lie that puts someone alone with the body, not every lie. |
 
 ### B. Gated on the Azure provisioning spike (the hard dependency)
@@ -103,8 +103,8 @@ shallow retrieval call. Remove Foundry IQ and five of seven steps collapse.
 ## 5. Recommended sequence
 
 1. ✅ **B0 + B1 DONE (June 13)** — the IQ-brain verdict is live in the live-server; "Best Use of IQ" is now real on the hero surface.
-2. ✅ **A5 DONE (June 13)** — shared `verdict-core` package; live-server + MCP consume one tested module. **A6 next** (rewire MCP `check_claim` to call the IQ answer-synthesis verdict, not just the shared heuristic) — reclaims the Copilot axis with the identical IQ story.
-3. **A1** (one-product flow + cold-open) — fixes the comprehension tax; the hero moment in seconds.
+2. ✅ **A5 + A6 DONE (June 13)** — shared `verdict-core` package consumed by live-server + MCP; the MCP `check_claim` now produces the IQ answer-synthesis verdict (identical story across surfaces, Copilot axis reclaimed).
+3. **A1** (one-product flow + cold-open) — fixes the comprehension tax; the hero moment in seconds. ← **next**
 4. **A2, A3, A7** (OVERRULED, adapts, red herrings) — depth, replayability, "it's really reasoning."
 5. **A4** (full activity stream) — cheap IQ-visibility polish.
 6. **C1 → C2 → C3 → C5** (host, then record against prod, receipts, Discord).

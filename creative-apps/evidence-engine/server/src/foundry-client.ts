@@ -17,10 +17,80 @@ export interface RetrievalResult {
 const AZURE_ENDPOINT = process.env.AZURE_SEARCH_ENDPOINT;
 const AZURE_KEY = process.env.AZURE_SEARCH_KEY;
 const AZURE_KB_NAME = process.env.AZURE_KNOWLEDGE_BASE_NAME ?? "evidence-kb";
+const AZURE_KS_NAME = process.env.AZURE_KNOWLEDGE_SOURCE_NAME ?? "evidence-ks";
 const AZURE_INDEX_NAME = process.env.AZURE_SEARCH_INDEX_NAME ?? "evidence";
 
 export function isFoundryConfigured(): boolean {
   return Boolean(AZURE_ENDPOINT && AZURE_KEY);
+}
+
+export interface IqReasonResult {
+  /** The KB's synthesised answer (verdict-shaped prose). */
+  answer: string;
+  /** Grounding references above the threshold, most relevant first. */
+  references: Array<{ docKey: string; title: string; rerankerScore: number }>;
+  /** Agentic-reasoning tokens the KB reported — the "IQ is reasoning" signal. */
+  reasoningTokens: number | null;
+}
+
+/**
+ * IQ-brain verdict call (A6): the same Foundry IQ answer-synthesis the
+ * live-server uses, so the Copilot surface tells the identical story. The KB
+ * retrieves over the evidence partition AND a bound model synthesises a grounded
+ * verdict — the judgment comes from Foundry IQ, not a local heuristic. Requires
+ * the KB provisioned with answerSynthesis + a bound model (spike stage 8) and
+ * reasoning effort low/medium.
+ *
+ * Returns null when Azure is not configured (local-corpus fallback) so the
+ * caller degrades to the deterministic cross-check rather than faking an IQ
+ * verdict. Mirrors the request shape proven in spike/08-answer-synthesis.sh.
+ */
+export async function reasonVerdict(
+  instruction: string,
+  effort: "low" | "medium",
+  filterAddOn = "doc_type eq 'evidence'",
+  threshold = 2.0
+): Promise<IqReasonResult | null> {
+  if (!isFoundryConfigured()) return null;
+
+  const url = `${AZURE_ENDPOINT}/knowledgebases/${AZURE_KB_NAME}/retrieve?api-version=2026-05-01-preview`;
+  const body = {
+    messages: [{ role: "user", content: [{ type: "text", text: instruction }] }],
+    retrievalReasoningEffort: { kind: effort },
+    knowledgeSourceParams: [
+      { kind: "searchIndex", knowledgeSourceName: AZURE_KS_NAME, filterAddOn },
+    ],
+  };
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "api-key": AZURE_KEY!, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Foundry IQ verdict failed: ${response.status} — ${text.slice(0, 300)}`);
+  }
+
+  const data = (await response.json()) as {
+    response?: Array<{ content?: Array<{ type: string; text: string }> }>;
+    activity?: Array<{ type: string; reasoningTokens?: number }>;
+    references?: Array<{ docKey: string; title?: string; rerankerScore?: number }>;
+  };
+
+  // In answerSynthesis mode the synthesised verdict prose is the response text.
+  const answer = data.response?.[0]?.content?.find((c) => c.type === "text")?.text ?? "";
+  const references = (data.references ?? [])
+    .filter((ref) => (ref.rerankerScore ?? 0) >= threshold)
+    .map((ref) => ({
+      docKey: ref.docKey,
+      title: ref.title ?? ref.docKey,
+      rerankerScore: ref.rerankerScore ?? 0,
+    }));
+  const reasoning = (data.activity ?? []).find((a) => a.type === "agenticReasoning");
+
+  return { answer, references, reasoningTokens: reasoning?.reasoningTokens ?? null };
 }
 
 export async function retrieve(query: string): Promise<RetrievalResult> {

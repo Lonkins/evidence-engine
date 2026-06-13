@@ -21,8 +21,15 @@ Build green, 30 tests. Proof: `spike/output/08-retrieve-verdict.json`,
 (`@evidence-engine/verdict-core`, 25 tests) consumed by live-server + MCP via a
 `file:` dep. The MCP's drifted inline verdict copy is gone; both surfaces run the
 identical heuristic + IQ verdict. Offline-web parity deferred (canned Act I).
-**Next: A6 (rewire MCP `check_claim` to the IQ answer-synthesis verdict) → A1
-(one-product flow + cold-open).**
+
+**A6 done (June 13):** MCP `check_claim` now produces the IQ answer-synthesis
+verdict. `foundry-client.ts` gained `reasonVerdict()`; the tool runs
+`buildVerdictInstruction → parseIqAnswer → combineWithCrossCheck` and renders the
+IQ-led verdict + cited passage + "Decided by: Foundry IQ" in the Copilot output,
+degrading to the shared heuristic when Azure is off. Verified vs live KB (Helena
+19:45 → source:iq CONTRADICTED, 29,995 reasoning tok). MCP env gains
+`IQ_VERDICT_ENABLED` + `KB_REASONING_EFFORT` (default off/minimal).
+**Next: A1 (one-product flow + cold-open) → A2/A3/A7 → A4.**
 
 ---
 

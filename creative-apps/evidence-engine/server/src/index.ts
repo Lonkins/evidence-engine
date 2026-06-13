@@ -6,8 +6,15 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import "dotenv/config";
 
-import { retrieve, fetchDocumentByKey, isFoundryConfigured } from "./foundry-client.js";
-import { checkAgainstEvidence, type DocText } from "@evidence-engine/verdict-core";
+import { retrieve, fetchDocumentByKey, isFoundryConfigured, reasonVerdict } from "./foundry-client.js";
+import {
+  checkAgainstEvidence,
+  buildVerdictInstruction,
+  parseIqAnswer,
+  combineWithCrossCheck,
+  type DocText,
+  type IqVerdict,
+} from "@evidence-engine/verdict-core";
 import {
   getState,
   recordQuestion,
@@ -232,9 +239,8 @@ The evidence file is silent on this point. No documents were retrieved that spea
       })
     );
 
-    // Single shared verdict-core (A5) — the same deterministic check the
-    // live-server runs as its disclosed cross-check. One copy, one behaviour:
-    // "her badge says 20:47, not 19:45" is detected identically on every surface.
+    // Shared verdict-core (A5) — the same deterministic check the live-server
+    // runs as its disclosed cross-check. One copy, one behaviour.
     const docs: DocText[] = fullTexts.map((d) => ({
       docKey: d.docKey,
       title: d.docKey,
@@ -242,24 +248,68 @@ The evidence file is silent on this point. No documents were retrieved that spea
     }));
     const check = checkAgainstEvidence(claim, docs);
 
-    // UNSUPPORTED is "the file is silent" — surfaced as INSUFFICIENT EVIDENCE in
-    // the Copilot text, never as a contradiction (conflating unverifiable with
-    // false is the exact error the game teaches against).
-    const verdictLabel =
-      check.verdict === "UNSUPPORTED" ? "INSUFFICIENT EVIDENCE" : check.verdict;
+    // IQ-brain verdict (A6): when enabled, Foundry IQ's answer synthesis produces
+    // the verdict and the deterministic check becomes a disclosed cross-check —
+    // the identical story the live-server tells. Degrades to the cross-check when
+    // Azure / answerSynthesis is unavailable; never fakes an IQ verdict.
+    const iqEnabled = (process.env.IQ_VERDICT_ENABLED ?? "false").toLowerCase() === "true";
+    const effort = (process.env.KB_REASONING_EFFORT ?? "minimal") as
+      | "minimal"
+      | "low"
+      | "medium";
+    let iqVerdict: IqVerdict | null = null;
+    let reasoningTokens: number | null = null;
+    if (iqEnabled && effort !== "minimal") {
+      try {
+        const reason = await reasonVerdict(buildVerdictInstruction(claim, "the witness"), effort);
+        if (reason) {
+          iqVerdict = parseIqAnswer(reason.answer, reason.references);
+          reasoningTokens = reason.reasoningTokens;
+        }
+      } catch {
+        // Disclosed degradation: keep the deterministic verdict.
+      }
+    }
+    const combined = combineWithCrossCheck(iqVerdict, check);
 
-    // Cite the deciding docs: the contradicting passages (verbatim triggers) when
-    // CONTRADICTED, the matched supporting docs when SUPPORTED, nothing when silent.
-    const citationBlock = check.citations
-      .map((doc, i) => {
-        const triggers = check.triggers[doc.docKey];
-        const body =
-          triggers && triggers.length > 0
-            ? triggers.join("\n")
-            : `${doc.content.slice(0, 400).replace(/\n{3,}/g, "\n\n")}...`;
-        return `**[${i + 1}] ${doc.docKey}**\n${body}`;
-      })
-      .join("\n\n---\n\n");
+    // UNSUPPORTED is "the file is silent" — surfaced as INSUFFICIENT EVIDENCE,
+    // never as a contradiction (conflating unverifiable with false is the exact
+    // error the game teaches against).
+    const verdictLabel =
+      combined.verdict === "UNSUPPORTED" ? "INSUFFICIENT EVIDENCE" : combined.verdict;
+    const decidedBy =
+      combined.source === "iq"
+        ? `Foundry IQ — answer synthesis${
+            reasoningTokens != null ? ` (${reasoningTokens} reasoning tokens)` : ""
+          }${combined.agreement ? "; deterministic cross-check agrees" : "; cross-check diverged — IQ leads"}`
+        : "deterministic cross-check (Foundry IQ verdict unavailable — set IQ_VERDICT_ENABLED + KB_REASONING_EFFORT)";
+
+    // Body: the KB's own grounded reasoning when IQ decided, else the heuristic's
+    // verbatim triggering passages.
+    let evidenceBlock: string;
+    if (combined.source === "iq" && combined.iq) {
+      const cites = combined.iq.citations
+        .map((ref, i) => `**[${i + 1}] ${ref.docKey}**`)
+        .join(" · ");
+      evidenceBlock = [
+        combined.iq.citedPassage ? `> ${combined.iq.citedPassage}` : "",
+        combined.iq.justification,
+        cites ? `Grounded on: ${cites}` : "",
+      ]
+        .filter(Boolean)
+        .join("\n\n");
+    } else {
+      evidenceBlock = check.citations
+        .map((doc, i) => {
+          const triggers = check.triggers[doc.docKey];
+          const bodyText =
+            triggers && triggers.length > 0
+              ? triggers.join("\n")
+              : `${doc.content.slice(0, 400).replace(/\n{3,}/g, "\n\n")}...`;
+          return `**[${i + 1}] ${doc.docKey}**\n${bodyText}`;
+        })
+        .join("\n\n---\n\n");
+    }
 
     return {
       content: [
@@ -270,16 +320,17 @@ The evidence file is silent on this point. No documents were retrieved that spea
 **Claim:** "${claim}"
 
 **Verdict:** ${verdictLabel}
+**Decided by:** ${decidedBy}
 
-## Supporting Documents
+## Evidence
 
-${citationBlock || "_No specific passages retrieved._"}
+${evidenceBlock || "_No specific passages retrieved._"}
 
 ---
 *${
-  check.verdict === "CONTRADICTED"
+  combined.verdict === "CONTRADICTED"
     ? "The evidence contradicts this claim. Note the specific document and passage — this may be significant."
-    : check.verdict === "SUPPORTED"
+    : combined.verdict === "SUPPORTED"
     ? "The evidence is consistent with this claim."
     : "The evidence file cannot confirm or refute this claim."
 }*`,
