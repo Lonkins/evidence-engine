@@ -24,11 +24,10 @@
    logs every live knowledge-base call — retrieval, testimony indexing, verdict — as
    it happens.
 3. **Proof without running anything:** [`evidence-engine/docs/live-mode-proof.json`](evidence-engine/docs/live-mode-proof.json)
-   is a sanitized end-to-end trace against the live KB; the design reasoning is in
-   [`evidence-engine/docs/design-log.md`](evidence-engine/docs/design-log.md). The full
-   Azure provisioning trail — stage-by-stage run log plus the committed raw responses
-   from the live service (timestamped, `@odata.context` naming the endpoint and API
-   version) — is in [`spike/README.md`](spike/README.md).
+   is a sanitized end-to-end trace against the live KB. The full Azure provisioning
+   trail — stage-by-stage run log plus the committed raw responses from the live
+   service (timestamped, `@odata.context` naming the endpoint and API version) — is in
+   [`spike/README.md`](spike/README.md).
 
 ---
 

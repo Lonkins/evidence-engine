@@ -7,6 +7,72 @@ Strategist breaks ties.
 
 ---
 
+## Entry 5 — June 13, 2026: Reviewer synthesis + buildable-now ideas
+
+Ran the four personas again (Foundry IQ capability maximalist, game/experience
+designer, prize strategist, rival team) on the question "go all in on Foundry
+IQ, one product, a genuinely unique and fun loop." Full responses summarised
+here.
+
+### Convergent findings (all four)
+
+1. **The answer-synthesis provisioning spike is the hard dependency.** Until a
+   model is bound to `evidence-kb` and `answerSynthesis` is verified to return a
+   grounded verdict, "Best Use of IQ" is unwinnable and the headline claim is
+   false. Strategist: we're ~45% on the axis that has a *named prize*.
+2. **Surface the KB's native `activity[]` reasoning trace** — already returned,
+   free plumbing, the most persuasive "IQ is reasoning" artifact. ✅ shipped
+   (the agenticReasoning token count now appears in the engine-tap line).
+3. **Collapse the three-engine drift + Act I/ModeSwitch clutter** to one
+   verdict-core, one surface, one loop.
+4. **Two near-free credibility fixes:** stop linking the design-log from the
+   judge-facing README (it contains "the headline claim is false today"); get
+   real Copilot receipts, not prose. ✅ README link removed this session.
+
+### Decisions locked with the user (June 13)
+
+- **Hero surface: the hosted web app leads; Copilot/MCP is strong supporting
+  proof** (addressing the rival's "web app sidesteps the track's MCP signal" by
+  keeping a prominent Copilot beat, not by making the web app the *only* thing).
+- Cost is not a constraint for this work; prioritise complete, correct builds.
+
+### The standout new idea — "pull the plug on IQ"
+
+A grounding toggle the judge presses: OFF → confident lies sail through
+uncaught ("her word stands"); ON → re-challenge lands the CONTRADICTED stamp.
+Turns the thesis ("remove Foundry IQ and detection collapses") into something
+provable on stage. Works without Azure because it demonstrates IQ's *absence*.
+
+### Built this session (all build-green, 29 server tests pass)
+
+- Pull-the-plug grounding toggle — engine support (`iq-verdict.ts`
+  `ungroundedVerdict`, `server.ts` ask/challenge branches) + web UI (toggle in
+  the engine tap, unplugged banner, ungrounded verdict rendering).
+- Time-of-death stakes on Helena's CONTRADICTED kill-shot (corpus-true: alone
+  in the gallery across the 20:30–21:15 death window).
+- Catch set-piece animation; Foundry IQ reasoning line on verdicts; native
+  `activity[]` token count in the engine-tap trace.
+- README credibility fix.
+
+### Buildable-now, scoped for next (deliberately not half-built this session)
+
+- **One-product flow (#6):** make the live interrogation the default surface,
+  cold-open on the lie, demote Act I to a no-keys offline fallback, rework the
+  TitleCard CTA. Larger UX redesign — needs in-browser verification; flipping
+  the default alone would contradict the current "Begin the briefing" CTA.
+- **`OVERRULED` confident-but-wrong accusation (#4):** move the accusation
+  set-piece into the live close; accusing a witness who lied but didn't do it
+  returns "a contradiction is not a confession." Live mode has no accusation
+  flow yet, so this is a real feature, not a tweak.
+
+### Needs Azure / human (not this session)
+
+Answer-synthesis provisioning spike, hosting, demo video, real Copilot
+receipts, multi-source KB federation, vector embeddings, permission-trimmed
+"sealed evidence", voice interrogation.
+
+---
+
 ## Entry 4 — June 13, 2026: Repositioning — IQ becomes the brain, one hero surface
 
 > Four-persona protocol was requested but the parallel subagents hit an account
