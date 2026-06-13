@@ -18,6 +18,12 @@ import {
 import { heuristicEntry } from "./trace.js";
 import { extractTimes } from "./verdict.js";
 import {
+  buildVerdictInstruction,
+  parseIqAnswer,
+  combineWithCrossCheck,
+  type IqVerdict,
+} from "./iq-verdict.js";
+import {
   appendHistory,
   createSession,
   deleteSession,
@@ -222,6 +228,36 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
     )
   );
 
+  // IQ-brain verdict: when enabled, the KB's grounded reasoning (answerSynthesis)
+  // produces the verdict and the deterministic check above becomes a disclosed
+  // cross-check. Falls back safely to the deterministic verdict if the IQ call
+  // is unavailable, so the demo never hard-fails on the new path.
+  let iqVerdict: IqVerdict | null = null;
+  if (config.iqVerdictEnabled && config.reasoningEffort !== "minimal") {
+    try {
+      const reason = await search.kbReason(
+        buildVerdictInstruction(claim.text, claim.speaker),
+        EVIDENCE_FILTER,
+        "kb.reason(verdict)",
+        config.reasoningEffort,
+        config.claimEvidenceThreshold
+      );
+      trace.push(reason.entry);
+      iqVerdict = parseIqAnswer(reason.data.answer, reason.data.references);
+    } catch (error) {
+      // Disclosed degradation: log a heuristic trace line and keep the
+      // deterministic verdict. Never silently substitute while claiming IQ.
+      trace.push(
+        heuristicEntry(
+          "kb.reason(verdict) — unavailable, using cross-check",
+          0,
+          error instanceof Error ? error.message.slice(0, 120) : "IQ verdict unavailable"
+        )
+      );
+    }
+  }
+  const combined = combineWithCrossCheck(iqVerdict, evidence);
+
   // (b) Live retrieve against this speaker's earlier testimony in this session.
   const testimonyFilter =
     `doc_type eq 'testimony' and case_id eq '${CASE_ID}'` +
@@ -283,7 +319,7 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
   // (counting it would make "challenge everything" the dominant strategy and
   // conflate unverifiable with false). SUPPORTED costs a false objection.
   const isCatch =
-    evidence.verdict === "CONTRADICTED" || self.verdict === "SELF_CONTRADICTION";
+    combined.verdict === "CONTRADICTED" || self.verdict === "SELF_CONTRADICTION";
 
   // Ground truth: was this claim one of the planted fabrications? A plant
   // counts as caught only when the player pinned it with a contradiction.
@@ -297,11 +333,11 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
   if (!claim.challenged) {
     claim.challenged = true;
     session.score.challenges += 1;
-    if (evidence.verdict === "CONTRADICTED") {
+    if (combined.verdict === "CONTRADICTED") {
       session.score.contradictionsPinned += 1;
-    } else if (evidence.verdict === "UNSUPPORTED") {
+    } else if (combined.verdict === "UNSUPPORTED") {
       session.score.flaggedUnverifiable += 1;
-    } else if (evidence.verdict === "SUPPORTED" && self.verdict !== "SELF_CONTRADICTION") {
+    } else if (combined.verdict === "SUPPORTED" && self.verdict !== "SELF_CONTRADICTION") {
       session.score.falseObjections += 1;
     }
     if (self.verdict === "SELF_CONTRADICTION") {
@@ -319,14 +355,31 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
     speaker: claim.speaker,
     turnNo: claim.turnNo,
     evidence: {
-      verdict: evidence.verdict,
-      citations: evidence.citations.map((doc) => ({
-        docKey: doc.docKey,
-        title: doc.title,
-        // The specific segment(s) that triggered the contradiction, verbatim —
-        // or the doc opening for supporting citations.
-        excerpt: (evidence.triggers[doc.docKey] ?? [doc.content.slice(0, 400)]).join("\n"),
-      })),
+      verdict: combined.verdict,
+      // Honest disclosure of which system decided: `iq` = the KB's grounded
+      // reasoning (answerSynthesis); `heuristic` = the deterministic fallback.
+      source: combined.source,
+      // Whether the IQ verdict and the deterministic cross-check agreed.
+      agreement: combined.agreement,
+      citations:
+        evidence.citations.length > 0
+          ? evidence.citations.map((doc) => ({
+              docKey: doc.docKey,
+              title: doc.title,
+              // The specific segment(s) that triggered the contradiction,
+              // verbatim — or the doc opening for supporting citations.
+              excerpt: (evidence.triggers[doc.docKey] ?? [doc.content.slice(0, 400)]).join("\n"),
+            }))
+          : combined.citations.map((ref) => ({
+              docKey: ref.docKey,
+              title: ref.title,
+              excerpt: combined.citedPassage ?? "",
+            })),
+      // The KB's own one-line reasoning + verbatim cited passage, when the IQ
+      // path produced the verdict.
+      iq: combined.iq
+        ? { justification: combined.iq.justification, citedPassage: combined.iq.citedPassage }
+        : null,
     },
     self: {
       verdict: self.verdict,

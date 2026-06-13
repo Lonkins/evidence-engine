@@ -99,6 +99,73 @@ export class SearchClient {
     });
   }
 
+  /**
+   * IQ-brain reasoning call: answerSynthesis mode. The KB retrieves over the
+   * given partition AND a bound model synthesises a grounded answer to the
+   * instruction — so the verdict itself comes from Foundry IQ, not a local
+   * regex. Requires reasoning effort `low`/`medium` and a model bound to the
+   * KB (design-log Entry 4 provisioning spike).
+   *
+   * ⚠️ SPECULATIVE shape: `messages` input (supported only at effort > minimal,
+   * per spike) and a synthesised prose answer in `response[].content[].text`.
+   * RECONCILE once the answer-synthesis spike confirms the live response shape.
+   */
+  async kbReason(
+    instruction: string,
+    filterAddOn: string,
+    step: string,
+    effort: "low" | "medium",
+    thresholdOverride?: number
+  ): Promise<{ data: { answer: string; references: KbReference[] }; entry: TraceEntry }> {
+    const path = `/knowledgebases/${this.config.knowledgeBaseName}/retrieve`;
+    return timed(step, "POST", `${path} [answerSynthesis · ${filterAddOn}]`, async () => {
+      const response = await fetch(`${this.config.searchEndpoint}${path}?api-version=${API_VERSION}`, {
+        method: "POST",
+        headers: this.headers(),
+        body: JSON.stringify({
+          messages: [{ role: "user", content: [{ type: "text", text: instruction }] }],
+          retrievalReasoningEffort: { kind: effort },
+          knowledgeSourceParams: [
+            {
+              kind: "searchIndex",
+              knowledgeSourceName: this.config.knowledgeSourceName,
+              filterAddOn,
+            },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`KB reason failed: ${response.status} — ${text.slice(0, 300)}`);
+      }
+
+      const body = (await response.json()) as {
+        references?: Array<{ id: string; docKey: string; title?: string; rerankerScore?: number }>;
+        response?: Array<{ content?: Array<{ type: string; text: string }> }>;
+      };
+
+      const threshold = thresholdOverride ?? this.config.claimEvidenceThreshold;
+      const references = (body.references ?? [])
+        .filter((ref) => (ref.rerankerScore ?? 0) >= threshold)
+        .map((ref) => ({
+          docKey: ref.docKey,
+          title: ref.title ?? ref.docKey,
+          rerankerScore: ref.rerankerScore ?? 0,
+        }));
+
+      // In answerSynthesis mode the response text is the synthesised prose
+      // answer (not the extractive passage JSON).
+      const answer = body.response?.[0]?.content?.find((c) => c.type === "text")?.text ?? "";
+
+      return {
+        status: response.status,
+        data: { answer, references },
+        detail: `${references.length} grounding ref(s), answer ${answer.length} chars`,
+      };
+    });
+  }
+
   /** Lookup a single document by key (full content, all fields). */
   async lookupDoc(
     docKey: string,
