@@ -7,6 +7,86 @@ Strategist breaks ties.
 
 ---
 
+## Entry 8 — June 13, 2026: Inference-driven multi-persona BYO (SPEC — build next session)
+
+Decision locked with the user. Status: **spec only, not built.** Build this in a
+fresh context (this session was very long). Implements the answers to four
+questions the user raised about the bring-your-own scenario.
+
+### The questions and the answers
+- **One cast or many?** Level BYO *up* to a selectable witness rail (1–3
+  witnesses), do NOT cut Holbrooke down to one. The accusation endgame and the
+  example's richness depend on Holbrooke's three suspects. This also makes the
+  two flows truly uniform — both become a rail of selectable witnesses.
+- **Infer the character from the source?** Yes. On ingest, one LLM call reads the
+  pasted source and proposes the interrogatable witnesses.
+- **What's the manual witness-name field for?** Nothing, once we infer — **remove
+  it.** The name comes from the source (a story's characters; "The Author" for a
+  nameless doc).
+- **What about code?** You don't interrogate code as a character — you interrogate
+  the *author/assistant behind it* and grill it *about* the code. The model
+  answers (often wrong), and Foundry IQ checks each claim against the indexed code
+  → CONTRADICTED (file:line) / UNVERIFIABLE. This is the strongest, most useful
+  case (the "Receipts" idea in miniature); the inferred persona ("the assistant
+  that wrote this") makes it fit the interrogation metaphor.
+
+### The unified model
+Paste → index the source (existing `chunkSource` + `uploadCaseDocs`) → **infer
+1–3 witnesses** → show them in the same selectable "On the stand" rail as
+Holbrooke → interrogate any of them → Foundry IQ checks against the source.
+BYO and the example case become the same experience (built-in vs inferred cast).
+
+### Backend changes (live-server)
+- **Witness extraction call** (in `handleNewSession`, BYO branch, after upload):
+  one `chat()` call to GitHub Models. Prompt ≈ "You are setting up an
+  interrogation game. From this source, propose 1–3 witnesses the player can put
+  on the stand — people who would plausibly answer questions about it in
+  character. A story → its characters. A factual doc → its author or a named
+  figure (or 'The Author'). Code → the developer or 'the assistant that wrote
+  it'. Return STRICT JSON array `[{name, role, hook}]`, ≤3 items, grounded in the
+  material; don't invent people the source doesn't imply (except a generic
+  author/assistant). Source:\n<first ~4k chars>." Parse defensively; **fallback**
+  to `[{name:"The Witness", role:"Witness", hook:"Knows only this source."}]` on
+  any failure/empty. Cap at 3.
+- **Session model:** replace `witness?: Witness` with `witnesses: Witness[]`
+  (each `{name, role, hook}`); keep `sourceTitle`. Update `createSession` opts.
+- **`buildByoSystemPrompt(witness, sourceTitle, passages)`** — take the full
+  witness `{name, role, hook}` so the model plays that specific person
+  ("You are {name}, {role}. {hook}. Everything you know comes from the source…").
+  Keep the drift + injection-hardening rules.
+- **`handleAsk`** (BYO): resolve `speaker` to one of `session.witnesses` by name
+  (from the request); build the prompt for that witness. Validate the speaker is
+  in the cast. Testimony indexing already keys on speaker string — fine.
+- **`/api/session` BYO response:** return `witnesses` (array) instead of
+  `witness`. Holbrooke unchanged.
+
+### Web changes
+- **Intake (`ByoIntake.tsx`):** drop the witness-name field. Keep source + optional
+  title + the data-safety notice. (Maybe a small "finding the witnesses…" state
+  while the ingest call runs.)
+- **`SessionInfo`/`useLiveSession`:** carry `witnesses: Witness[]`.
+- **BYO rail:** generalise `WitnessStand` into a *selectable* multi-witness rail
+  (mirror `SuspectRail`: cards, active state, click → select). Selection state:
+  Holbrooke uses GameContext `selectedSuspectId`; BYO can't (arbitrary names) —
+  hold a local `selectedWitnessName` in `LiveDesk` for BYO and pass the chosen
+  witness to `LiveInterrogationPanel` (already takes a `witness` prop). Default to
+  the first witness; cold-open asks that one.
+- **Cold-open:** ask the first/selected witness the generic opener (already
+  generalised). When the player switches witnesses, no auto-ask — they drive it
+  (like Holbrooke).
+- Keep the endgame as "End & debrief" (no killer in BYO).
+
+### Reuse / don't-break notes
+- Index/partition/upload/cleanup plumbing already exists — reuse as-is.
+- The BYO verdict threshold fix (`byoVerdictThreshold`) and the A4 activity stream
+  already apply to all witnesses.
+- Holbrooke path must stay untouched and verified.
+- Verify both flows in-browser: a story (multiple characters in the rail) and a
+  code snippet (a single "assistant" witness; challenge a wrong claim about the
+  code → CONTRADICTED with the grounded line).
+
+---
+
 ## Entry 7 — June 13, 2026: Concept reckoning — the grey band, and "bring your own trial"
 
 The owner stepped back and named a real flaw: the game *felt static and

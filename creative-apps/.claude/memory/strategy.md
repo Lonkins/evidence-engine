@@ -61,8 +61,19 @@ witness hallucinated a NASA-satellite backstory → challenge → UNVERIFIABLE g
 band against the user's own source ("a confident claim with no receipt is exactly
 where hallucinations hide"). Holbrooke untouched as the built-in example. Builds
 green; 39 web + 30 server tests.
-**Next: Section C — host (C1), record 90s kill-shot video (C2), real Copilot
-receipts (C3), fallback GIF (C4), Discord (C5). Deadline June 14.**
+**Uniform flow done (June 13):** neutral scenario chooser intro + one desk shell
+for both paths (same header, "On the stand" rail — 3 suspect cards for Holbrooke,
+1 `WitnessStand` card for BYO, same panel/engine-tap). Verified both in-browser.
+
+**NEXT BUILD (spec locked, design-log Entry 8) — inference-driven multi-persona
+BYO:** on ingest, an LLM proposes 1–3 witnesses from the source (story characters
+/ the author / 'the assistant that wrote the code'); show them in the same
+selectable rail as Holbrooke; drop the manual witness-name field; code → grill the
+assistant-behind-the-code (the Receipts idea). Build in a fresh context. Full spec
++ backend/web changes + build order in design-log Entry 8.
+
+**Also queued:** the "Receipts" Copilot rework (rival's idea, v2 headline).
+**Section C (host/video/receipts/Discord) is owned by the user. Deadline June 14.**
 
 ---
 
