@@ -7,6 +7,60 @@ Strategist breaks ties.
 
 ---
 
+## Entry 6 — June 13, 2026: Foundry IQ becomes the brain (B0 + B1 landed)
+
+The hard dependency from Entries 4–5 is **done and verified live**. "Foundry IQ
+is the verdict brain" is no longer aspirational — it is true on the hero surface.
+
+### B0 — answer-synthesis provisioning spike (`spike/08-answer-synthesis.sh`)
+
+- Azure discovery (this session, with Azure access): the existing AIServices
+  account `agents-league-hub-resource` (S0, eastus) had **zero deployments**;
+  `evidence-engine-search` (free) still live. Reused the hub — one additive
+  `gpt-4.1-mini` chat deployment (Standard, 50k TPM). No new account.
+  *(`gpt-4o-mini 2024-07-18` is deprecated since 2026-03-31; GlobalStandard quota
+  was 0, Standard had 200k — both real gotchas, logged in `SPIKE_LOG.md` stage 8.)*
+- Discovered the binding schema from `$metadata`: `Agent.models[]` is
+  `AgentModelConfiguration { kind:"azureOpenAI", azureOpenAIParameters:{ resourceUri,
+  deploymentId, modelName, apiKey } }`. PUT `evidence-kb` with
+  `outputMode: answerSynthesis` + that model + effort `medium` → **HTTP 204**.
+- `/retrieve` with the `messages` verdict prompt over the `doc_type eq 'evidence'`
+  partition → **HTTP 200**, synthesised **`VERDICT: CONTRADICTED`** + verbatim
+  badge-log PASSAGE (Helena's 20:47:33 exit vs her claimed 19:45) + **12
+  references[]** + `agenticReasoning` 10,155 tok. Proof:
+  `spike/output/08-retrieve-verdict.json`. **The KB produced the verdict.**
+
+### B1 — reconcile + enable
+
+- The speculative code (`iq-verdict.ts`, `search.ts`) was **essentially correct**.
+  Reconciliation was light: the synthesised answer lands exactly where `kbReason()`
+  reads it (`response[0].content[0].text`); the leading-token shape survives. Only
+  cleanup needed: strip wrapping quotes from PASSAGE and trailing `[ref_id:N]` tags
+  from PASSAGE/WHY. Every `SPECULATIVE`/`RECONCILE:` marker updated to confirmed.
+- live-server `.env` (gitignored): `IQ_VERDICT_ENABLED=true`, `KB_REASONING_EFFORT=medium`.
+- **End-to-end verification** (live KB + GitHub Models witness): asked Helena her
+  departure time → she planted "I left the gallery at 19:45." Challenge with
+  grounding ON → `verdict: CONTRADICTED, source: iq, agreement: true`, the KB's own
+  justification + verbatim citation, `kb.reason(verdict) | azure | 2507ms | IQ
+  reasoning 39699 tok` visible in the engine tap. Grounding OFF (pull the plug) →
+  `verdict: UNSUPPORTED, source: ungrounded` — her word stands. The thesis, proven.
+- Build green; **30 server tests pass** (added a real-shape parse test from the
+  spike output). Regex demoted to a disclosed, agreeing cross-check.
+
+### Honesty note
+
+The deterministic check **agreed** here (`agreement: true`), so this claim doesn't
+yet exercise the divergence path. The IQ verdict leads regardless; divergence is
+surfaced in the engine tap when it occurs. The headline is now defensible: the
+verdict is IQ-produced and the reasoning is on screen.
+
+### Next (per roadmap §5)
+
+A5 (shared verdict-core) → A6 (rewire MCP `check_claim` to the same IQ verdict) so
+the Copilot surface tells the identical story → A1 (one-product flow + cold-open).
+
+---
+
 ## Entry 5 — June 13, 2026: Reviewer synthesis + buildable-now ideas
 
 Ran the four personas again (Foundry IQ capability maximalist, game/experience

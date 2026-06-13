@@ -63,6 +63,23 @@ describe("parseIqAnswer", () => {
     const result = parseIqAnswer("The badge log contradicts her stated time.", refs);
     expect(result.verdict).toBe("CONTRADICTED");
   });
+
+  test("real spike shape: strips wrapping quotes and trailing [ref_id:N] tags", () => {
+    // Verbatim from spike/output/08-retrieve-verdict.json (gpt-4.1-mini, medium).
+    const answer = [
+      "VERDICT: CONTRADICTED  ",
+      'PASSAGE: "Helena Voss\'s statement asserts she left the gallery at approximately 19:45. This is directly contradicted by the electronic access log, which records her badge exiting the main door at 20:47:33 — approximately one hour later, and within the time of death window."  ',
+      "WHY: The electronic access log shows Helena Voss left the gallery at 20:47, one hour later than her claimed time of 19:45, contradicting her statement. [ref_id:0] [ref_id:4]",
+    ].join("\n");
+    const result = parseIqAnswer(answer, refs);
+    expect(result.verdict).toBe("CONTRADICTED");
+    // Wrapping quotes removed; verbatim badge time preserved.
+    expect(result.citedPassage?.startsWith('"')).toBe(false);
+    expect(result.citedPassage).toContain("20:47:33");
+    // Inline grounding tags stripped from the justification.
+    expect(result.justification).not.toContain("[ref_id");
+    expect(result.justification).toContain("20:47");
+  });
 });
 
 describe("combineWithCrossCheck", () => {

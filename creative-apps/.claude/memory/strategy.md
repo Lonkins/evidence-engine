@@ -5,7 +5,21 @@ metadata:
   type: project
 ---
 
-## Status: REPOSITIONING — IQ becomes the brain, Live web = hero surface
+## Status: IQ-BRAIN LIVE (B0 + B1 done June 13) — Live web = hero surface
+
+**June 13, 2026 — B0 + B1 landed (design-log Entry 6).** Foundry IQ now produces
+the verdict on the hero surface. `gpt-4.1-mini` (AIServices `agents-league-hub-resource`,
+Standard, eastus) is bound to `evidence-kb`; `outputMode: answerSynthesis` + effort
+`medium`. Challenge → the KB reasons and emits `VERDICT: CONTRADICTED` + verbatim
+citation; `source: iq` in the response, `kb.reason` in the engine tap. Regex is now a
+disclosed, agreeing cross-check. Pull-the-plug OFF → `source: ungrounded`, her word
+stands. live-server `.env`: `IQ_VERDICT_ENABLED=true`, `KB_REASONING_EFFORT=medium`.
+Build green, 30 tests. Proof: `spike/output/08-retrieve-verdict.json`,
+`spike/08-answer-synthesis.sh`. **Next: A5 (shared verdict-core) → A6 (MCP parity) → A1.**
+
+---
+
+### Prior status (the repositioning that B0/B1 just fulfilled)
 
 **June 13, 2026 — critical review + locked redesign (design-log Entry 4).** A
 first-hand code review (four-persona lenses; subagents were rate-limited so the

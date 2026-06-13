@@ -112,9 +112,12 @@ export class SearchClient {
    * regex. Requires reasoning effort `low`/`medium` and a model bound to the
    * KB (design-log Entry 4 provisioning spike).
    *
-   * ⚠️ SPECULATIVE shape: `messages` input (supported only at effort > minimal,
-   * per spike) and a synthesised prose answer in `response[].content[].text`.
-   * RECONCILE once the answer-synthesis spike confirms the live response shape.
+   * ✅ Confirmed live by spike/08-answer-synthesis.sh (June 13 2026): with
+   * gpt-4.1-mini bound to evidence-kb, this exact body (`messages` +
+   * `retrievalReasoningEffort` medium + `knowledgeSourceParams.filterAddOn`)
+   * returns HTTP 200 with the synthesised answer in `response[0].content[0].text`
+   * and grounded `references[]`. activity[] also carries `modelAnswerSynthesis`
+   * and `agenticReasoning` reasoning-token counts (surfaced in the engine tap).
    */
   async kbReason(
     instruction: string,

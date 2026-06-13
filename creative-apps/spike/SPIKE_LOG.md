@@ -15,6 +15,7 @@ quota errors, timing, or follow-up actions.
 | 1 | 3 | Create knowledge source + knowledge base | 2026-06-10 | PASS | <5s | KS create HTTP 201/204; KB create HTTP 204; GET /knowledgebases lists evidence-kb; API version 2026-05-01-preview. Shape fixes required (see notes below). |
 | 1 | 4 | Verify agentic retrieval with citations | 2026-06-10 | PASS | <2s | Winning shape: intents. In-corpus: HTTP 200, docKey=case-001, rerankerScore=3.9889. Out-corpus: HTTP 200, references=[]. Free tier confirmed working. Shape discovery required (see notes below). |
 | 1 | 5 | KB native MCP endpoint probe | 2026-06-10 | PASS | <1s | KB-scoped /knowledgebases/evidence-kb/mcp: HTTP 200, SSE transport, protocolVersion 2024-11-05, capabilities.tools.listChanged=true. Service-level /mcp: HTTP 405. Auth: api-key header. |
+| 2 | 8 | Answer-synthesis: bind model + IQ-produced verdict (roadmap B0) | 2026-06-13 | PASS | ~5s | Bound gpt-4.1-mini (AIServices `agents-league-hub-resource`) to evidence-kb; PUT outputMode=answerSynthesis + models[] + effort medium (HTTP 204). /retrieve with `messages` verdict prompt → HTTP 200, synthesised `VERDICT: CONTRADICTED` + verbatim badge-log PASSAGE in `response[0].content[0].text`, 12 references[], agenticReasoning 10155 tok. The IQ brain produces the verdict. Shape notes below. |
 
 ## Stage 4 API Shape Notes (2026-05-01-preview)
 
@@ -194,3 +195,76 @@ Key discoveries from `$metadata` (AgentOutputModality enum):
   — `"low"` and `"medium"` require a model to be specified; `"minimal"` is the only LLM-free option
 - `knowledgeSources[].name` references the knowledge source by name (not `sourceId`)
 - No `models` array needed for LLM-free retrieval
+
+---
+
+## Stage 8 API Shape Notes (2026-05-01-preview) — Answer Synthesis / IQ-brain verdict
+
+Script: `08-answer-synthesis.sh`. Proof: `output/08-retrieve-verdict.json`. This is
+the build that makes "Foundry IQ is the verdict brain" true (design-log Entry 4/6).
+
+### Model binding — Knowledge Base (PUT /knowledgebases/evidence-kb)
+
+Confirmed body (IQ-brain). Schemas from `$metadata` (`output/08-metadata.xml`):
+`Agent.models` is `Collection(AgentModelConfiguration)`;
+`AgentModelConfiguration = { kind, azureOpenAIParameters }`;
+`AzureOpenAIParameters = { resourceUri, deploymentId, apiKey, modelName, authIdentity }`.
+
+```json
+{
+  "name": "evidence-kb",
+  "outputMode": "answerSynthesis",
+  "retrievalReasoningEffort": { "kind": "medium" },
+  "models": [
+    {
+      "kind": "azureOpenAI",
+      "azureOpenAIParameters": {
+        "resourceUri": "https://<aiservices>.cognitiveservices.azure.com",
+        "deploymentId": "gpt-4.1-mini",
+        "modelName": "gpt-4.1-mini",
+        "apiKey": "<key — .env only, never commit>"
+      }
+    }
+  ],
+  "knowledgeSources": [{ "name": "evidence-ks" }]
+}
+```
+
+- `kind: "azureOpenAI"` is the accepted discriminator. PUT returns **HTTP 204**.
+- `Agent` also exposes `retrievalInstructions` / `answerInstructions` (KB-level prompt
+  shaping) — unused so far; verdict shaping is done per-request instead.
+- `gpt-4o-mini 2024-07-18` is **deprecated** (since 2026-03-31). Use `gpt-4.1-mini`.
+- GlobalStandard quota was 0 in this subscription; **Standard** `gpt-4o-mini`/`gpt-4.1-mini`
+  had 200k TPM. Deploy to Standard.
+
+### Verdict retrieve — POST /knowledgebases/evidence-kb/retrieve
+
+`messages` input is accepted now that effort > minimal and a model is bound:
+
+```json
+{
+  "messages": [{ "role": "user", "content": [{ "type": "text", "text": "<verdict instruction>" }] }],
+  "retrievalReasoningEffort": { "kind": "medium" },
+  "knowledgeSourceParams": [
+    { "kind": "searchIndex", "knowledgeSourceName": "evidence-ks", "filterAddOn": "doc_type eq 'evidence'" }
+  ]
+}
+```
+
+### Response shape (answerSynthesis, medium effort) — the reconcile
+
+- Synthesised prose answer at **`response[0].content[0].text`** (same field as extractive,
+  but prose instead of the ref_id JSON array). `content[].role` is null.
+- The model **honours the leading `VERDICT:/PASSAGE:/WHY:` shape verbatim** (no structured-
+  output/tool-call fallback needed). PASSAGE comes wrapped in quotes; WHY trails inline
+  `[ref_id:N]` tags — `parseIqAnswer` strips both.
+- `references[]` carry `{ type, id, activitySource, sourceData, rerankerScore, docKey, title }`
+  — the grounding set the synthesis used (12 returned for the Helena claim).
+- `activity[]` is richer than the minimal path: `modelQueryPlanning`, `searchIndex`
+  (count + searchIndexArguments.search/filter), `modelAnswerSynthesis` (input/outputTokens),
+  `agenticReasoning` (reasoningTokens, effort). Fuel for the full wiretap stream (roadmap A4).
+
+### PASS assertion
+
+- KB GET shows `outputMode=answerSynthesis`, `models` length 1, effort `medium`.
+- Retrieve HTTP 200; synthesised answer carries a parseable `VERDICT`; `references.length > 0`.

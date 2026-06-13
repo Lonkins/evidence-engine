@@ -8,14 +8,15 @@
  * deciding citation, and combines it with the legacy deterministic check as a
  * disclosed cross-check.
  *
- * ⚠️ SPECULATIVE — built against the DOCUMENTED answerSynthesis response shape
- * (spike/SPIKE_LOG.md stage 3-4: `response[].content[].text` synthesised
- * answer, `references[]`, `activity[].agenticReasoning`). The exact synthesised
- * answer wording is unverified until a model is wired to `evidence-kb` and the
- * provisioning spike (build-order item 1) runs. Reconciliation points are
- * marked `RECONCILE:`. The parser is intentionally tolerant so wording drift
- * does not break the verdict, and `combineWithCrossCheck` keeps the legacy
- * deterministic verdict available as a guardrail.
+ * ✅ RECONCILED against the live answer-synthesis spike (June 13 2026,
+ * spike/08-answer-synthesis.sh → spike/output/08-retrieve-verdict.json). With
+ * gpt-4.1-mini bound to `evidence-kb` (outputMode: answerSynthesis, effort
+ * medium), the KB honoured the leading `VERDICT:/PASSAGE:/WHY:` shape verbatim
+ * and returned grounded `references[]`. The synthesised PASSAGE comes wrapped in
+ * quotes and WHY trails `[ref_id:N]` citation tags; `parseIqAnswer` strips both.
+ * The parser stays tolerant so wording drift does not break the verdict, and
+ * `combineWithCrossCheck` keeps the deterministic verdict as a disclosed
+ * guardrail.
  */
 
 import type { EvidenceVerdict, EvidenceCheck, DocText } from "./verdict.js";
@@ -88,9 +89,9 @@ export function ungroundedVerdict(): CombinedVerdict {
  * it to lead with a machine-parseable verdict and quote the deciding passage
  * verbatim so the citation is the KB's, not ours.
  *
- * RECONCILE: confirm the KB honours a leading `VERDICT:` token in
- * answerSynthesis mode once a model is bound; if it buries the verdict, switch
- * to a structured-output / tool-call shape.
+ * Confirmed by spike 08 (June 13 2026): bound to gpt-4.1-mini at medium effort,
+ * the KB leads with `VERDICT:` and quotes the deciding passage verbatim, so this
+ * instruction shape holds — no structured-output / tool-call fallback needed.
  */
 export function buildVerdictInstruction(claim: string, speaker: string): string {
   return [
@@ -112,6 +113,15 @@ export function buildVerdictInstruction(claim: string, speaker: string): string 
 const VERDICT_LINE = /verdict\s*[:\-]\s*([a-z_]+)/i;
 const PASSAGE_LINE = /passage\s*[:\-]\s*([\s\S]*?)(?:\n\s*why\s*[:\-]|\n{2,}|$)/i;
 const WHY_LINE = /why\s*[:\-]\s*([\s\S]*?)(?:\n{2,}|$)/i;
+// The synthesis trails inline grounding tags like "[ref_id:0] [ref_id:4]" and
+// wraps quoted passages in straight/smart quotes — strip both for clean display.
+const REF_TAG = /\s*\[ref[_\s-]?id\s*[:\s]\s*\d+(?:\s*,\s*\d+)*\s*\]/gi;
+const WRAPPING_QUOTES = /^["“”'']+|["“”'']+$/g;
+
+/** Remove inline [ref_id:N] tags and collapse trailing whitespace. */
+function stripRefTags(text: string): string {
+  return text.replace(REF_TAG, "").replace(/[ \t]+$/gm, "").trim();
+}
 
 function mapLabel(token: string): EvidenceVerdict {
   const t = token.toUpperCase();
@@ -143,12 +153,14 @@ export function parseIqAnswer(rawAnswer: string, references: IqReference[]): IqV
   let citedPassage: string | null = null;
   const passageMatch = answer.match(PASSAGE_LINE);
   if (passageMatch) {
-    const raw = passageMatch[1].trim();
+    const raw = stripRefTags(passageMatch[1]).replace(WRAPPING_QUOTES, "").trim();
     citedPassage = raw && !/^none$/i.test(raw) ? raw : null;
   }
 
   const whyMatch = answer.match(WHY_LINE);
-  const justification = whyMatch ? whyMatch[1].trim() : answer.slice(0, 200);
+  const justification = whyMatch
+    ? stripRefTags(whyMatch[1])
+    : stripRefTags(answer).slice(0, 200);
 
   // A CONTRADICTED/SUPPORTED verdict with no grounding reference is not
   // trustworthy — the KB must have grounded on something. Fail closed.

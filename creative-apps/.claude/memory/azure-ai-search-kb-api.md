@@ -75,7 +75,56 @@ Threshold for "no evidence": `references.length === 0`.
 
 ---
 
-## Free Tier Verdict ✅
+## Answer-Synthesis (IQ-brain) Contract ✅ (confirmed 2026-06-13, spike stage 8)
+
+The verdict-producing path. Requires a model bound to the KB and effort > minimal.
+
+**Model binding — PUT /knowledgebases/evidence-kb** (returns HTTP 204):
+```json
+{
+  "name": "evidence-kb",
+  "outputMode": "answerSynthesis",
+  "retrievalReasoningEffort": { "kind": "medium" },
+  "models": [
+    { "kind": "azureOpenAI",
+      "azureOpenAIParameters": {
+        "resourceUri": "https://<aiservices>.cognitiveservices.azure.com",
+        "deploymentId": "gpt-4.1-mini", "modelName": "gpt-4.1-mini",
+        "apiKey": "<.env only>" } }
+  ],
+  "knowledgeSources": [{ "name": "evidence-ks" }]
+}
+```
+Schema (`$metadata`): `Agent.models = Collection(AgentModelConfiguration)`;
+`AgentModelConfiguration = { kind, azureOpenAIParameters }`;
+`AzureOpenAIParameters = { resourceUri, deploymentId, apiKey, modelName, authIdentity }`.
+`Agent` also has `retrievalInstructions` / `answerInstructions` (KB-level prompt shaping).
+
+**Verdict retrieve — POST /knowledgebases/evidence-kb/retrieve** (`messages` now allowed):
+```json
+{
+  "messages": [{ "role": "user", "content": [{ "type": "text", "text": "<instruction>" }] }],
+  "retrievalReasoningEffort": { "kind": "medium" },
+  "knowledgeSourceParams": [{ "kind": "searchIndex", "knowledgeSourceName": "evidence-ks", "filterAddOn": "doc_type eq 'evidence'" }]
+}
+```
+
+**Response (answerSynthesis):** synthesised prose at `response[0].content[0].text`
+(prose, not the extractive ref_id JSON); `references[]` = grounding set with
+`docKey`/`rerankerScore`; `activity[]` adds `modelQueryPlanning`, `searchIndex`,
+`modelAnswerSynthesis`, `agenticReasoning`. The model honours a leading
+`VERDICT:/PASSAGE:/WHY:` shape; PASSAGE is quote-wrapped and WHY trails `[ref_id:N]`
+(both stripped by `parseIqAnswer`).
+
+**Provisioning gotchas:** `gpt-4o-mini 2024-07-18` deprecated (2026-03-31) — use
+`gpt-4.1-mini`. GlobalStandard quota was 0 in this subscription; **Standard** had 200k TPM.
+Resource: AIServices `agents-league-hub-resource` (rg `agents-league-hub`, S0, eastus).
+
+Proof: `creative-apps/spike/output/08-retrieve-verdict.json`. Script: `spike/08-answer-synthesis.sh`.
+
+---
+
+## Free Tier Verdict ✅ (LLM-free retrieval path only)
 
 Azure AI Search free tier **works** for this retrieval path. Key insight: the free tier blocks the traditional semantic ranker on `/indexes/{name}/search`, but the knowledge base `/retrieve` endpoint with `minimal` agentic reasoning succeeds and returns `rerankerScore`. The agentic reasoning layer provides ranking without consuming the semantic ranker quota.
 

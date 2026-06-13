@@ -36,7 +36,7 @@ shallow retrieval call. Remove Foundry IQ and five of seven steps collapse.
 | **Cold open** | Lands mid-interrogation; Helena's "I left at 19:45" is already on screen, one claim chip pulsing | Pre-seeded; teaches the loop in ~16s with zero tutorial | next (#A1) |
 | **Ask** | Questions a witness | `kbRetrieve` (minimal effort) grounds the witness on retrieved passages only — so drift is *detectable* | ✅ live |
 | **Drift & index** | Witness answers, partly invents | Each sentence indexed as testimony within seconds (freshness) — now itself challengeable | ✅ live |
-| **Challenge** | Presses a sentence they doubt | **`answerSynthesis` (low/medium effort): the KB reasons and emits the verdict + verbatim citation** — IQ is the brain | engine built, **gated on spike** |
+| **Challenge** | Presses a sentence they doubt | **`answerSynthesis` (medium effort): the KB reasons and emits the verdict + verbatim citation** — IQ is the brain | ✅ live (B0/B1, June 13) |
 | **Cross-reference** | — | (a) self-consistency vs the witness's own earlier testimony; (b) *federation*: which sub-corpus (forensics/comms/financial) breaks the alibi | (a) ✅ live · (b) gated |
 | **Cite** | Reads the receipt | Verbatim passage + docKey, joined by `ref_id` so the quote is provably grounded; regex runs as a disclosed cross-check | ✅ live |
 | **Wiretap** | Watches IQ think | The KB's native `activity[]` (search count, reasoning tokens, effort tier) streams into the engine tap | ✅ partial (token count live; full activity stream = #A4) |
@@ -64,8 +64,8 @@ shallow retrieval call. Remove Foundry IQ and five of seven steps collapse.
 
 | # | Deliverable | Why | Notes |
 |---|-------------|-----|-------|
-| **B0** | **Answer-synthesis provisioning spike** | **Unblocks the whole IQ-brain claim** | Bind a model to `evidence-kb` (Azure OpenAI deployment or GitHub Models), PUT `outputMode: answerSynthesis` + `models[]`, call `/retrieve` with `messages` at `medium`, capture the raw response. Confirm the `VERDICT:`/`PASSAGE:` lead-token survives (reconcile `iq-verdict.ts`). **`spike/08-answer-synthesis.sh`.** Move to a small paid tier if free-tier can't bind a model — do not regress to regex. |
-| **B1** | Flip `IQ_VERDICT_ENABLED=true` + reconcile the speculative shape | Best Use of IQ | After B0 passes. |
+| **B0** | ✅ **Answer-synthesis provisioning spike** (June 13) | **Unblocked the IQ-brain claim** | DONE. `gpt-4.1-mini` (AIServices `agents-league-hub-resource`, Standard) bound to `evidence-kb`; PUT `outputMode: answerSynthesis` + `models[{kind:azureOpenAI,...}]` + effort `medium` → 204. `/retrieve` with `messages` → synthesised `VERDICT: CONTRADICTED` + verbatim badge-log PASSAGE + 12 references[]. Lead-token survives. Proof: `spike/output/08-retrieve-verdict.json`; shapes in `SPIKE_LOG.md` stage 8. |
+| **B1** | ✅ **Flip `IQ_VERDICT_ENABLED=true` + reconcile** (June 13) | Best Use of IQ | DONE. `iq-verdict.ts`/`search.ts` reconciled to the real shape (quote + `[ref_id:N]` strip); live-server `.env` sets `IQ_VERDICT_ENABLED=true`, `KB_REASONING_EFFORT=medium`. Verified end-to-end: challenge Helena's 19:45 → `source: iq`, `CONTRADICTED`, verbatim citation, `kb.reason` in the engine tap; grounding OFF → her word stands. Build green, 30 tests pass. |
 | **B2** | Multi-source KB federation | Creative + Best Use of IQ (engineer) | forensics-ks / comms-ks / financial-ks; verdict names *which* source broke the alibi. Strategist ranks below the line — do after B0–B1 land. |
 | **B3** | Permission-trimmed "sealed evidence" | Creative (engineer) | A query key + document-level security filter; sealed docs unlock when the player earns a "warrant." Also closes the admin-key least-privilege gap. |
 | **B4** | Vector hybrid | Closes paraphrase miss-rate | Defer — highest effort, lowest marginal demo value. |
@@ -102,8 +102,8 @@ shallow retrieval call. Remove Foundry IQ and five of seven steps collapse.
 
 ## 5. Recommended sequence
 
-1. **B0** (provisioning spike) — nothing about "Best Use of IQ" is real until this passes.
-2. **A5 → A6** (shared verdict-core, then MCP parity) — makes the IQ claim true *across* surfaces and reclaims the Copilot axis.
+1. ✅ **B0 + B1 DONE (June 13)** — the IQ-brain verdict is live in the live-server; "Best Use of IQ" is now real on the hero surface.
+2. **A5 → A6** (shared verdict-core, then MCP parity) — makes the IQ claim true *across* surfaces and reclaims the Copilot axis. ← **next**
 3. **A1** (one-product flow + cold-open) — fixes the comprehension tax; the hero moment in seconds.
 4. **A2, A3, A7** (OVERRULED, adapts, red herrings) — depth, replayability, "it's really reasoning."
 5. **A4** (full activity stream) — cheap IQ-visibility polish.
