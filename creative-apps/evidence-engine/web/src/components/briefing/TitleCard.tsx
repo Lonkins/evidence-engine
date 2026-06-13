@@ -10,38 +10,47 @@ export function TitleCard({ onBringYourOwn }: TitleCardProps) {
   const { dispatch } = useGame();
 
   return (
-    <div className="title-card" role="main">
+    <div className="title-card title-card--choose" role="main">
       <div className="title-card__rule" aria-hidden="true" />
-      <p className="micro-label title-card__eyebrow">Evidence Engine · Case HGA-2025-1014</p>
+      <p className="micro-label title-card__eyebrow">Evidence Engine</p>
       <h1 className="title-card__title">
-        The Holbrooke
+        Put an AI
         <br />
-        <em>Gallery Affair</em>
+        <em>on the stand</em>
       </h1>
       <p className="title-card__deck">
         AI assistants hallucinate — confidently, fluently, more often than you'd like.
-        You're about to interrogate one that will lie straight to your face.
-        <br />
-        A gallery owner is dead. A live AI witness takes the stand. Her testimony
-        <em> sounds</em> right — but every claim can be challenged, and Foundry IQ
-        checks it against the case file and hands you the receipt, live.
+        Here you interrogate one. It answers in character and lies; Foundry IQ checks
+        every claim against the source and hands you the receipt — or says, honestly,
+        when it can't be sure.
       </p>
-      <div className="title-card__cta-row">
-        <button
-          className="title-card__open"
-          onClick={() => dispatch({ type: "OPEN_CASE" })}
-        >
-          Step into the interrogation
+
+      <div className="scenario-choice">
+        <button type="button" className="scenario-card scenario-card--byo" onClick={onBringYourOwn}>
+          <span className="scenario-card__tag">Bring your own</span>
+          <span className="scenario-card__title">Put your own source on the stand</span>
+          <span className="scenario-card__desc">
+            Paste a document, your notes, a story, or code. A witness takes the stand who
+            only knows what you pasted — catch what it invents.
+          </span>
+          <span className="scenario-card__go">Paste a source →</span>
         </button>
-        <button type="button" className="title-card__byo" onClick={onBringYourOwn}>
-          …or put <em>your own</em> source on trial →
+
+        <button type="button" className="scenario-card" onClick={() => dispatch({ type: "OPEN_CASE" })}>
+          <span className="scenario-card__tag">No setup · ready to play</span>
+          <span className="scenario-card__title">Use our example case</span>
+          <span className="scenario-card__desc">
+            The Holbrooke Gallery Affair — a murder, three AI witnesses, and at least one
+            liar to catch against the record.
+          </span>
+          <span className="scenario-card__go">Step into the interrogation →</span>
         </button>
       </div>
+
       <p className="title-card__footnote">
         A live AI takes the stand · Foundry IQ catches the lie with its citation
         <br />
-        Bring your own document, notes, or code — or take the built-in case · All
-        persons and events are fictitious
+        All persons and events are fictitious
       </p>
       <div className="title-card__rule" aria-hidden="true" />
     </div>

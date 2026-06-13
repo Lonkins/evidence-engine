@@ -72,6 +72,18 @@ source — the engine tap showing the retrieve filtered on the `byo-…` partiti
 That is real emergent hallucination, caught by Foundry IQ against the user's
 material. Builds green; 39 web + 30 server tests.
 
+### Uniform flow (June 13)
+
+Reworked the entry + desk so the two paths (our example case / bring your own)
+share one shell. The intro is now a neutral **scenario chooser** — product-framed,
+two even cards (Bring your own · Use our example case) — instead of being
+Holbrooke-first. After the choice, the desk is identical for both: same "The
+Interrogation Room" header (scenario-aware subtitle), the same three-column
+layout with an "On the stand" rail (3 suspect cards for Holbrooke, a single
+`WitnessStand` card for BYO), the same interrogation panel + engine tap + grey-band
+verdicts. Only the scenario-inherent endgame differs ("Name the killer" vs "End &
+debrief"). Fixed a narrow-width header overlap. Verified both paths in-browser.
+
 ### Hardening pass (June 13, after a second four-persona review)
 
 Ran the four personas on positioning. They converged on three fixes (not "more

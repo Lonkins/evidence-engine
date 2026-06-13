@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { useGame } from "../../GameContext";
 import { SuspectRail } from "../suspects/SuspectRail";
+import { WitnessStand } from "../suspects/WitnessStand";
 import { DocumentModal } from "../evidence/DocumentModal";
 import { useLiveSession } from "../../live/useLiveSession";
 import { LiveInterrogationPanel } from "./LiveInterrogationPanel";
@@ -129,9 +130,7 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
             LIVE
           </span>
           <div>
-            <h1 className="case-header__title">
-              {isByo ? "Your source on the stand" : "The Interrogation Room"}
-            </h1>
+            <h1 className="case-header__title">The Interrogation Room</h1>
             <p className="case-header__sub">
               {isByo ? (
                 <>
@@ -149,7 +148,15 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
           </div>
         </div>
         <div className="live-header__tools">
-          {!isByo && (
+          {isByo ? (
+            <button
+              type="button"
+              className="surface-link"
+              onClick={() => void endSession(sessionId)}
+            >
+              End &amp; debrief
+            </button>
+          ) : (
             <button
               type="button"
               className="surface-link surface-link--accuse"
@@ -161,8 +168,12 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
           {actions}
         </div>
       </header>
-      <main className={`desk-grid live-grid ${isByo ? "live-grid--byo" : ""}`}>
-        {!isByo && <SuspectRail />}
+      <main className="desk-grid live-grid">
+        {isByo ? (
+          <WitnessStand witness={state.witness} sourceTitle={state.sourceTitle} />
+        ) : (
+          <SuspectRail />
+        )}
         <LiveInterrogationPanel
           live={state}
           grounding={grounding}

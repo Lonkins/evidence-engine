@@ -112,6 +112,78 @@
   color: var(--text);
 }
 
+/* Scenario chooser — two even-handed paths (bring your own / example case) */
+.scenario-choice {
+  display: flex;
+  gap: 1.1rem;
+  width: min(760px, 92vw);
+  flex-wrap: wrap;
+  animation: rise-in var(--duration-slow) var(--ease-out) 360ms both;
+}
+
+.scenario-card {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+  padding: 1.2em 1.3em 1.1em;
+  background: var(--ink-1);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out);
+}
+
+.scenario-card:hover,
+.scenario-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+  background: var(--ink-2);
+  outline: none;
+}
+
+.scenario-card--byo {
+  border-color: var(--gold-dim);
+}
+
+.scenario-card--byo:hover,
+.scenario-card--byo:focus-visible {
+  border-color: var(--gold);
+}
+
+.scenario-card__tag {
+  font-size: var(--text-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.scenario-card--byo .scenario-card__tag {
+  color: var(--gold-bright);
+}
+
+.scenario-card__title {
+  font-family: var(--font-display, serif);
+  font-size: var(--text-md);
+  color: var(--text);
+}
+
+.scenario-card__desc {
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--text-dim);
+}
+
+.scenario-card__go {
+  margin-top: 0.4rem;
+  font-size: var(--text-sm);
+  letter-spacing: 0.04em;
+  color: var(--gold-bright);
+}
+
 /* Bring-your-own intake screen */
 .byo-intake {
   gap: 1.1rem;
