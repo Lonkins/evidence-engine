@@ -1,6 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { randomUUID } from "node:crypto";
 import { loadConfig } from "./config.js";
-import { SearchClient, type TestimonyDoc } from "./search.js";
+import { SearchClient, type TestimonyDoc, type CaseSourceDoc } from "./search.js";
 import { chat } from "./llm.js";
 import { segmentClaims } from "./claims.js";
 import {
@@ -16,9 +17,9 @@ import {
 } from "@evidence-engine/verdict-core";
 import {
   buildSystemPrompt,
+  buildByoSystemPrompt,
   isSpeaker,
   plantsFor,
-  CASE_ID,
   type Speaker,
 } from "./characters.js";
 import { heuristicEntry } from "./trace.js";
@@ -36,7 +37,59 @@ import type { TraceEntry } from "./trace.js";
 const config = loadConfig();
 const search = new SearchClient(config);
 
-const EVIDENCE_FILTER = `doc_type eq 'evidence' and case_id eq '${CASE_ID}'`;
+/** The evidence partition this session interrogates (Holbrooke corpus or a BYO upload). */
+function evidenceFilter(session: Session): string {
+  return `doc_type eq 'evidence' and case_id eq '${session.caseId}'`;
+}
+
+// Source-chunking bounds for "bring your own trial".
+const MAX_CHUNK_CHARS = 1800;
+const MAX_CHUNKS = 40;
+const MIN_SOURCE_CHARS = 80;
+const MAX_SOURCE_CHARS = 24000;
+
+/** Split user-supplied source text into indexable chunks (paragraph-greedy). */
+function chunkSource(
+  text: string,
+  sourceTitle: string,
+  caseId: string,
+  sessionId: string
+): CaseSourceDoc[] {
+  const paragraphs = text
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  const chunks: string[] = [];
+  let buffer = "";
+  for (const paragraph of paragraphs) {
+    if (paragraph.length > MAX_CHUNK_CHARS) {
+      if (buffer) {
+        chunks.push(buffer);
+        buffer = "";
+      }
+      for (let i = 0; i < paragraph.length; i += MAX_CHUNK_CHARS) {
+        chunks.push(paragraph.slice(i, i + MAX_CHUNK_CHARS));
+      }
+      continue;
+    }
+    if (buffer && buffer.length + paragraph.length + 2 > MAX_CHUNK_CHARS) {
+      chunks.push(buffer);
+      buffer = "";
+    }
+    buffer = buffer ? `${buffer}\n\n${paragraph}` : paragraph;
+  }
+  if (buffer) chunks.push(buffer);
+
+  return chunks.slice(0, MAX_CHUNKS).map((content, index) => ({
+    id: `${caseId}-${index}`,
+    title: `${sourceTitle} — part ${index + 1}`,
+    content,
+    doc_type: "evidence" as const,
+    case_id: caseId,
+    session_id: sessionId,
+  }));
+}
 
 // ---------------------------------------------------------------------------
 // HTTP plumbing
@@ -92,23 +145,81 @@ async function handleHealth(res: ServerResponse): Promise<void> {
   }
 }
 
-function handleNewSession(res: ServerResponse): void {
-  const session = createSession();
-  send(res, 200, { sessionId: session.sessionId, createdAt: session.createdAt });
+async function handleNewSession(body: JsonBody, res: ServerResponse): Promise<void> {
+  const source = typeof body.source === "string" ? body.source.trim() : "";
+
+  // No source → the built-in Holbrooke example case.
+  if (!source) {
+    const session = createSession();
+    return send(res, 200, {
+      sessionId: session.sessionId,
+      createdAt: session.createdAt,
+      mode: session.mode,
+    });
+  }
+
+  // "Bring your own trial": index the user's source as its own evidence
+  // partition, then interrogate a single witness grounded in it.
+  if (source.length < MIN_SOURCE_CHARS || source.length > MAX_SOURCE_CHARS) {
+    return send(res, 400, {
+      error: `Source must be ${MIN_SOURCE_CHARS}–${MAX_SOURCE_CHARS} characters`,
+    });
+  }
+  const sourceTitle =
+    typeof body.title === "string" && body.title.trim()
+      ? body.title.trim().slice(0, 120)
+      : "Your source";
+  const witnessName =
+    typeof body.witnessName === "string" && body.witnessName.trim()
+      ? body.witnessName.trim().slice(0, 60)
+      : "The Witness";
+  const caseId = `byo-${randomUUID()}`;
+  const session = createSession({
+    caseId,
+    mode: "byo",
+    witness: { name: witnessName, role: "Witness" },
+    sourceTitle,
+    plantsTotal: 0,
+  });
+
+  const docs = chunkSource(source, sourceTitle, caseId, session.sessionId);
+  try {
+    const upload = await search.uploadCaseDocs(docs, "index.upload(source)");
+    send(res, 200, {
+      sessionId: session.sessionId,
+      createdAt: session.createdAt,
+      mode: session.mode,
+      witness: session.witness,
+      sourceTitle,
+      chunks: upload.data,
+    });
+  } catch (error) {
+    deleteSession(session.sessionId);
+    send(res, 502, { error: `Failed to index source: ${describe(error)}` });
+  }
 }
 
 async function handleAsk(body: JsonBody, res: ServerResponse): Promise<void> {
   const sessionId = String(body.sessionId ?? "");
-  const speakerRaw = String(body.speaker ?? "");
   const question = String(body.question ?? "").trim();
 
   const session = sessionId ? getSession(sessionId) : undefined;
   if (!session) return send(res, 404, { error: "Unknown session — create one via POST /api/session" });
-  if (!isSpeaker(speakerRaw)) return send(res, 400, { error: `Unknown speaker: ${speakerRaw}` });
   if (!question || question.length > 600) {
     return send(res, 400, { error: "Question must be 1–600 characters" });
   }
-  const speaker: Speaker = speakerRaw;
+
+  // Holbrooke mode interrogates one of the three suspects; a "bring your own"
+  // session has a single custom witness grounded in the user's source.
+  let speaker: string;
+  if (session.mode === "byo") {
+    if (!session.witness) return send(res, 400, { error: "This session has no witness" });
+    speaker = session.witness.name;
+  } else {
+    const speakerRaw = String(body.speaker ?? "");
+    if (!isSpeaker(speakerRaw)) return send(res, 400, { error: `Unknown speaker: ${speakerRaw}` });
+    speaker = speakerRaw;
+  }
   // Grounding defaults ON. `grounding: false` is the "pull the plug" demo —
   // Foundry IQ is unplugged so the witness has nothing anchoring her answer.
   const grounding = body.grounding !== false;
@@ -123,7 +234,7 @@ async function handleAsk(body: JsonBody, res: ServerResponse): Promise<void> {
   if (grounding) {
     const retrieval = await search.kbRetrieve(
       `${speaker}: ${question}`,
-      EVIDENCE_FILTER,
+      evidenceFilter(session),
       "kb.retrieve(evidence)"
     );
     trace.push(retrieval.entry);
@@ -140,7 +251,10 @@ async function handleAsk(body: JsonBody, res: ServerResponse): Promise<void> {
   }
 
   // 2. In-character reply from GitHub Models, grounded but free to drift.
-  const systemPrompt = buildSystemPrompt(speaker, passages);
+  const systemPrompt =
+    session.mode === "byo" && session.witness
+      ? buildByoSystemPrompt(session.witness.name, session.sourceTitle ?? "the source", passages)
+      : buildSystemPrompt(speaker as Speaker, passages);
   const history = getHistory(session, speaker);
   const llm = await chat(config, [
     { role: "system", content: systemPrompt },
@@ -172,7 +286,7 @@ async function handleAsk(body: JsonBody, res: ServerResponse): Promise<void> {
       title: `Testimony — ${speaker}, turn ${turnNo}`,
       content: claim.text,
       doc_type: "testimony",
-      case_id: CASE_ID,
+      case_id: session.caseId,
       session_id: session.sessionId,
       speaker,
       turn_no: turnNo,
@@ -250,7 +364,7 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
   // calibrated threshold (grounded ≥ 2.2 vs fabricated ≤ 1.5, measured live).
   const evidenceRetrieval = await search.kbRetrieve(
     `${claim.speaker}: ${claim.text}`,
-    EVIDENCE_FILTER,
+    evidenceFilter(session),
     "kb.retrieve(evidence)",
     config.claimEvidenceThreshold
   );
@@ -287,7 +401,7 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
     try {
       const reason = await search.kbReason(
         buildVerdictInstruction(claim.text, claim.speaker),
-        EVIDENCE_FILTER,
+        evidenceFilter(session),
         "kb.reason(verdict)",
         config.reasoningEffort,
         config.claimEvidenceThreshold
@@ -310,7 +424,7 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
 
   // (b) Live retrieve against this speaker's earlier testimony in this session.
   const testimonyFilter =
-    `doc_type eq 'testimony' and case_id eq '${CASE_ID}'` +
+    `doc_type eq 'testimony' and case_id eq '${session.caseId}'` +
     ` and session_id eq '${session.sessionId}'` +
     ` and speaker eq '${claim.speaker}' and turn_no lt ${claim.turnNo}`;
   const selfRetrieval = await search.kbRetrieve(
@@ -374,9 +488,14 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
   // Ground truth: was this claim one of the planted fabrications? A plant
   // counts as caught only when the player pinned it with a contradiction.
   const claimTimes = extractTimes(claim.text.toLowerCase());
-  const matchedPlant = plantsFor(claim.speaker).find((plant) =>
-    claimTimes.some((time) => Math.abs(time - plant.timeMinutes) <= 5)
-  );
+  // Plants only exist in the scripted Holbrooke case; in a bring-your-own trial
+  // the lies are emergent, so there is no ground-truth plant to confirm.
+  const matchedPlant =
+    session.mode === "holbrooke"
+      ? plantsFor(claim.speaker as Speaker).find((plant) =>
+          claimTimes.some((time) => Math.abs(time - plant.timeMinutes) <= 5)
+        )
+      : undefined;
   const plantConfirmed = Boolean(matchedPlant) && isCatch;
 
   // Score the challenge once per claim.
@@ -455,9 +574,23 @@ async function handleReset(body: JsonBody, res: ServerResponse): Promise<void> {
 
   // Delete this session's testimony docs so the shared index stays tiny.
   const { data: deleted, entry } = await search.deleteSessionTestimony(session.sessionId);
+  const trace: TraceEntry[] = [entry];
+
+  // For a bring-your-own trial, also purge the uploaded source partition.
+  if (session.mode === "byo") {
+    try {
+      const cleanup = await search.deleteCaseDocs(session.caseId);
+      trace.push(cleanup.entry);
+    } catch (error) {
+      trace.push(
+        heuristicEntry("index.delete(source) — failed", 0, describe(error).slice(0, 120))
+      );
+    }
+  }
+
   const finalScore = session.score;
   deleteSession(session.sessionId);
-  send(res, 200, { deletedTestimonyDocs: deleted, finalScore, trace: [entry] });
+  send(res, 200, { deletedTestimonyDocs: deleted, finalScore, trace });
 }
 
 function handleScore(body: JsonBody, res: ServerResponse): void {
@@ -488,12 +621,11 @@ const server = createServer(async (req, res) => {
     if (req.method === "GET" && url.pathname === "/api/health") {
       return await handleHealth(res);
     }
-    if (req.method === "POST" && url.pathname === "/api/session") {
-      return handleNewSession(res);
-    }
     if (req.method === "POST") {
       const body = await readJson(req);
       switch (url.pathname) {
+        case "/api/session":
+          return await handleNewSession(body, res);
         case "/api/ask":
           return await handleAsk(body, res);
         case "/api/challenge":

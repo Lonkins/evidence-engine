@@ -27,6 +27,16 @@ export interface TestimonyDoc {
   turn_no: number;
 }
 
+/** A chunk of user-supplied source material for a "bring your own trial". */
+export interface CaseSourceDoc {
+  id: string;
+  title: string;
+  content: string;
+  doc_type: "evidence";
+  case_id: string;
+  session_id: string;
+}
+
 export class SearchClient {
   constructor(private readonly config: Config) {}
 
@@ -225,6 +235,98 @@ export class SearchClient {
         detail: `${docs.length} testimony claim(s) indexed`,
       };
     });
+  }
+
+  /**
+   * Index user-supplied source chunks as the evidence partition for a
+   * "bring your own trial" (Part 2). Same index, same answerSynthesis path —
+   * the witness is grounded on the user's own material and Foundry IQ checks
+   * claims against it.
+   */
+  async uploadCaseDocs(
+    docs: CaseSourceDoc[],
+    step: string
+  ): Promise<{ data: number; entry: TraceEntry }> {
+    const path = `/indexes/${this.config.indexName}/docs/index`;
+    return timed(step, "POST", path, async () => {
+      const response = await fetch(`${this.config.searchEndpoint}${path}?api-version=${API_VERSION}`, {
+        method: "POST",
+        headers: this.headers(),
+        body: JSON.stringify({
+          value: docs.map((doc) => ({ "@search.action": "mergeOrUpload", ...doc })),
+        }),
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Case source upload failed: ${response.status} — ${text.slice(0, 300)}`);
+      }
+      return {
+        status: response.status,
+        data: docs.length,
+        detail: `${docs.length} source chunk(s) indexed`,
+      };
+    });
+  }
+
+  /**
+   * Delete a bring-your-own evidence partition on session end so the shared
+   * index stays small. Hard-guarded to `byo-` case ids so it can never touch
+   * the built-in Holbrooke corpus.
+   */
+  async deleteCaseDocs(caseId: string): Promise<{ data: number; entry: TraceEntry }> {
+    if (!caseId.startsWith("byo-")) {
+      throw new Error(`Refusing to delete a non-byo evidence partition: ${caseId}`);
+    }
+    const searchPath = `/indexes/${this.config.indexName}/docs/search`;
+    const { data: ids, entry: findEntry } = await timed<string[]>(
+      "index.find(source)",
+      "POST",
+      `${searchPath} [byo cleanup]`,
+      async () => {
+        const response = await fetch(
+          `${this.config.searchEndpoint}${searchPath}?api-version=${API_VERSION}`,
+          {
+            method: "POST",
+            headers: this.headers(),
+            body: JSON.stringify({
+              search: "*",
+              filter: `doc_type eq 'evidence' and case_id eq '${caseId.replace(/'/g, "")}'`,
+              select: "id",
+              top: 1000,
+            }),
+          }
+        );
+        if (!response.ok) {
+          throw new Error(`Source lookup failed: ${response.status}`);
+        }
+        const body = (await response.json()) as { value: Array<{ id: string }> };
+        const found = body.value.map((doc) => doc.id);
+        return { status: response.status, data: found, detail: `${found.length} doc(s)` };
+      }
+    );
+
+    if (ids.length === 0) {
+      return { data: 0, entry: findEntry };
+    }
+
+    const deletePath = `/indexes/${this.config.indexName}/docs/index`;
+    const { entry } = await timed("index.delete(source)", "POST", deletePath, async () => {
+      const response = await fetch(
+        `${this.config.searchEndpoint}${deletePath}?api-version=${API_VERSION}`,
+        {
+          method: "POST",
+          headers: this.headers(),
+          body: JSON.stringify({
+            value: ids.map((id) => ({ "@search.action": "delete", id })),
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`Source delete failed: ${response.status}`);
+      }
+      return { status: response.status, data: ids.length, detail: `${ids.length} deleted` };
+    });
+    return { data: ids.length, entry };
   }
 
   /**

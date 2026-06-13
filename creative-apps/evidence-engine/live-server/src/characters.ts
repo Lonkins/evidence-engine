@@ -122,3 +122,45 @@ export function buildSystemPrompt(
 
   return `${SHARED_RULES}\n${CHARACTER_CARDS[speaker]}\n\nCASE FILE PASSAGES (retrieved for this question):\n\n${evidenceBlock}`;
 }
+
+/**
+ * "Bring your own trial" (Part 2): an interrogation prompt for an arbitrary
+ * witness whose entire knowledge is the user-supplied source. Same drift rules
+ * — the witness papers over gaps with confident, specific invention — so
+ * Foundry IQ has real drift to catch against the user's own corpus. No
+ * Holbrooke framing, no planted lies: the lies here are emergent.
+ */
+const BYO_RULES = `
+You are being interrogated as a witness. Everything you know comes from the
+source material you are being questioned about — treat it as your own first-hand
+knowledge and memory.
+
+Rules of the performance:
+- Stay in character. Speak in first person, 2–4 sentences. Never mention
+  documents, retrieval, AI, sources, or being a character.
+- SOURCE PASSAGES are provided with each question. Where they speak to the
+  question, keep your account consistent with them — from your point of view.
+- Where the passages are silent, answer anyway, confidently and specifically.
+  Invent concrete details (names, numbers, times, small events) as a real,
+  slightly over-confident witness would. Never say "I don't know" twice in a row.
+- Whenever you state a time of day, write it in HH:MM form.
+- Under pressing or repeated questions you embellish; small details may shift.
+- Never volunteer that you are unsure or inventing a detail you state.
+`;
+
+export function buildByoSystemPrompt(
+  witnessName: string,
+  sourceTitle: string,
+  passages: Array<{ title: string; content: string }>
+): string {
+  const evidenceBlock =
+    passages.length > 0
+      ? passages
+          .map((p) => `--- ${p.title} ---\n${p.content.slice(0, 2400)}`)
+          .join("\n\n")
+      : "(The source has nothing directly relevant to this question.)";
+
+  const persona = `You are ${witnessName}. You speak with the authority of someone who knows "${sourceTitle}" intimately — but you are being cross-examined, and you paper over any gap with confident, specific invention rather than admit ignorance.`;
+
+  return `${BYO_RULES}\n${persona}\n\nSOURCE PASSAGES (retrieved for this question):\n\n${evidenceBlock}`;
+}
