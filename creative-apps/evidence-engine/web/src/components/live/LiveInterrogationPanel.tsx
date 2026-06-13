@@ -10,6 +10,8 @@ interface LiveInterrogationPanelProps {
   live: LiveSessionState;
   /** Whether Foundry IQ grounding is currently on (the "pull the plug" switch). */
   grounding: boolean;
+  /** In a bring-your-own trial, the single witness — overrides the Holbrooke suspect rail. */
+  witness?: { name: string; role: string };
   onAsk: (speaker: string, question: string) => void;
   onChallenge: (claimId: string) => void;
   onOpenDoc: (docKey: string) => void;
@@ -30,6 +32,7 @@ const SUGGESTED_OPENERS = [
 export function LiveInterrogationPanel({
   live,
   grounding,
+  witness,
   onAsk,
   onChallenge,
   onOpenDoc,
@@ -38,8 +41,12 @@ export function LiveInterrogationPanel({
   const [draft, setDraft] = useState("");
   const threadRef = useRef<HTMLDivElement>(null);
 
+  // The person on the stand: the BYO witness if supplied, else the selected
+  // Holbrooke suspect.
   const suspect = SUSPECTS.find((s) => s.id === state.selectedSuspectId);
-  const turns = suspect ? live.transcripts[suspect.name] ?? [] : [];
+  const person = witness ?? (suspect ? { name: suspect.name, role: suspect.role } : null);
+  const corpusNoun = witness ? "your source" : "the case file";
+  const turns = person ? live.transcripts[person.name] ?? [] : [];
   const turnCount = turns.length;
   const challengeCount = Object.keys(live.challenges).length;
   // Guided first beat: until the player lands their first challenge anywhere,
@@ -53,7 +60,7 @@ export function LiveInterrogationPanel({
     });
   }, [turnCount, challengeCount, live.askPending]);
 
-  if (!suspect) {
+  if (!person) {
     return (
       <section className="interrogation live-panel">
         <p className="interrogation__empty">
@@ -68,7 +75,7 @@ export function LiveInterrogationPanel({
     const question = draft.trim();
     if (!question || live.askPending) return;
     setDraft("");
-    onAsk(suspect.name, question);
+    onAsk(person.name, question);
   };
 
   return (
@@ -79,8 +86,8 @@ export function LiveInterrogationPanel({
             Live interrogation <span className="live-dot" aria-hidden="true" />
           </p>
           <h2 id="live-heading" className="interrogation__name">
-            {suspect.name}
-            <span className="interrogation__role"> · {suspect.role}</span>
+            {person.name}
+            <span className="interrogation__role"> · {person.role}</span>
           </h2>
         </div>
       </header>
@@ -95,11 +102,11 @@ export function LiveInterrogationPanel({
       )}
 
       <p className="live-panel__disclosure">
-        {suspect.name} is played by a live model, grounded in the case file through
+        {person.name} is played by a live model, grounded in {corpusNoun} through
         Foundry IQ on every turn — but free to drift beyond it. The drift is the game:
-        challenge any sentence and the engine checks it against the evidence, live.
+        challenge any sentence and the engine checks it against {corpusNoun}, live.
         <span className="live-panel__scope">
-          The engine can only check claims against this case file — like real grounding,
+          The engine can only check claims against {corpusNoun} — like real grounding,
           it can't see what isn't indexed.
         </span>
       </p>
@@ -107,7 +114,7 @@ export function LiveInterrogationPanel({
       <div className="interrogation__thread" ref={threadRef}>
         {turns.length === 0 && !live.askPending && (
           <p className="interrogation__empty">
-            {suspect.name} waits on the line. Ask anything — then challenge every
+            {person.name} waits on the line. Ask anything — then challenge every
             sentence you don't believe.
           </p>
         )}
@@ -164,7 +171,7 @@ export function LiveInterrogationPanel({
         {live.askPending && (
           <p className="live-panel__typing" role="status">
             <span className="live-dot live-dot--pulse" aria-hidden="true" />
-            {suspect.name} is answering — Foundry IQ retrieve in flight…
+            {person.name} is answering — Foundry IQ retrieve in flight…
           </p>
         )}
 
@@ -180,10 +187,10 @@ export function LiveInterrogationPanel({
           className="live-panel__input"
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
-          placeholder={`Put a question to ${suspect.name}…`}
+          placeholder={`Put a question to ${person.name}…`}
           maxLength={600}
           disabled={live.askPending}
-          aria-label={`Question for ${suspect.name}`}
+          aria-label={`Question for ${person.name}`}
         />
         <button
           type="submit"

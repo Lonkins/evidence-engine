@@ -42,8 +42,25 @@ export async function probeHealth(): Promise<boolean> {
   }
 }
 
-export function createSession(): Promise<{ sessionId: string }> {
-  return post("/api/session", {});
+/** Config for a "bring your own trial" — the user's source on the stand. */
+export interface ByoConfig {
+  source: string;
+  title?: string;
+  witnessName?: string;
+}
+
+export interface SessionInfo {
+  sessionId: string;
+  mode: "holbrooke" | "byo";
+  witness?: { name: string; role: string };
+  sourceTitle?: string;
+}
+
+export function createSession(byo?: ByoConfig): Promise<SessionInfo> {
+  return post(
+    "/api/session",
+    byo ? { source: byo.source, title: byo.title, witnessName: byo.witnessName } : {}
+  );
 }
 
 export function ask(

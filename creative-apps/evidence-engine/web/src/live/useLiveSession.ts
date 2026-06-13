@@ -1,5 +1,6 @@
 import { useCallback, useReducer } from "react";
 import * as api from "./api";
+import type { ByoConfig, SessionInfo } from "./api";
 import type {
   ChallengeResponse,
   LiveTurn,
@@ -12,6 +13,11 @@ export type LiveStatus = "idle" | "probing" | "offline" | "ready" | "ended";
 export interface LiveSessionState {
   status: LiveStatus;
   sessionId: string | null;
+  /** 'holbrooke' = the built-in case; 'byo' = the user's own source on trial. */
+  mode: "holbrooke" | "byo";
+  /** The single custom witness, in byo mode. */
+  witness: { name: string; role: string } | null;
+  sourceTitle: string | null;
   /** Transcript per speaker name. */
   transcripts: Record<string, LiveTurn[]>;
   /** Challenge results keyed by claimId. */
@@ -28,6 +34,9 @@ export interface LiveSessionState {
 const initialState: LiveSessionState = {
   status: "idle",
   sessionId: null,
+  mode: "holbrooke",
+  witness: null,
+  sourceTitle: null,
   transcripts: {},
   challenges: {},
   trace: [],
@@ -41,7 +50,7 @@ const initialState: LiveSessionState = {
 type LiveAction =
   | { type: "PROBE_START" }
   | { type: "OFFLINE" }
-  | { type: "READY"; sessionId: string }
+  | { type: "READY"; info: SessionInfo }
   | { type: "ASK_START" }
   | { type: "ASK_DONE"; speaker: string; turn: LiveTurn; trace: TraceEntry[] }
   | { type: "CHALLENGE_START"; claimId: string }
@@ -62,7 +71,15 @@ function reducer(state: LiveSessionState, action: LiveAction): LiveSessionState 
     case "OFFLINE":
       return { ...state, status: "offline" };
     case "READY":
-      return { ...state, status: "ready", sessionId: action.sessionId, error: null };
+      return {
+        ...state,
+        status: "ready",
+        sessionId: action.info.sessionId,
+        mode: action.info.mode,
+        witness: action.info.witness ?? null,
+        sourceTitle: action.info.sourceTitle ?? null,
+        error: null,
+      };
     case "ASK_START":
       return { ...state, askPending: true, error: null };
     case "ASK_DONE": {
@@ -111,8 +128,12 @@ function describe(error: unknown): string {
 export function useLiveSession() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  /** Probe the backend and open a session. Offline is reported plainly. */
-  const connect = useCallback(async () => {
+  /**
+   * Probe the backend and open a session. Pass a ByoConfig to put the user's
+   * own source on the stand; omit it for the built-in Holbrooke case. Offline
+   * is reported plainly.
+   */
+  const connect = useCallback(async (byo?: ByoConfig) => {
     dispatch({ type: "PROBE_START" });
     const live = await api.probeHealth();
     if (!live) {
@@ -120,8 +141,8 @@ export function useLiveSession() {
       return;
     }
     try {
-      const { sessionId } = await api.createSession();
-      dispatch({ type: "READY", sessionId });
+      const info = await api.createSession(byo);
+      dispatch({ type: "READY", info });
     } catch {
       dispatch({ type: "OFFLINE" });
     }

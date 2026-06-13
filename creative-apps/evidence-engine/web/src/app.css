@@ -70,6 +70,18 @@
   justify-content: flex-end;
 }
 
+/* Part 2: a bring-your-own trial has a single witness — no suspect rail, so the
+   interrogation panel takes the full width beside the engine tap. */
+.live-grid--byo {
+  grid-template-columns: minmax(0, 1fr) clamp(290px, 25vw, 380px);
+}
+
+@media (max-width: 980px) {
+  .live-grid--byo {
+    grid-template-columns: 1fr;
+  }
+}
+
 .desk-grid {
   flex: 1;
   min-height: 0;

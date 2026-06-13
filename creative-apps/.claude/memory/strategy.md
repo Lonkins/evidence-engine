@@ -51,8 +51,18 @@ story/notes/code, engine interrogates a witness grounded in *it* (Part 2 next);
 Holbrooke stays as the built-in example + deterministic video hero. Reuses the
 index/partition/upload plumbing. Deadline June 14 — timebox BYO, protect Section C
 (host/video/receipts/Discord), never break the verified Holbrooke path.
-**Next: Part 2 (BYO core: /api/case intake + per-session corpus + generic witness)
-→ Section C.**
+**Part 2 DONE (June 13) — "bring your own trial":** POST /api/session takes
+{source,title,witnessName}; text is chunked + indexed as its own evidence
+partition (case_id 'byo-<uuid>'); a single custom witness is grounded in it;
+challenges run answerSynthesis over that partition; reset purges it. Web: TitleCard
+"put your own source on trial" → ByoIntake (paste) → BYO desk (no suspect rail/
+accusation, "New trial" link). Verified in-browser: pasted a drone field manual →
+witness hallucinated a NASA-satellite backstory → challenge → UNVERIFIABLE grey
+band against the user's own source ("a confident claim with no receipt is exactly
+where hallucinations hide"). Holbrooke untouched as the built-in example. Builds
+green; 39 web + 30 server tests.
+**Next: Section C — host (C1), record 90s kill-shot video (C2), real Copilot
+receipts (C3), fallback GIF (C4), Discord (C5). Deadline June 14.**
 
 ---
 

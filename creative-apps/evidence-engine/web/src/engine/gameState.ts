@@ -19,6 +19,7 @@ export interface GameState {
 
 export type GameAction =
   | { type: "OPEN_CASE" }
+  | { type: "CLOSE_CASE" }
   | { type: "SELECT_SUSPECT"; suspectId: SuspectId }
   | { type: "ASK_QUESTION"; question: Question }
   | { type: "PRESS_CLAIM"; claim: Claim }
@@ -50,6 +51,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case "OPEN_CASE":
       return { ...state, caseOpened: true };
+
+    case "CLOSE_CASE":
+      return { ...state, caseOpened: false, selectedSuspectId: null };
 
     case "SELECT_SUSPECT":
       return { ...state, selectedSuspectId: action.suspectId };

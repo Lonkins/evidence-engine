@@ -8,12 +8,15 @@ import { LiveInterrogationPanel } from "./LiveInterrogationPanel";
 import { EngineTracePanel } from "./EngineTracePanel";
 import { InterrogationReport } from "./InterrogationReport";
 import { LiveAccusation } from "./LiveAccusation";
+import type { ByoConfig } from "../../live/api";
 import "./live.css";
 
 interface LiveDeskProps {
   onBackToCaseFile: () => void;
   /** Right-aligned slot for journey controls (the act switch). */
   actions?: ReactNode;
+  /** When set, put the user's own source on the stand instead of Holbrooke. */
+  byo?: ByoConfig;
 }
 
 /**
@@ -22,7 +25,7 @@ interface LiveDeskProps {
  * say so plainly and point back to Case File mode — we never substitute
  * local retrieval while claiming to be live.
  */
-export function LiveDesk({ onBackToCaseFile, actions }: LiveDeskProps) {
+export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
   const { dispatch } = useGame();
   const { state, connect, askQuestion, challengeClaim, endSession } = useLiveSession();
   const [openDocKey, setOpenDocKey] = useState<string | null>(null);
@@ -41,16 +44,24 @@ export function LiveDesk({ onBackToCaseFile, actions }: LiveDeskProps) {
   useEffect(() => {
     if (connectedRef.current) return;
     connectedRef.current = true;
-    void connect();
-  }, [connect]);
+    void connect(byo);
+  }, [connect, byo]);
 
-  // Cold open (A1): the moment the line is live, drop the player mid-interrogation
-  // — Helena already on the stand, her planted alibi ("I left at 19:45") on screen,
-  // one claim chip pulsing. No tutorial: challenge the time and Foundry IQ lands
-  // CONTRADICTED in seconds. Fires exactly once per mounted session.
+  // Cold open (A1): the moment the line is live, drop the player mid-interrogation.
+  // Holbrooke → Helena already on the stand with her planted alibi. Bring-your-own
+  // → the custom witness, asked to lay out the facts so there's something to
+  // challenge in seconds. Fires exactly once per mounted session.
   useEffect(() => {
-    if (state.status === "ready" && state.sessionId && !coldOpenedRef.current) {
-      coldOpenedRef.current = true;
+    if (state.status !== "ready" || !state.sessionId || coldOpenedRef.current) return;
+    coldOpenedRef.current = true;
+    if (state.mode === "byo" && state.witness) {
+      void askQuestion(
+        state.sessionId,
+        state.witness.name,
+        "In your own words — what is this about, and what are the most important facts?",
+        grounding
+      );
+    } else {
       dispatch({ type: "SELECT_SUSPECT", suspectId: "helena" });
       void askQuestion(
         state.sessionId,
@@ -59,7 +70,7 @@ export function LiveDesk({ onBackToCaseFile, actions }: LiveDeskProps) {
         grounding
       );
     }
-  }, [state.status, state.sessionId, dispatch, askQuestion, grounding]);
+  }, [state.status, state.sessionId, state.mode, state.witness, dispatch, askQuestion, grounding]);
 
   if (state.status === "probing" || state.status === "idle") {
     return (
@@ -108,6 +119,8 @@ export function LiveDesk({ onBackToCaseFile, actions }: LiveDeskProps) {
   const sessionId = state.sessionId;
   if (!sessionId) return null;
 
+  const isByo = state.mode === "byo";
+
   return (
     <>
       <header className="case-header live-header">
@@ -116,29 +129,44 @@ export function LiveDesk({ onBackToCaseFile, actions }: LiveDeskProps) {
             LIVE
           </span>
           <div>
-            <h1 className="case-header__title">The Interrogation Room</h1>
+            <h1 className="case-header__title">
+              {isByo ? "Your source on the stand" : "The Interrogation Room"}
+            </h1>
             <p className="case-header__sub">
-              A real AI plays the witnesses · Foundry IQ checks every claim against the
-              case file, live · they will lie — catch them with the receipt
+              {isByo ? (
+                <>
+                  {state.witness?.name ?? "The witness"} is grounded in{" "}
+                  <em>“{state.sourceTitle ?? "your source"}”</em> · Foundry IQ checks every
+                  claim against it, live — catch what it can't back up
+                </>
+              ) : (
+                <>
+                  A real AI plays the witnesses · Foundry IQ checks every claim against the
+                  case file, live · they will lie — catch them with the receipt
+                </>
+              )}
             </p>
           </div>
         </div>
         <div className="live-header__tools">
-          <button
-            type="button"
-            className="surface-link surface-link--accuse"
-            onClick={() => setAccusing(true)}
-          >
-            Name the killer
-          </button>
+          {!isByo && (
+            <button
+              type="button"
+              className="surface-link surface-link--accuse"
+              onClick={() => setAccusing(true)}
+            >
+              Name the killer
+            </button>
+          )}
           {actions}
         </div>
       </header>
-      <main className="desk-grid live-grid">
-        <SuspectRail />
+      <main className={`desk-grid live-grid ${isByo ? "live-grid--byo" : ""}`}>
+        {!isByo && <SuspectRail />}
         <LiveInterrogationPanel
           live={state}
           grounding={grounding}
+          witness={isByo ? state.witness ?? undefined : undefined}
           onAsk={(speaker, question) => void askQuestion(sessionId, speaker, question, grounding)}
           onChallenge={(claimId) => void challengeClaim(sessionId, claimId, grounding)}
           onOpenDoc={setOpenDocKey}
@@ -153,7 +181,7 @@ export function LiveDesk({ onBackToCaseFile, actions }: LiveDeskProps) {
         />
         {openDocKey && <DocumentModal docKey={openDocKey} onClose={() => setOpenDocKey(null)} />}
       </main>
-      {accusing && (
+      {accusing && !isByo && (
         <LiveAccusation
           challenges={state.challenges}
           onClose={() => setAccusing(false)}

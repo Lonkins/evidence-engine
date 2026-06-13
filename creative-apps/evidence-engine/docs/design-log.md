@@ -49,6 +49,29 @@ case where you *don't* have the source to check against.
    Holbrooke deterministic path; protect time for Section C. A submitted B+ beats
    an unsubmitted A+.
 
+### Part 2 shipped (June 13) — "bring your own trial"
+
+The wow, working end-to-end. The user pastes any source (a spec, notes, a story,
+code); it is chunked and indexed as its own evidence partition (`case_id
+'byo-<uuid>'`); a single custom witness takes the stand grounded in it; and
+Foundry IQ checks the witness's claims against the user's own material —
+GROUNDED / CONTRADICTED / UNVERIFIABLE with citations from their text. Reset
+purges the partition (hard-guarded so it can never touch the Holbrooke corpus).
+The lies here are **emergent**, not scripted, which kills the "you scripted both
+sides" critique. Backend reuses the existing index/partition/upload plumbing.
+
+Web: TitleCard gains a "put your own source on trial" CTA → `ByoIntake` (paste +
+optional title/witness) → the BYO desk (single witness, no suspect rail, no
+accusation, a "New trial" link). `LiveInterrogationPanel` takes an optional
+`witness`; `useLiveSession.connect(byo)` carries the config.
+
+Verified in-browser: pasted a "Nimbus-7 Field Manual" (a *drone*); the witness
+confidently hallucinated a NASA-satellite backstory ("space mission… launched 24
+October 1978"); challenging it returned **UNVERIFIABLE** against the user's own
+source — the engine tap showing the retrieve filtered on the `byo-…` partition.
+That is real emergent hallucination, caught by Foundry IQ against the user's
+material. Builds green; 39 web + 30 server tests.
+
 ### Part 1 shipped (this entry)
 Promoted UNSUPPORTED → a first-class **UNVERIFIABLE** stamp + note across the live
 web verdict cards and the MCP `check_claim` output; reframed SUPPORTED→"Grounded"
