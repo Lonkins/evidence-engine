@@ -5,6 +5,9 @@ import "./live.css";
 interface EngineTracePanelProps {
   trace: TraceEntry[];
   score: Scorecard | null;
+  /** Foundry IQ grounding on/off — the "pull the plug" switch. */
+  grounding: boolean;
+  onToggleGrounding: () => void;
   onEndSession: () => void;
   canEnd: boolean;
 }
@@ -35,7 +38,14 @@ function stepGlyph(step: string): string {
  * Foundry IQ retrieves, testimony indexing, document lookups, LLM turns.
  * This is the IQ layer made visible: method, target, latency, status.
  */
-export function EngineTracePanel({ trace, score, onEndSession, canEnd }: EngineTracePanelProps) {
+export function EngineTracePanel({
+  trace,
+  score,
+  grounding,
+  onToggleGrounding,
+  onEndSession,
+  canEnd,
+}: EngineTracePanelProps) {
   const logRef = useRef<HTMLOListElement>(null);
   const traceCount = trace.length;
 
@@ -62,6 +72,31 @@ export function EngineTracePanel({ trace, score, onEndSession, canEnd }: EngineT
         <strong>{Math.max(0, 3 - totalCatches(score))} more</strong> contradiction
         {Math.max(0, 3 - totalCatches(score)) === 1 ? "" : "s"} against the record.
       </p>
+
+      <div className={`engine-tap__grounding ${grounding ? "" : "engine-tap__grounding--off"}`}>
+        <div className="engine-tap__grounding-text">
+          <span className="micro-label">Foundry IQ grounding</span>
+          <p className="engine-tap__grounding-state">
+            {grounding
+              ? "ON — every claim is checked against the case file, live."
+              : "OFF — the engine has nothing to check against. Her word stands."}
+          </p>
+        </div>
+        <button
+          type="button"
+          className={`engine-tap__plug ${grounding ? "engine-tap__plug--on" : "engine-tap__plug--off"}`}
+          onClick={onToggleGrounding}
+          role="switch"
+          aria-checked={grounding}
+          aria-label="Toggle Foundry IQ grounding"
+          title={grounding ? "Pull the plug on Foundry IQ" : "Plug Foundry IQ back in"}
+        >
+          <span className="engine-tap__plug-track" aria-hidden="true">
+            <span className="engine-tap__plug-knob" />
+          </span>
+          <span className="engine-tap__plug-label">{grounding ? "ON" : "OFF"}</span>
+        </button>
+      </div>
 
       {score && (
         <dl className="engine-tap__score" aria-label="Interrogation scorecard">

@@ -74,6 +74,7 @@ export class SearchClient {
       const body = (await response.json()) as {
         references?: Array<{ id: string; docKey: string; title?: string; rerankerScore?: number }>;
         response?: Array<{ content?: Array<{ type: string; text: string }> }>;
+        activity?: Array<{ type: string; reasoningTokens?: number; count?: number }>;
       };
 
       const threshold = thresholdOverride ?? this.config.noEvidenceThreshold;
@@ -91,10 +92,15 @@ export class SearchClient {
       const passages = parsePassages(body.response).filter((p) => survivingIds.has(p.refId));
 
       const top = references[0]?.rerankerScore;
+      // Surface the KB's own agentic-reasoning activity in the engine tap —
+      // this is Foundry IQ's reasoning step, reported by the service itself.
+      const reasoning = (body.activity ?? []).find((a) => a.type === "agenticReasoning");
+      const reasoningNote =
+        reasoning?.reasoningTokens != null ? ` · IQ reasoning ${reasoning.reasoningTokens} tok` : "";
       return {
         status: response.status,
         data: { references, passages },
-        detail: `${references.length} ref(s) ≥ ${threshold}${top ? `, top ${top.toFixed(2)}` : ""}`,
+        detail: `${references.length} ref(s) ≥ ${threshold}${top ? `, top ${top.toFixed(2)}` : ""}${reasoningNote}`,
       };
     });
   }
@@ -143,6 +149,7 @@ export class SearchClient {
       const body = (await response.json()) as {
         references?: Array<{ id: string; docKey: string; title?: string; rerankerScore?: number }>;
         response?: Array<{ content?: Array<{ type: string; text: string }> }>;
+        activity?: Array<{ type: string; reasoningTokens?: number; count?: number }>;
       };
 
       const threshold = thresholdOverride ?? this.config.claimEvidenceThreshold;
@@ -157,11 +164,14 @@ export class SearchClient {
       // In answerSynthesis mode the response text is the synthesised prose
       // answer (not the extractive passage JSON).
       const answer = body.response?.[0]?.content?.find((c) => c.type === "text")?.text ?? "";
+      const reasoning = (body.activity ?? []).find((a) => a.type === "agenticReasoning");
+      const reasoningNote =
+        reasoning?.reasoningTokens != null ? ` · IQ reasoning ${reasoning.reasoningTokens} tok` : "";
 
       return {
         status: response.status,
         data: { answer, references },
-        detail: `${references.length} grounding ref(s), answer ${answer.length} chars`,
+        detail: `${references.length} grounding ref(s), answer ${answer.length} chars${reasoningNote}`,
       };
     });
   }

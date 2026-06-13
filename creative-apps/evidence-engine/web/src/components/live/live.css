@@ -791,3 +791,167 @@
   border-color: var(--gold-dim);
   color: var(--gold-bright);
 }
+
+/* ---------------------------------------------------------------------------
+   Pull-the-plug grounding toggle (engine tap)
+   --------------------------------------------------------------------------- */
+.engine-tap__grounding {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--gold-dim);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  transition: border-color 200ms ease, background 200ms ease;
+}
+
+.engine-tap__grounding--off {
+  border-color: #b3402f;
+  background: rgba(179, 64, 47, 0.12);
+}
+
+.engine-tap__grounding-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.engine-tap__grounding-state {
+  margin: 0;
+  font-size: 0.74rem;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.engine-tap__plug {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.5rem;
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text);
+  font: inherit;
+  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+}
+
+.engine-tap__plug-track {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  transition: background 200ms ease;
+}
+
+.engine-tap__plug-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text);
+  transition: transform 200ms ease, background 200ms ease;
+}
+
+.engine-tap__plug--on .engine-tap__plug-track {
+  background: var(--gold-dim);
+}
+
+.engine-tap__plug--on .engine-tap__plug-knob {
+  transform: translateX(18px);
+  background: var(--gold-bright);
+}
+
+.engine-tap__plug--on {
+  color: var(--gold-bright);
+  border-color: var(--gold-dim);
+}
+
+.engine-tap__plug--off {
+  color: #e08a7c;
+  border-color: #b3402f;
+}
+
+/* Unplugged banner in the interrogation panel */
+.live-panel__unplugged {
+  margin: 0 0 0.85rem;
+  padding: 0.7rem 0.85rem;
+  border-left: 3px solid #b3402f;
+  background: rgba(179, 64, 47, 0.12);
+  color: var(--text);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* Ungrounded challenged claim chip */
+.claim--ungrounded {
+  border-style: dashed !important;
+  opacity: 0.85;
+}
+
+/* The kill-shot set-piece: a real contradiction animates in */
+@keyframes live-pin-in {
+  0% { transform: scale(0.97) translateY(6px); opacity: 0; }
+  60% { transform: scale(1.01); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.live-verdict--pinned {
+  animation: live-pin-in 320ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  box-shadow: 0 0 0 1px #b3402f, 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-verdict--pinned { animation: none; }
+}
+
+/* Foundry IQ reasoning line on a verdict */
+.live-verdict__iq {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.live-verdict__iq-tag {
+  flex: none;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--gold-dim);
+  border-radius: 3px;
+  color: var(--gold-bright);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Time-of-death stakes on the kill-shot */
+.live-verdict__stakes {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.7rem 0 0;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #b3402f;
+  border-radius: 4px;
+  background: rgba(179, 64, 47, 0.14);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.live-verdict__stakes-mark {
+  flex: none;
+  color: #e08a7c;
+  font-size: 1rem;
+}

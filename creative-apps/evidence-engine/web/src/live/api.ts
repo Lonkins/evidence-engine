@@ -49,13 +49,18 @@ export function createSession(): Promise<{ sessionId: string }> {
 export function ask(
   sessionId: string,
   speaker: string,
-  question: string
+  question: string,
+  grounding = true
 ): Promise<AskResponse> {
-  return post("/api/ask", { sessionId, speaker, question });
+  return post("/api/ask", { sessionId, speaker, question, grounding });
 }
 
-export function challenge(sessionId: string, claimId: string): Promise<ChallengeResponse> {
-  return post("/api/challenge", { sessionId, claimId });
+export function challenge(
+  sessionId: string,
+  claimId: string,
+  grounding = true
+): Promise<ChallengeResponse> {
+  return post("/api/challenge", { sessionId, claimId, grounding });
 }
 
 export function reset(sessionId: string): Promise<ResetResponse> {

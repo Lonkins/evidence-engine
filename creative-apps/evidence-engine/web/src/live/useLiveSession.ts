@@ -128,10 +128,10 @@ export function useLiveSession() {
   }, []);
 
   const askQuestion = useCallback(
-    async (sessionId: string, speaker: string, question: string) => {
+    async (sessionId: string, speaker: string, question: string, grounding = true) => {
       dispatch({ type: "ASK_START" });
       try {
-        const response = await api.ask(sessionId, speaker, question);
+        const response = await api.ask(sessionId, speaker, question, grounding);
         dispatch({
           type: "ASK_DONE",
           speaker,
@@ -151,10 +151,11 @@ export function useLiveSession() {
     []
   );
 
-  const challengeClaim = useCallback(async (sessionId: string, claimId: string) => {
+  const challengeClaim = useCallback(
+    async (sessionId: string, claimId: string, grounding = true) => {
     dispatch({ type: "CHALLENGE_START", claimId });
     try {
-      const result = await api.challenge(sessionId, claimId);
+      const result = await api.challenge(sessionId, claimId, grounding);
       dispatch({ type: "CHALLENGE_DONE", result });
     } catch (error) {
       dispatch({ type: "ERROR", message: describe(error) });

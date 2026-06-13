@@ -8,6 +8,8 @@ import "./live.css";
 
 interface LiveInterrogationPanelProps {
   live: LiveSessionState;
+  /** Whether Foundry IQ grounding is currently on (the "pull the plug" switch). */
+  grounding: boolean;
   onAsk: (speaker: string, question: string) => void;
   onChallenge: (claimId: string) => void;
   onOpenDoc: (docKey: string) => void;
@@ -27,6 +29,7 @@ const SUGGESTED_OPENERS = [
  */
 export function LiveInterrogationPanel({
   live,
+  grounding,
   onAsk,
   onChallenge,
   onOpenDoc,
@@ -81,6 +84,15 @@ export function LiveInterrogationPanel({
           </h2>
         </div>
       </header>
+
+      {!grounding && (
+        <p className="live-panel__unplugged" role="status">
+          <strong>Foundry IQ is unplugged.</strong> Nothing checks the witness now — her
+          claims can't be verified or caught. This is the case <em>without</em> grounding:
+          a fluent liar and no way to know. Plug it back in (engine tap, right) and
+          re-challenge to watch the catch land.
+        </p>
+      )}
 
       <p className="live-panel__disclosure">
         {suspect.name} is played by a live model, grounded in the case file through

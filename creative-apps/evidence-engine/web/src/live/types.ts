@@ -29,11 +29,20 @@ export interface AskResponse {
   reply: string;
   claims: LiveClaimRef[];
   retrievedDocs: RetrievedDoc[];
+  /** Whether Foundry IQ grounding was on for this turn (false = pull the plug). */
+  grounding?: boolean;
   trace: TraceEntry[];
 }
 
 export type EvidenceVerdict = "SUPPORTED" | "UNSUPPORTED" | "CONTRADICTED";
 export type SelfVerdict = "SELF_CONSISTENT" | "SELF_CONTRADICTION";
+
+/**
+ * Which system produced the verdict. `iq` = the KB's grounded reasoning,
+ * `heuristic` = the deterministic cross-check, `ungrounded` = grounding was
+ * switched off so nothing could be checked ("pull the plug").
+ */
+export type VerdictSource = "iq" | "heuristic" | "ungrounded";
 
 export interface ChallengeResponse {
   claimId: string;
@@ -42,6 +51,12 @@ export interface ChallengeResponse {
   turnNo: number;
   evidence: {
     verdict: EvidenceVerdict;
+    /** Honest disclosure of who decided; absent on older responses. */
+    source?: VerdictSource;
+    /** Whether the IQ verdict and deterministic cross-check agreed. */
+    agreement?: boolean;
+    /** The KB's own reasoning + verbatim cited passage, when IQ produced it. */
+    iq?: { justification: string; citedPassage: string | null } | null;
     citations: Array<{ docKey: string; title: string; excerpt: string }>;
   };
   self: {
