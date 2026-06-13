@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import { useGame } from "../../GameContext";
 import { SuspectRail } from "../suspects/SuspectRail";
 import { DocumentModal } from "../evidence/DocumentModal";
 import { useLiveSession } from "../../live/useLiveSession";
@@ -21,15 +22,42 @@ interface LiveDeskProps {
  * local retrieval while claiming to be live.
  */
 export function LiveDesk({ onBackToCaseFile, actions }: LiveDeskProps) {
+  const { dispatch } = useGame();
   const { state, connect, askQuestion, challengeClaim, endSession } = useLiveSession();
   const [openDocKey, setOpenDocKey] = useState<string | null>(null);
   // "Pull the plug": grounding on = Foundry IQ checks every claim; off = the
   // engine has nothing to check against, so the witness's word stands.
   const [grounding, setGrounding] = useState(true);
+  const coldOpenedRef = useRef(false);
+  const connectedRef = useRef(false);
 
+  // Connect exactly once. Without this guard, React StrictMode's double-mount (dev)
+  // fires connect() twice and opens two sessions — the cold-open then asks against
+  // one session while the challenge targets the other ("Unknown claim"). The ref
+  // persists across the StrictMode remount, so the second invocation is a no-op.
+  // The offline-gate "Retry" button calls connect() directly and is unaffected.
   useEffect(() => {
+    if (connectedRef.current) return;
+    connectedRef.current = true;
     void connect();
   }, [connect]);
+
+  // Cold open (A1): the moment the line is live, drop the player mid-interrogation
+  // — Helena already on the stand, her planted alibi ("I left at 19:45") on screen,
+  // one claim chip pulsing. No tutorial: challenge the time and Foundry IQ lands
+  // CONTRADICTED in seconds. Fires exactly once per mounted session.
+  useEffect(() => {
+    if (state.status === "ready" && state.sessionId && !coldOpenedRef.current) {
+      coldOpenedRef.current = true;
+      dispatch({ type: "SELECT_SUSPECT", suspectId: "helena" });
+      void askQuestion(
+        state.sessionId,
+        "Helena Voss",
+        "What time did you leave the gallery that evening?",
+        grounding
+      );
+    }
+  }, [state.status, state.sessionId, dispatch, askQuestion, grounding]);
 
   if (state.status === "probing" || state.status === "idle") {
     return (
@@ -86,10 +114,10 @@ export function LiveDesk({ onBackToCaseFile, actions }: LiveDeskProps) {
             LIVE
           </span>
           <div>
-            <h1 className="case-header__title">Act II — The Live Interrogation</h1>
+            <h1 className="case-header__title">The Interrogation Room</h1>
             <p className="case-header__sub">
-              A real AI plays the witnesses · Foundry IQ checks every turn · they will
-              drift — use what the briefing taught you
+              A real AI plays the witnesses · Foundry IQ checks every claim against the
+              case file, live · they will lie — catch them with the receipt
             </p>
           </div>
         </div>

@@ -29,7 +29,16 @@ IQ-led verdict + cited passage + "Decided by: Foundry IQ" in the Copilot output,
 degrading to the shared heuristic when Azure is off. Verified vs live KB (Helena
 19:45 → source:iq CONTRADICTED, 29,995 reasoning tok). MCP env gains
 `IQ_VERDICT_ENABLED` + `KB_REASONING_EFFORT` (default off/minimal).
-**Next: A1 (one-product flow + cold-open) → A2/A3/A7 → A4.**
+
+**A1 done (June 13):** live is now the DEFAULT surface. The desk cold-opens
+mid-interrogation — Helena auto-on-the-stand, her planted "I left at 19:45"
+already a pulsing claim chip, zero tutorial → challenge → CONTRADICTED + Foundry
+IQ citation + FABRICATION CONFIRMED. TitleCard CTA reworked ("Step into the
+interrogation"); ModeSwitch retired → "Offline demo · no keys" corner link (Act I
+= offline fallback). Fixed a StrictMode double-`connect()` session race. Verified
+in-browser at 1440 + 375. Web build green, 34 tests.
+**Next: A2 (OVERRULED accusation) · A3 (she adapts) · A7 (red herrings) · A4
+(full activity[] wiretap). Then C-track: host, record kill-shot, Copilot receipts.**
 
 ---
 

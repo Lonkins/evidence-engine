@@ -15,22 +15,23 @@ export function TitleCard() {
       </h1>
       <p className="title-card__deck">
         AI assistants hallucinate — confidently, fluently, more often than you'd like.
-        In the next five minutes you'll learn to catch one in the act.
+        You're about to interrogate one that will lie straight to your face.
         <br />
-        A gallery owner is dead. Three witnesses will answer your questions. Their
-        testimony <em>sounds</em> right — your job is to check it against the record.
-        Every claim can be challenged. Every verdict carries its citation.
+        A gallery owner is dead. A live AI witness takes the stand. Her testimony
+        <em> sounds</em> right — but every claim can be challenged, and Foundry IQ
+        checks it against the case file and hands you the receipt, live.
       </p>
       <button
         className="title-card__open"
         onClick={() => dispatch({ type: "OPEN_CASE" })}
       >
-        Begin the briefing
+        Step into the interrogation
       </button>
       <p className="title-card__footnote">
-        Act I · train on the scripted case — Act II · a live AI takes the stand
+        A live AI takes the stand · Foundry IQ catches the lie with its citation
         <br />
-        All persons and events are fictitious · Grounded by Foundry IQ retrieval
+        No backend? A scripted offline demo is one click away · All persons and
+        events are fictitious
       </p>
       <div className="title-card__rule" aria-hidden="true" />
     </div>

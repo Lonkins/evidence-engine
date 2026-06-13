@@ -33,7 +33,7 @@ shallow retrieval call. Remove Foundry IQ and five of seven steps collapse.
 
 | Beat | What the player does | What Foundry IQ does | Status |
 |------|----------------------|----------------------|--------|
-| **Cold open** | Lands mid-interrogation; Helena's "I left at 19:45" is already on screen, one claim chip pulsing | Pre-seeded; teaches the loop in ~16s with zero tutorial | next (#A1) |
+| **Cold open** | Lands mid-interrogation; Helena's "I left at 19:45" is already on screen, one claim chip pulsing | Pre-seeded; teaches the loop in ~16s with zero tutorial | ✅ live (A1, June 13) |
 | **Ask** | Questions a witness | `kbRetrieve` (minimal effort) grounds the witness on retrieved passages only — so drift is *detectable* | ✅ live |
 | **Drift & index** | Witness answers, partly invents | Each sentence indexed as testimony within seconds (freshness) — now itself challengeable | ✅ live |
 | **Challenge** | Presses a sentence they doubt | **`answerSynthesis` (medium effort): the KB reasons and emits the verdict + verbatim citation** — IQ is the brain | ✅ live (B0/B1, June 13) |
@@ -52,7 +52,7 @@ shallow retrieval call. Remove Foundry IQ and five of seven steps collapse.
 
 | # | Deliverable | Why (axis / source) | Effort | Notes |
 |---|-------------|---------------------|--------|-------|
-| **A1** | **One-product flow + cold-open** | UX, Creative Innovation (designer) | M–L | Make live the default surface; open mid-interrogation on the lie; demote Act I to a corner "no-keys offline demo" link; rework the TitleCard CTA; retire the ModeSwitch from the main flow. Verify in-browser (Playwright). A blind default-flip is wrong — the current "Begin the briefing" CTA must be reworked with it. |
+| **A1** | ✅ **One-product flow + cold-open** (June 13) | UX, Creative Innovation (designer) | M–L | DONE. Live is the default surface; the desk cold-opens mid-interrogation — Helena auto-on-the-stand, her planted "I left at 19:45" already on screen as a pulsing claim chip, zero tutorial. TitleCard CTA reworked ("Step into the interrogation", live-first copy). ModeSwitch retired from the main flow → a subtle "Offline demo · no keys" corner link (Act I demoted to the no-backend fallback). Header retitled "The Interrogation Room". Fixed a real StrictMode double-`connect()` session race (caused "Unknown claim" on challenge). Verified in-browser (desktop 1440 + mobile 375): cold-open → challenge → CONTRADICTED + Foundry IQ citation + FABRICATION CONFIRMED; no overflow. Web build green, 34 tests. |
 | **A2** | **`OVERRULED` accusation in the live close** | Replayability + Responsible AI (designer, rival) | M | Move the accusation set-piece into the live ending. Accuse a witness who lied but didn't do it → "a contradiction is not a confession." Live mode has no accusation flow yet — real feature. |
 | **A3** | **"She adapts" second turn** | Technical Excellence, "it's really reasoning" (engineer) | M | When a plant is pinned, the witness shifts her story and the shift is itself checkable — lying digs a deeper hole. Prompt work in `characters.ts` + a re-challenge beat. |
 | **A4** | **Full `activity[]` stream in the wiretap** | Best Use of IQ (engineer) | S | Beyond the token count: render the KB's `searchIndex` step(s) + `agenticReasoning` as their own engine-tap lines so the judge sees the reasoning, not just latency. |
@@ -104,7 +104,7 @@ shallow retrieval call. Remove Foundry IQ and five of seven steps collapse.
 
 1. ✅ **B0 + B1 DONE (June 13)** — the IQ-brain verdict is live in the live-server; "Best Use of IQ" is now real on the hero surface.
 2. ✅ **A5 + A6 DONE (June 13)** — shared `verdict-core` package consumed by live-server + MCP; the MCP `check_claim` now produces the IQ answer-synthesis verdict (identical story across surfaces, Copilot axis reclaimed).
-3. **A1** (one-product flow + cold-open) — fixes the comprehension tax; the hero moment in seconds. ← **next**
+3. ✅ **A1 DONE (June 13)** — live is the default surface, cold-open on the lie, Act I demoted to an offline link, CTA reworked. Hero moment in seconds, verified in-browser.
 4. **A2, A3, A7** (OVERRULED, adapts, red herrings) — depth, replayability, "it's really reasoning."
 5. **A4** (full activity stream) — cheap IQ-visibility polish.
 6. **C1 → C2 → C3 → C5** (host, then record against prod, receipts, Discord).

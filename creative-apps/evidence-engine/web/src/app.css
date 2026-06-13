@@ -6,6 +6,48 @@
   flex-direction: column;
 }
 
+/* A1: subtle cross-surface link — replaces the prominent ModeSwitch. Live is the
+   front door; this is the quiet way to the offline demo and back. */
+.surface-link {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text-dim);
+  font: inherit;
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.4em 0.9em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+
+.surface-link:hover,
+.surface-link:focus-visible {
+  color: var(--text);
+  border-color: var(--line-strong);
+  background: rgba(201, 161, 74, 0.06);
+  outline: none;
+}
+
+.surface-link--live {
+  color: var(--gold-bright);
+  border-color: var(--gold-dim);
+}
+
+.surface-link__dot {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: var(--crimson);
+  box-shadow: 0 0 6px rgba(197, 48, 47, 0.8);
+  margin-right: 0.4em;
+  vertical-align: middle;
+}
+
 .desk-grid {
   flex: 1;
   min-height: 0;
