@@ -322,6 +322,13 @@ Foundry IQ won't vouch for this — nothing in the source was retrieved that bac
 
 **Verdict:** ${verdictLabel}
 **Decided by:** ${decidedBy}
+**Faithfulness gate:** ${
+  combined.verdict === "SUPPORTED"
+    ? "PASS — cleared to use; the source backs this (citation below)."
+    : combined.verdict === "CONTRADICTED"
+    ? "HELD — this conflicts with the source; don't propagate it without checking."
+    : "HELD — the source can't back this; treat it as unverified."
+} _(faithfulness to your source, not truth about the world)_
 
 ## Evidence
 

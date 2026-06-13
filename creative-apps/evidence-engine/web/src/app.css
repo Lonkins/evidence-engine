@@ -55,6 +55,17 @@
   font-weight: 600;
 }
 
+.surface-link--record {
+  color: var(--gold-bright);
+  border-color: var(--gold-dim);
+}
+
+.surface-link--record:hover,
+.surface-link--record:focus-visible {
+  border-color: var(--gold);
+  background: rgba(201, 161, 74, 0.08);
+}
+
 .surface-link--accuse:hover,
 .surface-link--accuse:focus-visible {
   color: #ffd9d6;

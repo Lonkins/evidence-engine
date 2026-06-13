@@ -955,3 +955,127 @@
   color: #e08a7c;
   font-size: 1rem;
 }
+
+/* The Grounding Record — the post-catch artifact (the "so what"). */
+.record-modal__paper {
+  max-width: 720px;
+  width: min(720px, 94vw);
+  max-height: 88vh;
+  overflow-y: auto;
+}
+
+.record-modal__head {
+  margin-bottom: 1.2rem;
+}
+
+.record-modal__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--paper-ink);
+  margin: 0.2rem 0 0.6rem;
+}
+
+.record-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin: 0;
+  font-size: var(--text-sm);
+  letter-spacing: 0.04em;
+}
+
+.record-count {
+  font-weight: 600;
+}
+
+.record-count--grounded {
+  color: #2f6b3a;
+}
+.record-count--contradicted {
+  color: var(--crimson);
+}
+.record-count--unverifiable {
+  color: var(--paper-ink-dim);
+}
+
+.record-rows {
+  list-style: none;
+  margin: 0 0 1.2rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.record-row {
+  padding: 0.7em 0.9em;
+  border-left: 3px solid var(--paper-ink-dim);
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 2px;
+}
+
+.record-row--grounded {
+  border-left-color: #2f6b3a;
+}
+.record-row--contradicted {
+  border-left-color: var(--crimson);
+}
+.record-row--unverifiable {
+  border-left-color: var(--paper-ink-dim);
+}
+
+.record-row__claim {
+  margin: 0;
+  font-size: var(--text-base);
+  color: var(--paper-ink);
+}
+
+.record-row__speaker {
+  color: var(--paper-ink-dim);
+  font-style: italic;
+}
+
+.record-row__verdict {
+  margin: 0.25rem 0 0.15rem;
+  font-size: var(--text-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--paper-ink-dim);
+}
+
+.record-row--grounded .record-row__verdict {
+  color: #2f6b3a;
+}
+.record-row--contradicted .record-row__verdict {
+  color: var(--crimson);
+}
+
+.record-row__source {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--paper-ink);
+}
+
+.record-empty {
+  color: var(--paper-ink-dim);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  margin: 1.2rem 0;
+}
+
+.record-disclaimer {
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--paper-ink-dim);
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  padding-top: 0.8rem;
+  margin: 0 0 1rem;
+}
+
+.record-modal__actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}

@@ -9,6 +9,7 @@ import { LiveInterrogationPanel } from "./LiveInterrogationPanel";
 import { EngineTracePanel } from "./EngineTracePanel";
 import { InterrogationReport } from "./InterrogationReport";
 import { LiveAccusation } from "./LiveAccusation";
+import { GroundingRecord } from "./GroundingRecord";
 import type { ByoConfig } from "../../live/api";
 import "./live.css";
 
@@ -34,6 +35,7 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
   // engine has nothing to check against, so the witness's word stands.
   const [grounding, setGrounding] = useState(true);
   const [accusing, setAccusing] = useState(false);
+  const [showRecord, setShowRecord] = useState(false);
   // Which inferred witness is on the stand, in a bring-your-own trial.
   const [selectedWitness, setSelectedWitness] = useState<string | null>(null);
   const coldOpenedRef = useRef(false);
@@ -129,6 +131,14 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
   const activeWitness =
     state.witnesses.find((w) => w.name === selectedWitness) ?? state.witnesses[0] ?? null;
 
+  // The grounding record (the "so what"): challenges that were actually checked.
+  const recordCount = Object.values(state.challenges).filter(
+    (c) => c.evidence.source !== "ungrounded"
+  ).length;
+  const sourceLabel = isByo
+    ? state.sourceTitle ?? "your source"
+    : "The Holbrooke Gallery Affair";
+
   return (
     <>
       <header className="case-header live-header">
@@ -157,6 +167,15 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
           </div>
         </div>
         <div className="live-header__tools">
+          {recordCount > 0 && (
+            <button
+              type="button"
+              className="surface-link surface-link--record"
+              onClick={() => setShowRecord(true)}
+            >
+              The Record ({recordCount})
+            </button>
+          )}
           {isByo ? (
             <button
               type="button"
@@ -214,6 +233,13 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
             setAccusing(false);
             void endSession(sessionId);
           }}
+        />
+      )}
+      {showRecord && (
+        <GroundingRecord
+          challenges={state.challenges}
+          sourceLabel={sourceLabel}
+          onClose={() => setShowRecord(false)}
         />
       )}
     </>

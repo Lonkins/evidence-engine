@@ -74,6 +74,14 @@ gone. Sessions hold `witnesses[]`; `handleAsk` resolves the selected witness;
 witnesses → switch to Tom → CONTRADICTED with grounded citation. Builds green;
 tests pass.
 
+**The Grounding Record — DONE (June 13, design-log Entry 9).** The "so what" after
+a catch: each challenge files into a live, growing, exportable record (Grounded /
+Contradicted-with-"source says" / Unverifiable-held). "The Record (N)" trigger in
+the live header → modal with cited rows, counts (never a score), a faithfulness-
+not-truth disclaimer, and Export-to-markdown. Universal (Holbrooke + BYO). No 2nd
+IQ call — reuses the verdict's existing justification/citation. The MCP check_claim
+gains a "Faithfulness gate: PASS/HELD" line. Verified in-browser.
+
 **Also queued:** the "Receipts" Copilot rework (rival's idea, v2 headline).
 **Section C (host/video/receipts/Discord) is owned by the user. Deadline June 14.**
 

@@ -7,6 +7,50 @@ Strategist breaks ties.
 
 ---
 
+## Entry 9 — June 13, 2026: The Grounding Record — the "so what" after a catch
+
+The owner asked the load-bearing question: we catch a lie/hallucination — **so
+what?** The catch was a terminal stamp; nothing consumed it forward. Re-ran the
+four personas; they converged: **the catch must produce an artifact, and it must
+accumulate.** Built it.
+
+### What shipped — the Grounding Record
+A universal post-catch payoff (Holbrooke + BYO). Every challenge files the claim
+into a live, growing record: **Grounded** (kept, cited) / **Contradicted** (shown
+next to *what the source actually says*) / **Unverifiable** (held back, source
+silent). A "The Record (N)" trigger appears in the live header once you've caught
+something; opening it shows the cited rows + counts + an **Export the record**
+(copy-to-clipboard markdown). You assemble a cited document by interrogating a
+liar — *"he lied to my face; I left with the truth, every line cited."*
+
+### Key engineering call
+**No second answer-synthesis call.** The verdict's IQ `justification` +
+`citedPassage` already *are* the grounded "what your source says" — the record
+sources that existing data (`web/src/components/live/GroundingRecord.tsx` reads
+`live.challenges`). This avoids the engineer's flagged risk of a second medium-
+effort LLM call on the hero moment (latency + determinism), and is a pure
+presentation-layer move on data we already produce.
+
+### Honesty guardrails (RAI judge — non-negotiable, all in)
+- Named the **Grounding Record**, never "Verified" (verified ⇒ true).
+- **Counts, never a trust score** (a "72%" reads as 72% true).
+- The correction is framed **"Your source says…"**, never "the correct answer".
+- **Always shows** contradicted + unverifiable rows; never hides them to tidy.
+- A disclaimer is **bound to the artifact**: "labels reflect agreement with your
+  source, not real-world truth … the source itself is not verified."
+- The deepest framing (a claim-level **faithfulness gate**) is surfaced in the MCP
+  `check_claim` too: a one-line "Faithfulness gate: PASS/HELD … faithfulness to
+  your source, not truth about the world" — props the required Copilot axis cheaply.
+
+### Strategist's ruling honoured
+Built exactly ONE "so what", chosen for the video climax + the required Copilot
+axis; made it live/accumulating (films as a before→after), not a static dossier
+(the trap). Section C (host/video/receipts/Discord) stays the user's workstream;
+this build cost it nothing. Verified in-browser (Holbrooke: 2 contradictions →
+the record with "source says" lines + export). All builds green; tests pass.
+
+---
+
 ## Entry 8 — June 13, 2026: Inference-driven multi-persona BYO
 
 Status: **BUILT & verified end-to-end (June 13).** Implements the answers to four
