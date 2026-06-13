@@ -5,7 +5,31 @@ metadata:
   type: project
 ---
 
-## Status: CONCEPT LOCKED + MCP SERVER BUILT
+## Status: REPOSITIONING — IQ becomes the brain, Live web = hero surface
+
+**June 13, 2026 — critical review + locked redesign (design-log Entry 4).** A
+first-hand code review (four-persona lenses; subagents were rate-limited so the
+orchestrator ran them directly) found the headline claim *"the IQ layer is the
+game engine"* is **false today**: in all three surfaces (MCP, web Act I, live
+Act II) Foundry IQ only retrieves; a **local regex** makes the actual verdict.
+Root cause: KB provisioned LLM-free (`extractiveData` + `minimal` effort) to
+stay on the free tier, which *cannot* synthesise a judgment.
+
+**Two decisions locked with the user:**
+1. **Live web interrogation is THE product.** MCP server + offline Act I demoted
+   to supporting evidence (Copilot proof / offline fallback).
+2. **Full rebuild — Foundry IQ becomes the verdict brain.** Wire a model to the
+   KB, use `answerSynthesis` + `low`/`medium` effort so the KB reasons and
+   returns the grounded verdict + citation. Regex demoted to disclosed
+   cross-check. **Free-tier constraint lifted** (resources unlimited).
+
+**Next action: provisioning spike — confirm `answerSynthesis` returns a grounded
+verdict with citations (Azure OpenAI/GitHub Models bound to `evidence-kb`).**
+Full spec + build order: `evidence-engine/docs/design-log.md` Entry 4.
+
+---
+
+### Prior status (superseded by the repositioning above)
 
 Overnight loop 1 complete (June 10, 2026). MCP server scaffold, 15-document case corpus, and README built.
 

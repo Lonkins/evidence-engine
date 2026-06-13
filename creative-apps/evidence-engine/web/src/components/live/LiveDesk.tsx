@@ -23,6 +23,9 @@ interface LiveDeskProps {
 export function LiveDesk({ onBackToCaseFile, actions }: LiveDeskProps) {
   const { state, connect, askQuestion, challengeClaim, endSession } = useLiveSession();
   const [openDocKey, setOpenDocKey] = useState<string | null>(null);
+  // "Pull the plug": grounding on = Foundry IQ checks every claim; off = the
+  // engine has nothing to check against, so the witness's word stands.
+  const [grounding, setGrounding] = useState(true);
 
   useEffect(() => {
     void connect();
@@ -96,13 +99,16 @@ export function LiveDesk({ onBackToCaseFile, actions }: LiveDeskProps) {
         <SuspectRail />
         <LiveInterrogationPanel
           live={state}
-          onAsk={(speaker, question) => void askQuestion(sessionId, speaker, question)}
-          onChallenge={(claimId) => void challengeClaim(sessionId, claimId)}
+          grounding={grounding}
+          onAsk={(speaker, question) => void askQuestion(sessionId, speaker, question, grounding)}
+          onChallenge={(claimId) => void challengeClaim(sessionId, claimId, grounding)}
           onOpenDoc={setOpenDocKey}
         />
         <EngineTracePanel
           trace={state.trace}
           score={state.score}
+          grounding={grounding}
+          onToggleGrounding={() => setGrounding((on) => !on)}
           canEnd={state.score !== null || Object.keys(state.transcripts).length > 0}
           onEndSession={() => void endSession(sessionId)}
         />

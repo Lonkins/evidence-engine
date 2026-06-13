@@ -18,6 +18,13 @@ import {
 import { heuristicEntry } from "./trace.js";
 import { extractTimes } from "./verdict.js";
 import {
+  buildVerdictInstruction,
+  parseIqAnswer,
+  combineWithCrossCheck,
+  ungroundedVerdict,
+  type IqVerdict,
+} from "./iq-verdict.js";
+import {
   appendHistory,
   createSession,
   deleteSession,
@@ -104,19 +111,38 @@ async function handleAsk(body: JsonBody, res: ServerResponse): Promise<void> {
     return send(res, 400, { error: "Question must be 1–600 characters" });
   }
   const speaker: Speaker = speakerRaw;
+  // Grounding defaults ON. `grounding: false` is the "pull the plug" demo —
+  // Foundry IQ is unplugged so the witness has nothing anchoring her answer.
+  const grounding = body.grounding !== false;
   const trace: TraceEntry[] = [];
 
   // 1. Live KB retrieve against the evidence partition — Foundry IQ is in the
   //    loop on every turn; the character only ever sees retrieved passages.
-  const retrieval = await search.kbRetrieve(
-    `${speaker}: ${question}`,
-    EVIDENCE_FILTER,
-    "kb.retrieve(evidence)"
-  );
-  trace.push(retrieval.entry);
+  //    With grounding OFF we retrieve nothing: the witness is ungrounded and
+  //    free to invent, and the engine has nothing to check her against.
+  let passages: Array<{ refId: number; title: string; content: string }> = [];
+  let retrievedRefs: Array<{ docKey: string; title: string; rerankerScore: number }> = [];
+  if (grounding) {
+    const retrieval = await search.kbRetrieve(
+      `${speaker}: ${question}`,
+      EVIDENCE_FILTER,
+      "kb.retrieve(evidence)"
+    );
+    trace.push(retrieval.entry);
+    passages = retrieval.data.passages;
+    retrievedRefs = retrieval.data.references;
+  } else {
+    trace.push(
+      heuristicEntry(
+        "kb.retrieve — DISABLED (grounding off)",
+        0,
+        "Foundry IQ unplugged — the witness is ungrounded and nothing checks her"
+      )
+    );
+  }
 
   // 2. In-character reply from GitHub Models, grounded but free to drift.
-  const systemPrompt = buildSystemPrompt(speaker, retrieval.data.passages);
+  const systemPrompt = buildSystemPrompt(speaker, passages);
   const history = getHistory(session, speaker);
   const llm = await chat(config, [
     { role: "system", content: systemPrompt },
@@ -173,7 +199,8 @@ async function handleAsk(body: JsonBody, res: ServerResponse): Promise<void> {
     turnNo,
     reply,
     claims: claims.map(({ claimId, text }) => ({ claimId, text })),
-    retrievedDocs: retrieval.data.references,
+    retrievedDocs: retrievedRefs,
+    grounding,
     trace,
   });
 }
@@ -188,6 +215,37 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
   if (!claim) return send(res, 404, { error: "Unknown claim" });
 
   const trace: TraceEntry[] = [];
+
+  // "Pull the plug" demo: grounding off → nothing is retrieved, so nothing can
+  // be checked and the witness's word stands. Re-challenging the same claim
+  // with grounding on is what produces the CONTRADICTED stamp — the thesis,
+  // made interactive. Not scored as a catch or a false objection.
+  const grounding = body.grounding !== false;
+  if (!grounding) {
+    trace.push(
+      heuristicEntry(
+        "kb.retrieve — DISABLED (grounding off)",
+        0,
+        "Foundry IQ unplugged — no evidence retrieved, the claim cannot be checked"
+      )
+    );
+    const combined = ungroundedVerdict();
+    if (!claim.challenged) {
+      claim.challenged = true;
+      session.score.challenges += 1;
+    }
+    return send(res, 200, {
+      claimId,
+      claimText: claim.text,
+      speaker: claim.speaker,
+      turnNo: claim.turnNo,
+      evidence: { verdict: combined.verdict, source: combined.source, agreement: false, citations: [], iq: null },
+      self: { verdict: "SELF_CONSISTENT", conflicts: [] },
+      plant: undefined,
+      score: session.score,
+      trace,
+    });
+  }
 
   // (a) Live retrieve against the evidence partition. Declarative claims
   // rerank lower than questions, so the challenge path uses its own
@@ -221,6 +279,36 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
       `negation + clock-time conflicts over ${evidenceDocs.length} retrieved doc(s) → ${evidence.verdict}`
     )
   );
+
+  // IQ-brain verdict: when enabled, the KB's grounded reasoning (answerSynthesis)
+  // produces the verdict and the deterministic check above becomes a disclosed
+  // cross-check. Falls back safely to the deterministic verdict if the IQ call
+  // is unavailable, so the demo never hard-fails on the new path.
+  let iqVerdict: IqVerdict | null = null;
+  if (config.iqVerdictEnabled && config.reasoningEffort !== "minimal") {
+    try {
+      const reason = await search.kbReason(
+        buildVerdictInstruction(claim.text, claim.speaker),
+        EVIDENCE_FILTER,
+        "kb.reason(verdict)",
+        config.reasoningEffort,
+        config.claimEvidenceThreshold
+      );
+      trace.push(reason.entry);
+      iqVerdict = parseIqAnswer(reason.data.answer, reason.data.references);
+    } catch (error) {
+      // Disclosed degradation: log a heuristic trace line and keep the
+      // deterministic verdict. Never silently substitute while claiming IQ.
+      trace.push(
+        heuristicEntry(
+          "kb.reason(verdict) — unavailable, using cross-check",
+          0,
+          error instanceof Error ? error.message.slice(0, 120) : "IQ verdict unavailable"
+        )
+      );
+    }
+  }
+  const combined = combineWithCrossCheck(iqVerdict, evidence);
 
   // (b) Live retrieve against this speaker's earlier testimony in this session.
   const testimonyFilter =
@@ -283,7 +371,7 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
   // (counting it would make "challenge everything" the dominant strategy and
   // conflate unverifiable with false). SUPPORTED costs a false objection.
   const isCatch =
-    evidence.verdict === "CONTRADICTED" || self.verdict === "SELF_CONTRADICTION";
+    combined.verdict === "CONTRADICTED" || self.verdict === "SELF_CONTRADICTION";
 
   // Ground truth: was this claim one of the planted fabrications? A plant
   // counts as caught only when the player pinned it with a contradiction.
@@ -297,11 +385,11 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
   if (!claim.challenged) {
     claim.challenged = true;
     session.score.challenges += 1;
-    if (evidence.verdict === "CONTRADICTED") {
+    if (combined.verdict === "CONTRADICTED") {
       session.score.contradictionsPinned += 1;
-    } else if (evidence.verdict === "UNSUPPORTED") {
+    } else if (combined.verdict === "UNSUPPORTED") {
       session.score.flaggedUnverifiable += 1;
-    } else if (evidence.verdict === "SUPPORTED" && self.verdict !== "SELF_CONTRADICTION") {
+    } else if (combined.verdict === "SUPPORTED" && self.verdict !== "SELF_CONTRADICTION") {
       session.score.falseObjections += 1;
     }
     if (self.verdict === "SELF_CONTRADICTION") {
@@ -319,14 +407,31 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
     speaker: claim.speaker,
     turnNo: claim.turnNo,
     evidence: {
-      verdict: evidence.verdict,
-      citations: evidence.citations.map((doc) => ({
-        docKey: doc.docKey,
-        title: doc.title,
-        // The specific segment(s) that triggered the contradiction, verbatim —
-        // or the doc opening for supporting citations.
-        excerpt: (evidence.triggers[doc.docKey] ?? [doc.content.slice(0, 400)]).join("\n"),
-      })),
+      verdict: combined.verdict,
+      // Honest disclosure of which system decided: `iq` = the KB's grounded
+      // reasoning (answerSynthesis); `heuristic` = the deterministic fallback.
+      source: combined.source,
+      // Whether the IQ verdict and the deterministic cross-check agreed.
+      agreement: combined.agreement,
+      citations:
+        evidence.citations.length > 0
+          ? evidence.citations.map((doc) => ({
+              docKey: doc.docKey,
+              title: doc.title,
+              // The specific segment(s) that triggered the contradiction,
+              // verbatim — or the doc opening for supporting citations.
+              excerpt: (evidence.triggers[doc.docKey] ?? [doc.content.slice(0, 400)]).join("\n"),
+            }))
+          : combined.citations.map((ref) => ({
+              docKey: ref.docKey,
+              title: ref.title,
+              excerpt: combined.citedPassage ?? "",
+            })),
+      // The KB's own one-line reasoning + verbatim cited passage, when the IQ
+      // path produced the verdict.
+      iq: combined.iq
+        ? { justification: combined.iq.justification, citedPassage: combined.iq.citedPassage }
+        : null,
     },
     self: {
       verdict: self.verdict,

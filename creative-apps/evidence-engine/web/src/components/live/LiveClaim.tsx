@@ -29,13 +29,19 @@ interface LiveClaimChipProps {
 /** A sentence of live testimony — pressable until challenged. */
 export function LiveClaimChip({ claim, result, pending, onChallenge }: LiveClaimChipProps) {
   if (result) {
-    const verdictClass =
-      result.evidence.verdict === "SUPPORTED" ? "supported" : result.evidence.verdict.toLowerCase();
+    const ungrounded = result.evidence.source === "ungrounded";
+    const verdictClass = ungrounded
+      ? "ungrounded"
+      : result.evidence.verdict === "SUPPORTED"
+      ? "supported"
+      : result.evidence.verdict.toLowerCase();
     return (
       <span className={`claim claim--pressed claim--${verdictClass}`}>
         {claim.text}
-        <span className="claim__glyph" aria-label={`Verdict: ${result.evidence.verdict}`}>
-          {result.evidence.verdict === "SUPPORTED"
+        <span className="claim__glyph" aria-label={`Verdict: ${ungrounded ? "no grounding" : result.evidence.verdict}`}>
+          {ungrounded
+            ? "⌀"
+            : result.evidence.verdict === "SUPPORTED"
             ? "✓"
             : result.evidence.verdict === "CONTRADICTED"
             ? "✗"
@@ -72,13 +78,28 @@ interface LiveVerdictCardProps {
  * never "true/false".
  */
 export function LiveVerdictCard({ result, onOpenDoc }: LiveVerdictCardProps) {
-  const stamp = EVIDENCE_STAMP[result.evidence.verdict];
-  const verdictClass =
-    result.evidence.verdict === "SUPPORTED" ? "supported" : result.evidence.verdict.toLowerCase();
+  const ungrounded = result.evidence.source === "ungrounded";
+  const stamp = ungrounded
+    ? ({ tone: "silent", text: "No grounding" } as const)
+    : EVIDENCE_STAMP[result.evidence.verdict];
+  const verdictClass = ungrounded
+    ? "ungrounded"
+    : result.evidence.verdict === "SUPPORTED"
+    ? "supported"
+    : result.evidence.verdict.toLowerCase();
+  const note = ungrounded
+    ? "Foundry IQ was unplugged — nothing could check this claim, so her word stands. Plug grounding back in (engine tap) and re-challenge to watch the catch land."
+    : EVIDENCE_NOTE[result.evidence.verdict];
+  const isContradiction = !ungrounded && result.evidence.verdict === "CONTRADICTED";
+  // Corpus-true stakes: Helena's 20:47 badge exit + "no card activity 19:48–20:47"
+  // puts her alone in the gallery across the 20:30–21:15 time-of-death window.
+  const showStakes = isContradiction && result.speaker === "Helena Voss";
 
   return (
     <aside
-      className={`verdict-card verdict-card--${verdictClass} live-verdict`}
+      className={`verdict-card verdict-card--${verdictClass} live-verdict ${
+        isContradiction ? "live-verdict--pinned" : ""
+      }`}
       aria-label={`Challenge verdict: ${stamp.text}`}
     >
       <header className="verdict-card__head">
@@ -86,7 +107,23 @@ export function LiveVerdictCard({ result, onOpenDoc }: LiveVerdictCardProps) {
         <p className="verdict-card__claim">“{result.claimText}”</p>
       </header>
 
-      <p className="verdict-card__note">{EVIDENCE_NOTE[result.evidence.verdict]}</p>
+      <p className="verdict-card__note">{note}</p>
+
+      {result.evidence.iq?.justification && (
+        <p className="live-verdict__iq">
+          <span className="live-verdict__iq-tag" aria-hidden="true">Foundry IQ</span>
+          {result.evidence.iq.justification}
+        </p>
+      )}
+
+      {showStakes && (
+        <p className="live-verdict__stakes" role="status">
+          <span className="live-verdict__stakes-mark" aria-hidden="true">⚠</span>
+          The badge log puts her alone in the gallery from 19:48 to 20:47 — across the
+          20:30–21:15 window the coroner gives for Victor's death. This isn't just a wrong
+          time; it's the scene of the murder.
+        </p>
+      )}
 
       {result.plant?.confirmed && (
         <p className="live-verdict__plant" role="status">

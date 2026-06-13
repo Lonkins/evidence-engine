@@ -11,6 +11,20 @@ export interface Config {
   noEvidenceThreshold: number;
   claimEvidenceThreshold: number;
   testimonyThreshold: number;
+  /**
+   * When true, the challenge verdict is produced by the KB's grounded
+   * reasoning (answerSynthesis) and the deterministic check is demoted to a
+   * disclosed cross-check. Default false until a model is wired to the KB and
+   * the answer-synthesis provisioning spike passes (design-log Entry 4) — so
+   * the current demo path is unchanged until the upgrade is verified live.
+   */
+  iqVerdictEnabled: boolean;
+  /**
+   * KB retrieval reasoning effort. `minimal` is LLM-free (current proven path,
+   * extractive only — cannot synthesise a verdict). `low`/`medium` require a
+   * model bound to the KB and unlock answerSynthesis (the IQ-brain path).
+   */
+  reasoningEffort: "minimal" | "low" | "medium";
   port: number;
   corsOrigins: string[];
 }
@@ -40,6 +54,8 @@ export function loadConfig(): Config {
     // Testimony sentences are short; any hit is then gated by the temporal
     // conflict heuristic, so the retrieval bar can sit low without false alarms.
     testimonyThreshold: parseFloat(process.env.TESTIMONY_THRESHOLD ?? "1.0"),
+    iqVerdictEnabled: (process.env.IQ_VERDICT_ENABLED ?? "false").toLowerCase() === "true",
+    reasoningEffort: (process.env.KB_REASONING_EFFORT ?? "minimal") as Config["reasoningEffort"],
     port: parseInt(process.env.PORT ?? "8787", 10),
     corsOrigins: (process.env.CORS_ORIGINS ?? "http://localhost:5173")
       .split(",")
