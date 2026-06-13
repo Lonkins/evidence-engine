@@ -6,7 +6,15 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import "dotenv/config";
 
-import { retrieve, fetchDocumentByKey, isFoundryConfigured, reasonVerdict } from "./foundry-client.js";
+import { randomUUID } from "node:crypto";
+import {
+  retrieve,
+  fetchDocumentByKey,
+  isFoundryConfigured,
+  reasonVerdict,
+  indexSource,
+  chunkSource,
+} from "./foundry-client.js";
 import {
   checkAgainstEvidence,
   buildVerdictInstruction,
@@ -30,6 +38,11 @@ const server = new Server(
   { name: "evidence-engine", version: "1.0.0" },
   { capabilities: { tools: {} } }
 );
+
+// Receipts: the source the user loaded via ground_on, so check_claim audits
+// against their own material (a doc, notes, or code from their repo) instead of
+// the built-in case. Null = check against the Holbrooke case file.
+let activeSource: { caseId: string; title: string; chunks: number } | null = null;
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: [
@@ -64,16 +77,35 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "ground_on",
+      description:
+        "Load a source (a document, your notes, or code from the repo) so claims can be ground-checked against it. After loading, use check_claim to audit any statement against this source — including a claim you (the assistant) just made about the user's own code or docs. Foundry IQ indexes the source; it is the user's own material, not the built-in case.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          title: {
+            type: "string",
+            description: "A short label for the source, e.g. 'auth.ts' or 'Onboarding Guide'",
+          },
+          content: {
+            type: "string",
+            description: "The source text to ground claims against — paste a file, notes, or doc",
+          },
+        },
+        required: ["content"],
+      },
+    },
+    {
       name: "check_claim",
       description:
-        "Check whether a specific factual claim is supported by evidence in the case file. Returns: SUPPORTED (with citations), CONTRADICTED (with citations to the contradicting evidence), or INSUFFICIENT_EVIDENCE (the evidence file is silent on this point). This is the core lie-detection mechanic.",
+        "Ground-check a factual claim against the loaded source (see ground_on) or the built-in case file. Use this to verify a statement before relying on it — including a claim you just made about the user's code or documents. Returns GROUNDED / CONTRADICTED / UNVERIFIABLE with the verbatim citation and a faithfulness gate. Checks faithfulness to the source, not truth about the world.",
       inputSchema: {
         type: "object",
         properties: {
           claim: {
             type: "string",
             description:
-              "A specific factual claim to check — e.g. 'Helena left the gallery at 7:45pm' or 'Felix was at dinner by 8:35pm'",
+              "A specific factual claim to check — e.g. 'getSession has no callers' or 'Helena left the gallery at 7:45pm'",
           },
         },
         required: ["claim"],
@@ -144,6 +176,41 @@ Use \`interrogate\` to question suspects, \`check_claim\` to test their assertio
     };
   }
 
+  if (name === "ground_on") {
+    const content = String(args?.content ?? "").trim();
+    const title = String(args?.title ?? "").trim().slice(0, 120) || "Your source";
+    if (content.length < 40) {
+      return errorResponse("Provide at least 40 characters of source content to ground on.");
+    }
+    if (!isFoundryConfigured()) {
+      return errorResponse(
+        "Foundry IQ is not configured. Set AZURE_SEARCH_ENDPOINT + AZURE_SEARCH_KEY (admin key) to ground on your own source."
+      );
+    }
+    const caseId = `byo-mcp-${randomUUID()}`;
+    try {
+      const docs = chunkSource(content, title, caseId);
+      const indexed = await indexSource(docs);
+      activeSource = { caseId, title, chunks: indexed };
+      return {
+        content: [
+          {
+            type: "text",
+            text: `# Grounded on “${title}”
+
+Indexed **${indexed} chunk(s)** into Foundry IQ. From now on, \`check_claim\` audits any statement against *this* source — your own material, not the built-in case.
+
+**Try it:** when you state something about this source — or when I claim something about your code or docs — run \`check_claim\` to see whether the source actually backs it (GROUNDED), conflicts with it (CONTRADICTED), or is silent (UNVERIFIABLE), each with the citation.
+
+_Checks faithfulness to your source, not truth about the world._`,
+          },
+        ],
+      };
+    } catch (err) {
+      return errorResponse(`Failed to ground on the source: ${String(err)}`);
+    }
+  }
+
   if (name === "interrogate") {
     const character = args?.character as string;
     const question = args?.question as string;
@@ -208,9 +275,17 @@ ${fallbackNote}
 
     recordClaimCheck();
 
+    // Receipts: when a source is loaded (ground_on), scope the check to its
+    // partition. Otherwise check against the built-in case file.
+    const sourceFilter = activeSource
+      ? `doc_type eq 'evidence' and case_id eq '${activeSource.caseId}'`
+      : undefined;
+    const groundedOn = activeSource ? `“${activeSource.title}”` : "the case file";
+    const verdictThreshold = activeSource ? 1.0 : 2.0;
+
     let retrievalResult;
     try {
-      retrievalResult = await retrieve(claim);
+      retrievalResult = await retrieve(claim, sourceFilter);
     } catch (err) {
       return errorResponse(`Evidence retrieval failed: ${String(err)}`);
     }
@@ -223,10 +298,12 @@ ${fallbackNote}
             text: `# Claim Check: UNVERIFIABLE
 
 **Claim:** "${claim}"
+**Source:** ${groundedOn}
 
 **Verdict:** UNVERIFIABLE
+**Faithfulness gate:** HELD — ${groundedOn} can't back this; treat it as unverified. _(faithfulness to your source, not truth about the world)_
 
-Foundry IQ won't vouch for this — nothing in the source was retrieved that backs it or knocks it down. That is not a finding of falsehood; it is the engine refusing to bless a claim it can't ground. A confident claim with no receipt is exactly where hallucinations hide.`,
+Foundry IQ won't vouch for this — nothing in ${groundedOn} was retrieved that backs it or knocks it down. That is not a finding of falsehood; it is the engine refusing to bless a claim it can't ground. A confident claim with no receipt is exactly where hallucinations hide.`,
           },
         ],
       };
@@ -261,7 +338,12 @@ Foundry IQ won't vouch for this — nothing in the source was retrieved that bac
     let reasoningTokens: number | null = null;
     if (iqEnabled && effort !== "minimal") {
       try {
-        const reason = await reasonVerdict(buildVerdictInstruction(claim, "the witness"), effort);
+        const reason = await reasonVerdict(
+          buildVerdictInstruction(claim, "the witness"),
+          effort,
+          sourceFilter ?? "doc_type eq 'evidence'",
+          verdictThreshold
+        );
         if (reason) {
           iqVerdict = parseIqAnswer(reason.answer, reason.references);
           reasoningTokens = reason.reasoningTokens;
@@ -319,6 +401,7 @@ Foundry IQ won't vouch for this — nothing in the source was retrieved that bac
           text: `# Claim Check: ${verdictLabel}
 
 **Claim:** "${claim}"
+**Source:** ${groundedOn}
 
 **Verdict:** ${verdictLabel}
 **Decided by:** ${decidedBy}

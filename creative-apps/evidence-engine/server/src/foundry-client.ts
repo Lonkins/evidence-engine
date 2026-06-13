@@ -24,6 +24,76 @@ export function isFoundryConfigured(): boolean {
   return Boolean(AZURE_ENDPOINT && AZURE_KEY);
 }
 
+// --- Receipts: index the user's own source so claims can be checked against it ---
+
+export interface SourceDoc {
+  id: string;
+  title: string;
+  content: string;
+  doc_type: "evidence";
+  case_id: string;
+}
+
+const MAX_CHUNK_CHARS = 1800;
+const MAX_CHUNKS = 60;
+
+/** Split a pasted source (doc, notes, or code) into indexable chunks. */
+export function chunkSource(content: string, title: string, caseId: string): SourceDoc[] {
+  const paragraphs = content
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  const chunks: string[] = [];
+  let buffer = "";
+  for (const paragraph of paragraphs) {
+    if (paragraph.length > MAX_CHUNK_CHARS) {
+      if (buffer) {
+        chunks.push(buffer);
+        buffer = "";
+      }
+      for (let i = 0; i < paragraph.length; i += MAX_CHUNK_CHARS) {
+        chunks.push(paragraph.slice(i, i + MAX_CHUNK_CHARS));
+      }
+      continue;
+    }
+    if (buffer && buffer.length + paragraph.length + 2 > MAX_CHUNK_CHARS) {
+      chunks.push(buffer);
+      buffer = "";
+    }
+    buffer = buffer ? `${buffer}\n\n${paragraph}` : paragraph;
+  }
+  if (buffer) chunks.push(buffer);
+
+  return chunks.slice(0, MAX_CHUNKS).map((chunk, index) => ({
+    id: `${caseId}-${index}`,
+    title: `${title} — part ${index + 1}`,
+    content: chunk,
+    doc_type: "evidence" as const,
+    case_id: caseId,
+  }));
+}
+
+/** Index source chunks into the Azure AI Search index (needs a write/admin key). */
+export async function indexSource(docs: SourceDoc[]): Promise<number> {
+  if (!isFoundryConfigured()) {
+    throw new Error("Azure not configured — set AZURE_SEARCH_ENDPOINT + AZURE_SEARCH_KEY (admin key).");
+  }
+  const url = `${AZURE_ENDPOINT}/indexes/${AZURE_INDEX_NAME}/docs/index?api-version=2026-05-01-preview`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "api-key": AZURE_KEY!, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      value: docs.map((doc) => ({ "@search.action": "mergeOrUpload", ...doc })),
+    }),
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Source indexing failed: ${response.status} — ${text.slice(0, 300)}`);
+  }
+  return docs.length;
+}
+
 export interface IqReasonResult {
   /** The KB's synthesised answer (verdict-shaped prose). */
   answer: string;
@@ -93,20 +163,26 @@ export async function reasonVerdict(
   return { answer, references, reasoningTokens: reasoning?.reasoningTokens ?? null };
 }
 
-export async function retrieve(query: string): Promise<RetrievalResult> {
+export async function retrieve(query: string, filterAddOn?: string): Promise<RetrievalResult> {
   if (isFoundryConfigured()) {
-    return retrieveFromFoundry(query);
+    return retrieveFromFoundry(query, filterAddOn);
   }
   return retrieveFromLocalCorpus(query);
 }
 
-async function retrieveFromFoundry(query: string): Promise<RetrievalResult> {
+async function retrieveFromFoundry(query: string, filterAddOn?: string): Promise<RetrievalResult> {
   const url = `${AZURE_ENDPOINT}/knowledgebases/${AZURE_KB_NAME}/retrieve?api-version=2026-05-01-preview`;
 
-  const body = {
+  // When a source is loaded (Receipts), scope retrieval to its partition.
+  const body: Record<string, unknown> = {
     intents: [{ type: "semantic", search: query }],
     retrievalReasoningEffort: { kind: "minimal" },
   };
+  if (filterAddOn) {
+    body.knowledgeSourceParams = [
+      { kind: "searchIndex", knowledgeSourceName: AZURE_KS_NAME, filterAddOn },
+    ];
+  }
 
   const response = await fetch(url, {
     method: "POST",

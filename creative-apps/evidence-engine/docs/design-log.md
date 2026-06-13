@@ -7,6 +7,40 @@ Strategist breaks ties.
 
 ---
 
+## Entry 10 — June 14, 2026: Copilot "Receipts" — audit claims about your own source
+
+From the "so what" review, the one buildable idea that lifts a *required, thin*
+axis (GitHub Copilot Integration) — the rival's headline, the strategist's
+#1-if-building. Built it on the MCP server, reusing what we have.
+
+### What shipped
+- **`ground_on(title, content)`** MCP tool — chunks + indexes the user's own
+  source (a doc, notes, or code from their repo) into a `byo-mcp-<uuid>`
+  partition (`foundry-client.ts` `chunkSource` + `indexSource`), and sets it as
+  the active grounding.
+- **`check_claim`** now audits against the loaded source when one is grounded
+  (partition `filterAddOn` on both `retrieve` and `reasonVerdict`, BYO threshold
+  1.0), else the case file. Reframed so Copilot self-checks: "verify a statement
+  before relying on it — including a claim you just made about the user's code or
+  docs." Output shows **Source:**, the GROUNDED/CONTRADICTED/UNVERIFIABLE verdict
+  + citation, and the **Faithfulness gate** line.
+- The dev story: `@check_claim` a claim Copilot made about *your* repo → HELD with
+  a `file:line` receipt → "don't act on it." Makes the MCP the hero the track asks
+  for.
+
+### Verified + honest caveat
+Verified against the live KB: `ground_on` indexed an `auth.ts` snippet; the
+GROUNDED claim ("sessions expire after 30 minutes") returned SUPPORTED via IQ with
+the grounded justification. **Caveat:** Azure OpenAI's content filter
+(prompt-shield) intermittently 400'd the answer-synthesis on the *security code*
+specifically — `check_claim`'s try/catch degrades to the heuristic (no crash), but
+the heuristic is weaker and can mis-verdict. The IQ path is reliable on docs/notes/
+stories (proven by every BYO test). **Demo guidance:** ground Receipts on a doc or
+notes (or pre-test code claims); keep Holbrooke as the deterministic video hero.
+Needs an ADMIN search key (ground_on indexes). Builds green.
+
+---
+
 ## Entry 9 — June 13, 2026: The Grounding Record — the "so what" after a catch
 
 The owner asked the load-bearing question: we catch a lie/hallucination — **so
