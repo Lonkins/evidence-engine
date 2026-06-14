@@ -1,6 +1,6 @@
 # Evidence Engine — Demo Shot List (~3 min)
 
-A beat-level recording guide, not a word-for-word script. The spine:
+A recording guide — beats at a glance (the table), then a word-for-word narration to read. The spine:
 
 > **One Foundry IQ engine, proving itself on progressively harder ground** — a
 > stranger's pasted text → its own off-switch → *our own codebase inside VS Code*.
@@ -90,10 +90,40 @@ reproducible than relying on emergent witness drift.
 | **6** | 120–170s | **Copilot climax (VS Code).** Have **`live-server/src/search.ts`** open (line 75 visible) and already `ground_on`'d in pre-flight. Briefly flash `.vscode/mcp.json` pointing at the real Azure endpoint. Get Copilot to assert the false claim — or type it straight into `check_claim`: ***"The kbRetrieve dialogue-grounding step runs Foundry IQ at medium reasoning effort."*** → **CONTRADICTED + faithfulness gate HELD**, citing the verbatim **`retrievalReasoningEffort: { kind: "minimal" }`** line (search.ts:75), receipt **"Foundry IQ — answer synthesis · N reasoning tokens."** Then a *true* claim — *"kbReason synthesises the verdict at medium effort"* (search.ts:162) → **GROUNDED / PASS** — so it reads as a verdict engine, not a buzzer. **Verify on camera the receipt says "Foundry IQ," not "cross-check."** Keep the claim about the *config fact* (retrieve = minimal, verdict = medium); don't invite a tangent about whether "minimal" is deprecated. | The Creative-Apps-*with-Copilot* climax and the **only** beat scoring both headline prizes at once: a Copilot hallucination about our *own* code, caught with a receipt the judge can verify in the file on screen. |
 | **7** | 170–180s | **Two-receipt close.** Two-pane final frame: the web Grounding Record beside the VS Code `CONTRADICTED` + HELD receipt — the same Foundry IQ call signature visible in both. Hold on it. | Makes "one engine, two surfaces" *visual*, not spoken. The last thing the judge reads is the stacked Copilot + IQ proof. |
 
-**Close line (over the empty paste box, no "lie"):** *"An AI will state things your
-source never said — confidently. Foundry IQ catches it with the exact line, in your own
-words, or it honestly says it can't. Paste anything."* End on the product doing the thing,
-not a logo crawl.
+---
+
+## Word-for-word narration (read this)
+
+Confident, unhurried. `[DO]` = the on-screen action; the **quoted lines are what you say**.
+No "lie" anywhere — the engine catches *confident fabrication*, not malice.
+
+**0:00–0:15 · Cold open**
+`[DO]` Empty paste box. Paste the Aurora blurb; let the *"demo-safe text only · purged on reset"* notice sit for a beat; hit **Interrogate**.
+> "This is Evidence Engine. I'm pasting a document it has never seen — release notes for a CLI tool — and turning it into an interrogation. Notice it only wants demo-safe text, and purges it on reset. Watch what it does with my source."
+
+**0:15–0:40 · A witness is born**
+`[DO]` Inferred witnesses appear on the rail. Type one question: *"What's the cache TTL — it's 7 days, right?"* The reply breaks into claim chips.
+> "From that text alone, a live model has invented a witness — name, role, backstory — that only knows what I pasted. I interrogate them in plain chat, and every sentence of the answer becomes its own challengeable claim. It answers confidently — but it's a model with no ground truth, so it fills the gaps. The engine is the part that checks."
+
+**0:40–1:15 · Pull the plug**
+`[DO]` Click **IQ off ⇄ on** on the first claim. Keep *"Foundry IQ is reasoning…"* on screen through the wait; two panes resolve.
+> "Here's the whole idea in one frame. On the left, Foundry IQ unplugged — no record, nothing checked, the claim sails through. On the right, Foundry IQ in the loop — it reasons over my source and comes back Contradicted, quoting the exact line: twenty-four hours, not seven days. Same claim, same model. The only difference is the engine. And that number — the reasoning tokens — is the knowledge base's own count of the thinking it did. That's the brain."
+
+**1:15–1:40 · The honest part**
+`[DO]` Press a supported claim → **Grounded**. Press *"how many engineers?"* → **Unverifiable**.
+> "It's not just catch-or-miss. This claim the source backs — Grounded, cited. This one — how many engineers were on the team? — the source is silent, so it refuses to guess. Unverifiable. That's the honest part: a confident claim with no receipt is exactly where hallucinations hide, and the engine says so instead of bluffing."
+
+**1:40–2:00 · The receipt**
+`[DO]` Deliver the verdict → **Case Made**. Export the Grounding Record; disclaimer legible.
+> "I close the case — and it says Case *Made*, never *Solved*. On your own source it can't claim it solved anything; that guardrail is in the code, not the marketing. And I walk away with a receipt — every claim I checked, grounded, contradicted, or unverifiable, each one cited. Same engine — now let me show you where it really earns its keep: inside the editor."
+
+**2:00–2:50 · The climax — Foundry IQ audits Copilot, on our own code**
+`[DO]` Cut to VS Code, **`live-server/src/search.ts`** open (line 75 visible). Briefly flash `.vscode/mcp.json`'s Azure endpoint. Ask Copilot about the retrieval config; it claims *medium*. `@check_claim` it → **Contradicted · gate HELD**, the `{ kind: "minimal" }` line cited. Then a true claim → **Grounded · PASS**.
+> "This is our own codebase. I ask Copilot about our retrieval config — and it tells me the retrieve step runs at medium reasoning effort. Sounds plausible. So I check that claim against the file itself — Contradicted. The engine quotes the actual line: kind, minimal. Copilot was confidently wrong about our own code, and Foundry IQ caught it, with the receipt — the same answer synthesis, the same Azure knowledge base, right here in the editor. And to show it's a verdict engine and not a buzzer — here's a claim that's true: the verdict step *does* run at medium. Grounded. Passed."
+
+**2:50–3:00 · Close**
+`[DO]` Two-pane final frame: the web Grounding Record beside the VS Code receipt. Hold; no logo crawl.
+> "One Foundry IQ engine — catching a fabrication in a document I pasted, and one Copilot told about our own code. It catches it with the exact line, in your own words — or it honestly says it can't. Paste anything."
 
 ---
 
