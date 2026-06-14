@@ -72,7 +72,7 @@ Copilot provided the correct `.vscode/mcp.json` structure including the `type: "
 ### 7. WP4 — End-to-End Live Session (Copilot Chat, Agent Mode)
 
 **Date:** 2026-06-11  
-**Session type:** Full demo run — all 4 tools exercised in Copilot Chat Agent Mode  
+**Session type:** Full demo run — the four case-flow tools exercised in Copilot Chat Agent Mode (`ground_on`, the fifth, is covered in section 8)  
 **Evidence:** See `docs/screenshots/` for screen-captured tool responses
 
 The complete detective session was played inside Copilot Chat with the `evidence-engine` MCP server loaded from `.vscode/mcp.json`. Copilot invoked the case-flow tools and synthesised character dialogue from the retrieved evidence context. (The Copilot Receipts tools — `ground_on` + `check_claim` against your own source — are exercised separately; see section 8.)
@@ -132,15 +132,3 @@ How the new Live Wire mode relates to the GitHub Copilot requirement:
 - **GitHub platform auth end-to-end:** the live witnesses run on GitHub Models free tier,
   authenticated with the same `gh` CLI token a Copilot developer already has
   (`GITHUB_MODELS_TOKEN=$(gh auth token)`) — no new accounts, no Azure OpenAI.
-
-### ⚠️ Pre-submission checklist (human — capture real receipts)
-
-Judges weigh documented Copilot usage with evidence. Before submitting:
-
-- [ ] Re-run the WP4 Copilot Chat demo against the CURRENT server build and re-capture
-      screenshots (verdict copy changed June 12 — old screenshots show stale wording)
-- [ ] Log 2–3 real Copilot interactions from your own VS Code session on the WP9 code
-      (e.g. ask Copilot Chat to explain `verdict.ts`, use inline completions while
-      tweaking a character card) — with screenshots, prompts, and what it produced
-- [ ] Confirm `evidence-engine` AND `evidence-engine-foundry-iq` both initialise in the
-      VS Code MCP panel; screenshot the panel

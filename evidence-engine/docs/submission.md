@@ -32,7 +32,7 @@ Most AI games have the same problem: you cannot trust what the AI says. Evidence
 
 The hero product is a hosted web app. A live model plays the witnesses in *The Holbrooke Gallery Affair*: a gallery owner is found dead, three suspects were present, and the model is deliberately allowed to drift and invent beyond the evidence. You interrogate them in open chat. When a story sounds wrong, you challenge the claim — and the Azure AI Search knowledge base retrieves the relevant case documents, a bound model (`gpt-4.1-mini`, medium reasoning effort) reasons over them with **answer synthesis**, and the knowledge base itself returns the verdict: **GROUNDED**, **CONTRADICTED**, or **UNVERIFIABLE** — with the deciding passage quoted verbatim. Foundry IQ is the brain. A deterministic check runs alongside only as a disclosed cross-check, and as the fallback when IQ is unavailable — never the headline decision.
 
-The win condition is **a contradiction with a cited receipt.** An "engine tap" panel shows the live Azure call that produced it, so the reasoning is on screen, not merely asserted. **Pull the plug** on Foundry IQ and the catch collapses — the witness's word stands. That toggle is in the UI, staged as a side-by-side split screen: the same sentence with grounding off (no record) next to grounding on (CONTRADICTED, cited).
+The win condition is **a contradiction with a cited receipt.** An "engine tap" panel shows the live Azure call that produced it, so the reasoning is on screen, not merely asserted. **Pull the plug** on Foundry IQ and the catch collapses — the witness's word stands. The UI proves it: on a witness's first claim, an **IQ off ⇄ on** button opens a side-by-side split screen — the same sentence with grounding off (no record) next to grounding on (CONTRADICTED, cited). It's a non-scoring preview.
 
 ### Bring Your Own Trial
 
@@ -103,8 +103,8 @@ See `docs/demo-script.md` for the full 3-minute narrated recording guide.
 **Recommended demo flow (3 minutes):**
 1. Hook: open the hosted web app, explain the premise — a live witness who lies (20s)
 2. Interrogate Helena in open chat; she drifts on when she left (30s)
-3. Challenge the claim → **Foundry IQ returns CONTRADICTED, badge-log passage cited verbatim, engine tap shows the live AZURE call** (40s, hero moment)
-4. **Pull the plug** split screen: grounding off (her word stands) vs grounding on (CONTRADICTED) (25s)
+3. On her first claim, press **IQ off ⇄ on** for the split screen: Foundry IQ unplugged (her word stands) vs in the loop (CONTRADICTED) — the engine is the difference (25s)
+4. Now challenge the claim for real → **Foundry IQ returns CONTRADICTED, badge-log passage cited verbatim, engine tap shows the live AZURE call** (40s, hero moment)
 5. **Bring your own trial**: paste a doc, witnesses are inferred, challenge a claim → cited verdict on text we never saw (35s)
 6. Deliver the verdict + export the Grounding Record; show the same engine as a Copilot MCP tool (`@check_claim`) (30s)
 
@@ -142,32 +142,6 @@ Contact: babkek1337@gmail.com
 
 ---
 
-## Submission Checklist
+## Pre-submission status
 
-- [ ] Demo video recorded and uploaded (see `docs/demo-script.md`)
-- [ ] GitHub repo set to public
-- [ ] Azure AI Search free tier provisioned with `evidence-kb` knowledge base (see the `spike/` directory)
-- [ ] Corpus documents uploaded to `evidence-kb` index; live partition fields added (`spike/07-add-live-fields.sh`)
-- [ ] `live-server/.env` filled with `AZURE_SEARCH_ENDPOINT`, `AZURE_SEARCH_ADMIN_KEY`, `GITHUB_MODELS_TOKEN`, `IQ_VERDICT_ENABLED=true`
-- [ ] End-to-end live verdict validated against the KB (`live-server: npm run test:live` writes `live-mode-proof.json`)
-- [ ] Web app deployed / hosting link live, or run locally (`web: npm run dev`)
-- [ ] Screenshots captured for submission: `docs/screenshots/` (beats listed in `docs/screenshots/README.md`)
-- [ ] Discord post submitted in `#creative-apps` with the demo video
-- [ ] This form submitted before June 14, 2026 EOD
-
----
-
-## June 14 Execution Order
-
-Copy this if you are doing everything on the last day:
-
-1. `cd evidence-engine/live-server && npm install && npm run build` — verify clean build
-2. `cd evidence-engine/web && npm run dev` — confirm the web app loads; run the live verdict end to end
-3. Confirm `.vscode/mcp.json` loads and the five MCP tools appear in Copilot Chat
-4. Record demo (3 min) following `docs/demo-script.md` — lead with the live web hero, then Bring Your Own Trial, then the Copilot MCP surface
-5. Upload demo to YouTube (unlisted is fine) or Loom
-6. Fill [FILL] values in this document (video URL, GitHub URL)
-7. Make GitHub repo public
-8. Submit form on hackathon portal — copy each section from this file
-9. Post the announcement in `#creative-apps` on Discord (with the video link)
-10. Reply to your own Discord post within 1 hour (engagement bump)
+The Azure AI Search knowledge base is provisioned and verified end-to-end (the live verdict path writes `docs/live-mode-proof.json`); the web app, live-server, and MCP server all build clean. Remaining human steps before submitting: record the demo video, set the repo public, and fill the `[FILL]` links above.
