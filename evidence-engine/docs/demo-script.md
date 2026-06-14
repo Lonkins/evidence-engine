@@ -30,8 +30,10 @@ verbatim citation. Land on the **Receipt** line under the verdict —
 > here's the receipt for the thinking it did."
 
 **0:55–1:15 — The split-screen (the loopable GIF — the close of the social cut):**
-Press **⚖ on/off** on a claim. One sentence, two panes: LEFT *Foundry IQ unplugged
-— "no record", her word stands*; RIGHT the **CONTRADICTED** stamp with its citation.
+Press **IQ off ⇄ on** on her first claim — stage this *before* the kill-shot challenge
+above, since the button retires once you challenge for real. One sentence, two panes:
+LEFT *Foundry IQ unplugged — "no record", her word stands*; RIGHT the **CONTRADICTED**
+stamp with its citation.
 > "Same claim, same model. The only difference is Foundry IQ. Pull the plug and
 > the catch collapses — that's the brain."
 Freeze on the two-pane frame. This is the eight seconds that travels.
@@ -42,7 +44,8 @@ CONTRADICTED against *their* text. The lie is emergent — the scripting critiqu
 
 **1:45–2:25 — Copilot Receipts** (the "especially welcomed" MCP surface): in VS Code,
 `@ground_on` a repo file, then `@check_claim` a plausible-but-wrong claim about it →
-**HELD** with the verbatim line + reasoning-token count, inside Copilot Chat.
+**CONTRADICTED** (or **UNVERIFIABLE**) with the verbatim line cited — the **Faithfulness
+gate** reads **HELD** beneath it — plus the reasoning-token count, inside Copilot Chat.
 > "Same engine, where developers already work — it catches the assistant lying
 > about your own code, with the receipt."
 
@@ -220,7 +223,7 @@ check_claim: "Victor Holt planned to confront Helena about a forged document tha
 
 Expected tool response:
 ```
-# Claim Check: SUPPORTED
+# Claim Check: GROUNDED
 ```
 
 From the recovered draft email: "I intend to confront Helena this evening..."
@@ -278,7 +281,7 @@ Show the `.env.example` or the `foundry-client.ts` briefly if making a technical
 
 ---
 
-## Backup Scenario — INSUFFICIENT EVIDENCE
+## Backup Scenario — UNVERIFIABLE
 
 If you want to show the responsible AI story:
 
@@ -289,7 +292,7 @@ check_claim: "Nora Ashton was inside the gallery when Victor was killed"
 
 Response:
 ```
-# Claim Check: INSUFFICIENT EVIDENCE
+# Claim Check: UNVERIFIABLE
 
 The evidence file is silent on this point. No documents were retrieved that speak
 to this claim.

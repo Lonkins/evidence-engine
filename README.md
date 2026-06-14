@@ -26,7 +26,8 @@
    Ask Helena when she left; challenge the time. The knowledge base runs **answer
    synthesis** and returns the `CONTRADICTED` verdict with the deciding passage quoted
    verbatim — the engine-tap panel shows the live `AZURE` reasoning step producing it.
-   Flip **"pull the plug"** off and the catch collapses: her word stands.
+   On her first reply, press **IQ off ⇄ on** for a side-by-side split: Foundry IQ
+   unplugged (her word stands — "no record") vs in the loop (`CONTRADICTED`, cited).
 3. **Bring your own trial:** from the front page, paste your own doc, notes, or code.
    Foundry IQ indexes it, infers the witnesses, and checks each thing they say against
    *your* source — `GROUNDED` / `CONTRADICTED` / `UNVERIFIABLE`, cited.
@@ -44,7 +45,7 @@
 
 Evidence Engine is a detective game where you interrogate AI witnesses who lie — and **Foundry IQ catches them in the act.** When you challenge a claim, the Azure AI Search knowledge base retrieves the relevant case documents, a bound model reasons over them with **answer synthesis**, and the KB itself returns the verdict — `GROUNDED`, `CONTRADICTED`, or `UNVERIFIABLE` — with the deciding passage quoted verbatim. The verdict is produced by Foundry IQ, not by a hand-written rule; a deterministic check runs alongside it only as a **disclosed cross-check** (see [Responsible AI](#responsible-ai)).
 
-The core mechanic: **a contradiction with a cited receipt is the win condition.** Pull the plug on Foundry IQ and the catch collapses — the witness's word stands. That toggle is in the UI.
+The core mechanic: **a contradiction with a cited receipt is the win condition.** Pull the engine and the catch collapses — the witness's word stands. The UI proves it: on the first claim of a witness's first reply, an **IQ off ⇄ on** button opens a side-by-side split — the same sentence with Foundry IQ unplugged ("no record") next to Foundry IQ in the loop (`CONTRADICTED`, cited). It's a non-scoring preview.
 
 ### Two ways to play, one engine
 
@@ -57,7 +58,7 @@ Every catch files into a growing, exportable **Grounding Record** (kept / contra
 
 | Surface | Where | What it gives you | Talks to Foundry IQ? |
 |---------|-------|-------------------|----------------------|
-| **Copilot Chat (MCP)** | VS Code, via the four MCP tools below | Free-form interrogation with LLM-synthesised dialogue, grounded by Foundry IQ retrieval | **Yes — live**, when Azure env vars are set (local keyword fallback otherwise, clearly labelled) |
+| **Copilot Chat (MCP)** | VS Code, via the five MCP tools below | Free-form interrogation with LLM-synthesised dialogue, grounded by Foundry IQ retrieval | **Yes — live**, when Azure env vars are set (local keyword fallback otherwise, clearly labelled) |
 | **Web: Act I · Training Case** | [`evidence-engine/web/`](evidence-engine/web/) — static, hostable anywhere, no keys | A noir detective desk: pressable claim chips that flip to stamped VERIFIED / CONTRADICTED / NO RECORD verdicts, an evidence board, a full-screen accusation set-piece. Citation quotes verified verbatim by tests. | **No — fully offline by design.** This is the judge-without-keys path; the UI never claims otherwise |
 | **Web: Act II · Live Interrogation** | Same web app + [`evidence-engine/live-server/`](evidence-engine/live-server/) | **Open free-form chat with the suspects.** A live model plays each witness, grounded through a Foundry IQ retrieve on *every* turn — and deliberately allowed to drift. Every sentence becomes a challengeable claim, indexed into the knowledge base as testimony the moment it is spoken. Challenge any claim and the engine runs two live retrieves: one against the evidence partition, one against that witness's own earlier testimony. A wiretap-styled "engine tap" panel shows every live call (method, latency, status) in real time. | **Yes — live on every turn and every verdict.** If the backend is unreachable, the UI says "LINE DEAD" and points back to the Act I training case — it never silently substitutes local retrieval |
 
@@ -82,9 +83,9 @@ graph TD
     Corpus -- "indexed documents" --> FoundryIQ
 ```
 
-**Why Foundry IQ is load-bearing:** the verdict is *produced by the knowledge base*, not by our code. On a challenge, the KB runs answer synthesis (`outputMode: answerSynthesis`, reasoning effort `medium`, `gpt-4.1-mini` bound to `evidence-kb`) and returns the `VERDICT: CONTRADICTED` line plus the verbatim deciding passage and its `references[]`. There is no hardcoded "Helena is guilty"; remove the knowledge base and there is nothing to reason over, so the catch collapses — which is exactly what the in-UI "pull the plug" toggle demonstrates. The raw end-to-end response is committed at [`spike/output/08-retrieve-verdict.json`](spike/output/08-retrieve-verdict.json) (`modelQueryPlanning → searchIndex → modelAnswerSynthesis → agenticReasoning`, 10,155 reasoning tokens). A deterministic check runs alongside as a disclosed cross-check; when the two diverge, the IQ verdict leads and the divergence is shown in the engine tap.
+**Why Foundry IQ is load-bearing:** the verdict is *produced by the knowledge base*, not by our code. On a challenge, the KB runs answer synthesis (`outputMode: answerSynthesis`, reasoning effort `medium`, `gpt-4.1-mini` bound to `evidence-kb`) and returns the `VERDICT: CONTRADICTED` line plus the verbatim deciding passage and its `references[]`. There is no hardcoded "Helena is guilty"; remove the knowledge base and there is nothing to reason over, so the catch collapses — which is exactly what the in-UI **IQ off ⇄ on** split-preview demonstrates. The raw end-to-end response is committed at [`spike/output/08-retrieve-verdict.json`](spike/output/08-retrieve-verdict.json) (`modelQueryPlanning → searchIndex → modelAnswerSynthesis → agenticReasoning`, 10,155 reasoning tokens). A deterministic check runs alongside as a disclosed cross-check; when the two diverge, the IQ verdict leads and the divergence is shown in the engine tap.
 
-**Three set-pieces make the reasoning visible.** Press **⚖ on/off** on any live claim for a side-by-side *split screen* — the same sentence with Foundry IQ unplugged (no record, her word stands) next to Foundry IQ in the loop (CONTRADICTED, cited). Every verdict carries a **receipt** — `Foundry IQ · medium effort · N reasoning tokens` — so the multi-step reasoning is on screen, not merely asserted. And a witness can be convicted by *her own earlier words*: each reply is indexed into Foundry IQ as she speaks, so challenging a later claim retrieves her turn-1 testimony and catches the self-contradiction, verbatim, with the turn number — the AI assembling the proof of its own drift as it talks.
+**Three set-pieces make the reasoning visible.** On the first claim of a witness's first reply, press **IQ off ⇄ on** for a side-by-side *split screen* — the same sentence with Foundry IQ unplugged (no record, her word stands) next to Foundry IQ in the loop (CONTRADICTED, cited); it's a non-scoring preview. Every verdict carries a **receipt** — `Foundry IQ · medium effort · N reasoning tokens` — so the multi-step reasoning is on screen, not merely asserted. And a witness can be convicted by *her own earlier words*: each reply is indexed into Foundry IQ as she speaks, so challenging a later claim retrieves her turn-1 testimony and catches the self-contradiction, verbatim, with the turn number — the AI assembling the proof of its own drift as it talks.
 
 ### Live Interrogation architecture (Act II)
 

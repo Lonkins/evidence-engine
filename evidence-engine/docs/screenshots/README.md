@@ -31,7 +31,7 @@ panel shows the real `AZURE` calls.
 2. In another shell: `cd evidence-engine/web && npm run dev` → open the app.
 3. Interrogate the witness in free-form chat, then challenge the time claim — wait for the
    live verdict and confirm the engine tap shows the `AZURE` step before capturing.
-4. For `03`, press the **⚖ on/off** toggle on the challenged claim to stage the split-screen.
+4. For `03`, press the **IQ off ⇄ on** button on the first claim (before challenging it) to stage the split-screen.
 5. For `05`, switch to **Bring Your Own Trial**, paste demo-safe text, interrogate the
    inferred witness, and challenge a claim it invents.
 6. For `06`, open VS Code with `evidence-engine/` loaded and the `evidence-engine` MCP
