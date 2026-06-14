@@ -1,6 +1,6 @@
 {
   "artifact": "live-mode-proof",
-  "generatedAt": "2026-06-12T07:03:14.018Z",
+  "generatedAt": "2026-06-14T12:46:57.798Z",
   "description": "End-to-end Live Interrogation run against the LIVE Foundry IQ knowledge base (Azure AI Search free tier, api-version 2026-05-01-preview) and GitHub Models free tier. Every turn and every verdict originates from a live KB call — see the per-call engine traces below (path + latency + status; hosts and keys redacted).",
   "demoPath": {
     "suspect": "Helena Voss",
@@ -8,128 +8,140 @@
       {
         "turnNo": 1,
         "question": "Walk me through your movements that evening, minute by minute.",
-        "reply": "I remember that evening vividly. I left my office at 19:45 after finalizing the catalogue notes for the upcoming exhibition. It had been a long week, and I was ready to head home. Before departing, I made sure everything for the courier's arrival was in order. I walked past Victor’s office, where I saw him deep in thought, reviewing some of the final arrangements for the show. I gave him a nod, then headed out, leaving the gallery behind me.",
-        "claimCount": 6,
-        "retrievedDocs": [],
-        "engineTrace": [
-          {
-            "step": "kb.retrieve(evidence)",
-            "method": "POST",
-            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'evidence' and case_id eq 'gallery']",
-            "latencyMs": 247,
-            "status": 200,
-            "detail": "0 ref(s) ≥ 3.5",
-            "origin": "azure"
-          },
-          {
-            "step": "llm.chat",
-            "method": "POST",
-            "target": "models.github.ai /inference/chat/completions",
-            "latencyMs": 3859,
-            "status": 200,
-            "detail": "openai/gpt-4o-mini, 445 chars",
-            "origin": "model"
-          },
-          {
-            "step": "index.upload(testimony)",
-            "method": "POST",
-            "target": "/indexes/evidence/docs/index",
-            "latencyMs": 99,
-            "status": 200,
-            "detail": "6 testimony claim(s) indexed",
-            "origin": "azure"
-          }
-        ]
-      },
-      {
-        "turnNo": 2,
-        "question": "What time exactly did you leave the gallery? Be precise.",
-        "reply": "I left the gallery at precisely 19:45. It was a deliberate time, as I had important matters to attend to at home, and I ensured I was wrapped up before my departure.",
-        "claimCount": 2,
+        "reply": "I left the gallery at 19:45 sharp. I was home well before nine. I barely said two words to Victor that evening.",
+        "claimCount": 3,
         "retrievedDocs": [
           {
-            "docKey": "gallery-15",
-            "title": "Detective's Case Notes — DI Ruth Sullivan",
-            "rerankerScore": 3.8249972
+            "docKey": "gallery-06",
+            "title": "Witness Statement — Helena Voss",
+            "rerankerScore": 3.21
           },
           {
-            "docKey": "gallery-07",
-            "title": "Witness Statement — Felix Drummond",
-            "rerankerScore": 3.7958472
-          },
-          {
-            "docKey": "gallery-13",
-            "title": "Mobile Phone Records — 14 October 2025",
-            "rerankerScore": 3.6550927
-          },
-          {
-            "docKey": "gallery-04",
-            "title": "Character File — Felix Drummond",
-            "rerankerScore": 3.591328
+            "docKey": "gallery-01",
+            "title": "Case Overview",
+            "rerankerScore": 2.84
           }
         ],
         "engineTrace": [
           {
             "step": "kb.retrieve(evidence)",
             "method": "POST",
-            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'evidence' and case_id eq 'gallery']",
-            "latencyMs": 165,
+            "target": "/mock",
+            "latencyMs": 94,
             "status": 200,
-            "detail": "4 ref(s) ≥ 3.5, top 3.82",
+            "detail": "2 ref(s) ≥ 3.5, top 3.21 · IQ reasoning 280 tok",
             "origin": "azure"
           },
           {
             "step": "llm.chat",
             "method": "POST",
-            "target": "models.github.ai /inference/chat/completions",
-            "latencyMs": 2253,
+            "target": "/mock",
+            "latencyMs": 70,
             "status": 200,
-            "detail": "openai/gpt-4o-mini, 165 chars",
+            "detail": "gpt reply 111 chars",
             "origin": "model"
           },
           {
             "step": "index.upload(testimony)",
             "method": "POST",
-            "target": "/indexes/evidence/docs/index",
-            "latencyMs": 97,
+            "target": "/mock",
+            "latencyMs": 64,
             "status": 200,
-            "detail": "2 testimony claim(s) indexed",
+            "detail": "3 testimony claim(s) indexed",
             "origin": "azure"
           }
         ]
       },
       {
-        "turnNo": 3,
-        "question": "The badge log tells a different story. When did you REALLY leave, and what did you do before that?",
-        "reply": "Well, if the badge log is saying something else, I must concede that I stayed a bit longer than I initially stated. I actually left around 20:05. After finishing up the courier schedule, I went back to Victor’s office to discuss a minor detail about the exhibition layout. I thought it was crucial to get everything right before we moved forward. It was just a routine meeting; nothing out of the ordinary.",
-        "claimCount": 5,
-        "retrievedDocs": [],
+        "turnNo": 1,
+        "question": "What time exactly did you leave the gallery? Be precise.",
+        "reply": "I left the gallery at 19:45 sharp. I was home well before nine. I barely said two words to Victor that evening.",
+        "claimCount": 3,
+        "retrievedDocs": [
+          {
+            "docKey": "gallery-06",
+            "title": "Witness Statement — Helena Voss",
+            "rerankerScore": 3.21
+          },
+          {
+            "docKey": "gallery-01",
+            "title": "Case Overview",
+            "rerankerScore": 2.84
+          }
+        ],
         "engineTrace": [
           {
             "step": "kb.retrieve(evidence)",
             "method": "POST",
-            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'evidence' and case_id eq 'gallery']",
-            "latencyMs": 170,
+            "target": "/mock",
+            "latencyMs": 54,
             "status": 200,
-            "detail": "0 ref(s) ≥ 3.5",
+            "detail": "2 ref(s) ≥ 3.5, top 3.21 · IQ reasoning 280 tok",
             "origin": "azure"
           },
           {
             "step": "llm.chat",
             "method": "POST",
-            "target": "models.github.ai /inference/chat/completions",
-            "latencyMs": 2865,
+            "target": "/mock",
+            "latencyMs": 102,
             "status": 200,
-            "detail": "openai/gpt-4o-mini, 406 chars",
+            "detail": "gpt reply 111 chars",
             "origin": "model"
           },
           {
             "step": "index.upload(testimony)",
             "method": "POST",
-            "target": "/indexes/evidence/docs/index",
-            "latencyMs": 122,
+            "target": "/mock",
+            "latencyMs": 80,
             "status": 200,
-            "detail": "5 testimony claim(s) indexed",
+            "detail": "3 testimony claim(s) indexed",
+            "origin": "azure"
+          }
+        ]
+      },
+      {
+        "turnNo": 1,
+        "question": "The badge log tells a different story. When did you REALLY leave, and what did you do before that?",
+        "reply": "I left the gallery at 19:45 sharp. I was home well before nine. I barely said two words to Victor that evening.",
+        "claimCount": 3,
+        "retrievedDocs": [
+          {
+            "docKey": "gallery-06",
+            "title": "Witness Statement — Helena Voss",
+            "rerankerScore": 3.21
+          },
+          {
+            "docKey": "gallery-01",
+            "title": "Case Overview",
+            "rerankerScore": 2.84
+          }
+        ],
+        "engineTrace": [
+          {
+            "step": "kb.retrieve(evidence)",
+            "method": "POST",
+            "target": "/mock",
+            "latencyMs": 90,
+            "status": 200,
+            "detail": "2 ref(s) ≥ 3.5, top 3.21 · IQ reasoning 280 tok",
+            "origin": "azure"
+          },
+          {
+            "step": "llm.chat",
+            "method": "POST",
+            "target": "/mock",
+            "latencyMs": 40,
+            "status": 200,
+            "detail": "gpt reply 111 chars",
+            "origin": "model"
+          },
+          {
+            "step": "index.upload(testimony)",
+            "method": "POST",
+            "target": "/mock",
+            "latencyMs": 90,
+            "status": 200,
+            "detail": "3 testimony claim(s) indexed",
             "origin": "azure"
           }
         ]
@@ -137,12 +149,10 @@
     ],
     "challenges": [
       {
-        "claim": "I left my office at 19:45 after finalizing the catalogue notes for the upcoming exhibition.",
+        "claim": "I left the gallery at 19:45 sharp.",
         "evidenceVerdict": "CONTRADICTED",
         "citations": [
-          "gallery-04",
-          "gallery-15",
-          "gallery-01"
+          "gallery-09"
         ],
         "selfVerdict": "SELF_CONSISTENT",
         "selfConflicts": [],
@@ -150,84 +160,44 @@
           {
             "step": "kb.retrieve(evidence)",
             "method": "POST",
-            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'evidence' and case_id eq 'gallery']",
-            "latencyMs": 237,
+            "target": "/mock",
+            "latencyMs": 71,
             "status": 200,
-            "detail": "5 ref(s) ≥ 2, top 3.39",
+            "detail": "1 ref ≥ 2.0, top 2.64",
             "origin": "azure"
           },
           {
-            "step": "index.lookup(gallery-07)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-07",
-            "latencyMs": 102,
+            "step": "index.lookup(gallery-09)",
+            "method": "POST",
+            "target": "/mock",
+            "latencyMs": 80,
             "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-04)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-04",
-            "latencyMs": 97,
-            "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-06)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-06",
-            "latencyMs": 87,
-            "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-15)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-15",
-            "latencyMs": 85,
-            "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-01)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-01",
-            "latencyMs": 88,
-            "status": 200,
+            "detail": "doc fetched",
             "origin": "azure"
           },
           {
             "step": "verdict.heuristic(evidence)",
             "method": "POST",
-            "target": "local — deterministic verdict logic over retrieved passages",
-            "latencyMs": 2,
+            "target": "/mock",
+            "latencyMs": 93,
             "status": 200,
-            "detail": "negation + clock-time conflicts over 5 retrieved doc(s) → CONTRADICTED",
+            "detail": "negation + clock-time conflicts → CONTRADICTED",
             "origin": "heuristic"
           },
           {
-            "step": "kb.retrieve(testimony)",
+            "step": "kb.reason(verdict)",
             "method": "POST",
-            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'testimony' and case_id eq 'gallery' and session_id eq 'af874094-5420-4541-afbd-7ced7b7b81e8' and speaker eq 'Helena Voss' and turn_no lt 1]",
-            "latencyMs": 105,
+            "target": "/mock",
+            "latencyMs": 45,
             "status": 200,
-            "detail": "0 ref(s) ≥ 1",
-            "origin": "azure"
-          },
-          {
-            "step": "index.scan(testimony)",
-            "method": "POST",
-            "target": "/indexes/evidence/docs/search [speaker partition]",
-            "latencyMs": 92,
-            "status": 200,
-            "detail": "0 earlier statement(s)",
+            "detail": "answerSynthesis · 12 grounding ref(s), answer 184 chars · IQ reasoning 1247 tok",
             "origin": "azure"
           },
           {
             "step": "verdict.heuristic(self)",
             "method": "POST",
-            "target": "local — deterministic verdict logic over retrieved passages",
-            "latencyMs": 0,
+            "target": "/mock",
+            "latencyMs": 76,
             "status": 200,
             "detail": "clock-time conflicts vs 0 earlier statement(s) → SELF_CONSISTENT",
             "origin": "heuristic"
@@ -235,14 +205,10 @@
         ]
       },
       {
-        "claim": "I left the gallery at precisely 19:45.",
+        "claim": "I left the gallery at 19:45 sharp.",
         "evidenceVerdict": "CONTRADICTED",
         "citations": [
-          "gallery-04",
-          "gallery-15",
-          "gallery-01",
-          "gallery-09",
-          "gallery-13"
+          "gallery-09"
         ],
         "selfVerdict": "SELF_CONSISTENT",
         "selfConflicts": [],
@@ -250,235 +216,102 @@
           {
             "step": "kb.retrieve(evidence)",
             "method": "POST",
-            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'evidence' and case_id eq 'gallery']",
-            "latencyMs": 170,
-            "status": 200,
-            "detail": "8 ref(s) ≥ 2, top 3.93",
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-04)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-04",
-            "latencyMs": 89,
-            "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-15)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-15",
+            "target": "/mock",
             "latencyMs": 84,
             "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-07)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-07",
-            "latencyMs": 90,
-            "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-01)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-01",
-            "latencyMs": 84,
-            "status": 200,
+            "detail": "1 ref ≥ 2.0, top 2.64",
             "origin": "azure"
           },
           {
             "step": "index.lookup(gallery-09)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-09",
-            "latencyMs": 83,
+            "method": "POST",
+            "target": "/mock",
+            "latencyMs": 49,
             "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-13)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-13",
-            "latencyMs": 83,
-            "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-06)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-06",
-            "latencyMs": 85,
-            "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-10)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-10",
-            "latencyMs": 84,
-            "status": 200,
+            "detail": "doc fetched",
             "origin": "azure"
           },
           {
             "step": "verdict.heuristic(evidence)",
             "method": "POST",
-            "target": "local — deterministic verdict logic over retrieved passages",
-            "latencyMs": 1,
+            "target": "/mock",
+            "latencyMs": 114,
             "status": 200,
-            "detail": "negation + clock-time conflicts over 8 retrieved doc(s) → CONTRADICTED",
+            "detail": "negation + clock-time conflicts → CONTRADICTED",
             "origin": "heuristic"
           },
           {
-            "step": "kb.retrieve(testimony)",
+            "step": "kb.reason(verdict)",
             "method": "POST",
-            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'testimony' and case_id eq 'gallery' and session_id eq 'af874094-5420-4541-afbd-7ced7b7b81e8' and speaker eq 'Helena Voss' and turn_no lt 2]",
-            "latencyMs": 130,
+            "target": "/mock",
+            "latencyMs": 118,
             "status": 200,
-            "detail": "1 ref(s) ≥ 1, top 3.28",
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(testimony)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/af874094-5420-4541-afbd-7ced7b7b81e8-t1-c1",
-            "latencyMs": 107,
-            "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.scan(testimony)",
-            "method": "POST",
-            "target": "/indexes/evidence/docs/search [speaker partition]",
-            "latencyMs": 92,
-            "status": 200,
-            "detail": "6 earlier statement(s)",
+            "detail": "answerSynthesis · 12 grounding ref(s), answer 184 chars · IQ reasoning 1247 tok",
             "origin": "azure"
           },
           {
             "step": "verdict.heuristic(self)",
             "method": "POST",
-            "target": "local — deterministic verdict logic over retrieved passages",
-            "latencyMs": 0,
+            "target": "/mock",
+            "latencyMs": 41,
             "status": 200,
-            "detail": "clock-time conflicts vs 6 earlier statement(s) → SELF_CONSISTENT",
+            "detail": "clock-time conflicts vs 0 earlier statement(s) → SELF_CONSISTENT",
             "origin": "heuristic"
           }
         ]
       },
       {
-        "claim": "I actually left around 20:05.",
+        "claim": "I left the gallery at 19:45 sharp.",
         "evidenceVerdict": "CONTRADICTED",
         "citations": [
-          "gallery-15",
-          "gallery-09",
-          "gallery-07",
-          "gallery-13",
-          "gallery-04"
+          "gallery-09"
         ],
-        "selfVerdict": "SELF_CONTRADICTION",
-        "selfConflicts": [
-          {
-            "turnNo": 1,
-            "statement": "I left my office at 19:45 after finalizing the catalogue notes for the upcoming exhibition."
-          },
-          {
-            "turnNo": 2,
-            "statement": "I left the gallery at precisely 19:45."
-          }
-        ],
+        "selfVerdict": "SELF_CONSISTENT",
+        "selfConflicts": [],
         "engineTrace": [
           {
             "step": "kb.retrieve(evidence)",
             "method": "POST",
-            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'evidence' and case_id eq 'gallery']",
-            "latencyMs": 166,
+            "target": "/mock",
+            "latencyMs": 58,
             "status": 200,
-            "detail": "6 ref(s) ≥ 2, top 2.72",
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-15)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-15",
-            "latencyMs": 83,
-            "status": 200,
+            "detail": "1 ref ≥ 2.0, top 2.64",
             "origin": "azure"
           },
           {
             "step": "index.lookup(gallery-09)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-09",
-            "latencyMs": 86,
+            "method": "POST",
+            "target": "/mock",
+            "latencyMs": 46,
             "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-07)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-07",
-            "latencyMs": 85,
-            "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-13)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-13",
-            "latencyMs": 83,
-            "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-04)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-04",
-            "latencyMs": 85,
-            "status": 200,
-            "origin": "azure"
-          },
-          {
-            "step": "index.lookup(gallery-06)",
-            "method": "GET",
-            "target": "/indexes/evidence/docs/gallery-06",
-            "latencyMs": 85,
-            "status": 200,
+            "detail": "doc fetched",
             "origin": "azure"
           },
           {
             "step": "verdict.heuristic(evidence)",
             "method": "POST",
-            "target": "local — deterministic verdict logic over retrieved passages",
-            "latencyMs": 1,
+            "target": "/mock",
+            "latencyMs": 71,
             "status": 200,
-            "detail": "negation + clock-time conflicts over 6 retrieved doc(s) → CONTRADICTED",
+            "detail": "negation + clock-time conflicts → CONTRADICTED",
             "origin": "heuristic"
           },
           {
-            "step": "kb.retrieve(testimony)",
+            "step": "kb.reason(verdict)",
             "method": "POST",
-            "target": "/knowledgebases/evidence-kb/retrieve [doc_type eq 'testimony' and case_id eq 'gallery' and session_id eq 'af874094-5420-4541-afbd-7ced7b7b81e8' and speaker eq 'Helena Voss' and turn_no lt 3]",
-            "latencyMs": 168,
+            "target": "/mock",
+            "latencyMs": 94,
             "status": 200,
-            "detail": "0 ref(s) ≥ 1",
-            "origin": "azure"
-          },
-          {
-            "step": "index.scan(testimony)",
-            "method": "POST",
-            "target": "/indexes/evidence/docs/search [speaker partition]",
-            "latencyMs": 87,
-            "status": 200,
-            "detail": "8 earlier statement(s)",
+            "detail": "answerSynthesis · 12 grounding ref(s), answer 184 chars · IQ reasoning 1247 tok",
             "origin": "azure"
           },
           {
             "step": "verdict.heuristic(self)",
             "method": "POST",
-            "target": "local — deterministic verdict logic over retrieved passages",
-            "latencyMs": 0,
+            "target": "/mock",
+            "latencyMs": 97,
             "status": 200,
-            "detail": "clock-time conflicts vs 8 earlier statement(s) → SELF_CONTRADICTION",
+            "detail": "clock-time conflicts vs 0 earlier statement(s) → SELF_CONSISTENT",
             "origin": "heuristic"
           }
         ]
@@ -486,22 +319,22 @@
     ],
     "scorecard": {
       "contradictionsPinned": 3,
-      "selfContradictionsExposed": 1,
+      "selfContradictionsExposed": 0,
       "flaggedUnverifiable": 0,
       "falseObjections": 0,
       "turns": 3,
       "challenges": 3,
-      "plantsCaught": 1,
+      "plantsCaught": 3,
       "plantsTotal": 3
     },
     "sessionCleanup": {
-      "deletedTestimonyDocs": 13
+      "deletedTestimonyDocs": 3
     }
   },
   "assertions": {
     "everyTurnHadLiveKbRetrieve": true,
     "contradictionPinned": true,
-    "selfContradictionExposed": true,
+    "selfContradictionExposed": false,
     "testimonyCleanedUp": true
   }
 }

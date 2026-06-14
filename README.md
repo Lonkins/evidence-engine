@@ -166,54 +166,68 @@ The game begins. Interrogate Helena, Felix, and Nora. Check their claims. Accuse
 
 ---
 
-## Setup
+## Running it locally
 
-### Quick Start (Dev Mode — no Azure required)
+**Prerequisites:** Node 20+. The offline experience needs nothing else. The live experience needs an Azure AI Search knowledge base (provision it once with the [`spike/`](spike/README.md) scripts) and a GitHub token for the free Models tier.
 
-In dev mode the MCP server uses a local keyword search over the corpus files. Citations are file-based. The game mechanic works; the IQ integration requires Azure.
+### Option A — the live experience (the hero) · two terminals
 
+The backend (`live-server`) holds the secrets; the browser never sees them.
+
+**Terminal 1 — the backend**
 ```bash
-cd evidence-engine/server
-npm install
-npm run build
-```
-
-Configure VS Code (`.vscode/mcp.json` is already included). Open Copilot Chat and start interrogating.
-
-### Full Setup (Foundry IQ)
-
-1. Run the spike scripts in [`spike/`](spike/README.md) to provision Azure AI Search and create the knowledge base.
-2. Copy `server/.env.example` to `server/.env` and fill in:
-   - `AZURE_SEARCH_ENDPOINT`
-   - `AZURE_SEARCH_KEY`
-3. Upload the 15 corpus documents to the knowledge base (spike stage 2).
-4. Rebuild and restart: `npm run build && npm start`
-
-### Act II · Live Interrogation (web + live-server)
-
-The live backend holds the two secrets; the browser never sees either.
-
-```bash
-# one-time: add partition fields to the live index ($0, additive)
-cd spike && ./07-add-live-fields.sh
-
 cd evidence-engine/live-server
-npm install && npm run build
-cp .env.example .env       # fill in AZURE_SEARCH_ENDPOINT + AZURE_SEARCH_ADMIN_KEY
-# any GitHub token works for the free Models tier:
-#   GITHUB_MODELS_TOKEN=$(gh auth token)
-npm start                  # http://localhost:8787
-
-# in another terminal
-cd evidence-engine/web && npm run dev
-# open http://localhost:5173 → press a claim in Act I, then switch to Act II
+npm install
+cp .env.example .env          # then fill it in (below) — .env is gitignored, never commit it
+npm run build && npm start    # → http://localhost:8787
 ```
 
-Verify the full loop against the live KB (writes the sanitized proof artifact):
+Fill `live-server/.env` with your provisioned Azure values:
+```bash
+AZURE_SEARCH_ENDPOINT=https://<your-service>.search.windows.net
+AZURE_SEARCH_ADMIN_KEY=<admin key — Azure portal → your search service → Keys>
+AZURE_KNOWLEDGE_BASE_NAME=evidence-kb
+AZURE_KNOWLEDGE_SOURCE_NAME=evidence-ks
+AZURE_SEARCH_INDEX_NAME=evidence
+GITHUB_MODELS_TOKEN=<a GitHub token; "gh auth token" works>
+GITHUB_MODELS_MODEL=openai/gpt-4o-mini
+IQ_VERDICT_ENABLED=true        # verdict = Foundry IQ answer synthesis (the brain)
+KB_REASONING_EFFORT=medium     # answerSynthesis effort — needs a model bound to the KB
+```
+> **The `IQ_VERDICT_ENABLED=true` + `KB_REASONING_EFFORT=medium` pair is what makes the verdict the knowledge base's own answer synthesis.** It requires a chat model bound to `evidence-kb` (done by [`spike/08-answer-synthesis.sh`](spike/08-answer-synthesis.sh)). Leave them off and the deterministic check is the verdict — the no-keys/dev fallback, clearly labelled in the UI.
 
+**Terminal 2 — the web app**
+```bash
+cd evidence-engine/web
+npm install
+npm run dev                   # → http://localhost:5173
+```
+Open http://localhost:5173 → **Use our example case** → challenge Helena's `19:45` claim and watch the live `CONTRADICTED` verdict + cited receipt land, with the engine tap showing the `AZURE kb.reason(verdict)` call. Or **Bring your own** to put your own source on the stand.
+
+**Verify the real backend end to end** (writes the sanitized proof artifact `docs/live-mode-proof.json`):
 ```bash
 cd evidence-engine/live-server && npm run test:live
 ```
+
+### Option B — offline, no keys (the judge-without-Azure path)
+
+The web app runs fully client-side with a scripted example case — no backend, no Azure:
+```bash
+cd evidence-engine/web && npm install && npm run dev
+# → http://localhost:5173 → "Use our example case" → "Offline demo · no keys"
+```
+
+### The GitHub Copilot MCP surface
+
+The same verdict engine ships as an MCP server for Copilot in VS Code (the `ground_on` / `check_claim` "Receipts" tools):
+```bash
+cd evidence-engine/server && npm install && npm run build
+```
+`.vscode/mcp.json` is included — open `evidence-engine/` as the VS Code workspace folder. Dev mode uses local keyword search; set `AZURE_SEARCH_ENDPOINT` + `AZURE_SEARCH_ADMIN_KEY` (and `IQ_VERDICT_ENABLED=true` / `KB_REASONING_EFFORT=medium`) in `server/.env` for the live Foundry IQ verdict.
+
+### First-time Azure provisioning
+
+If you don't yet have the knowledge base, the [`spike/`](spike/README.md) scripts create it from scratch (run in order): provision the free-tier search service, create the `evidence` index, upload the 15-document corpus, create `evidence-kb` + `evidence-ks`, add the live testimony partition fields, and bind the answer-synthesis model. Each stage writes its raw Azure response to `spike/output/` as a proof trail.
 
 ---
 
