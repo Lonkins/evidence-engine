@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" fill="none" role="img" aria-label="Evidence Engine seal">
+  <defs>
+    <linearGradient id="brass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6e6bd"></stop>
+      <stop offset="0.5" stop-color="#c9a14a"></stop>
+      <stop offset="1" stop-color="#8a6a2f"></stop>
+    </linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6e6bd" stop-opacity="0.95"></stop>
+      <stop offset="0.5" stop-color="#e8c97e" stop-opacity="0.4"></stop>
+      <stop offset="1" stop-color="#c9a14a" stop-opacity="0.05"></stop>
+    </linearGradient>
+  </defs>
+
+  
+  <polygon points="41,6 99,6 134,41 134,99 99,134 41,134 6,99 6,41" fill="#100c09" stroke="url(#brass)" stroke-width="2"></polygon>
+  <polygon points="44,12 96,12 128,44 128,96 96,128 44,128 12,96 12,44" fill="none" stroke="#c9a14a" stroke-width="0.75" stroke-opacity="0.5"></polygon>
+
+  
+  <rect x="68.5" y="16" width="3" height="10" fill="#8a6a2f"></rect>
+  
+  <path d="M50 40 C50 28 60 24 70 24 C80 24 90 28 90 40 Z" fill="url(#brass)"></path>
+  <ellipse cx="70" cy="40" rx="20" ry="3.4" fill="#6b4f24"></ellipse>
+  
+  <ellipse cx="70" cy="41" rx="6" ry="2.4" fill="#f6e6bd"></ellipse>
+
+  
+  <path d="M53 41 L87 41 L101 100 L39 100 Z" fill="url(#beam)"></path>
+
+  
+  <rect x="53" y="90" width="34" height="24" rx="1.6" fill="#e9dec2"></rect>
+  <line x1="58" y1="97" x2="82" y2="97" stroke="#5c4f3a" stroke-width="1.4"></line>
+  <line x1="58" y1="102" x2="76" y2="102" stroke="#5c4f3a" stroke-width="1.4"></line>
+  
+  <path d="M60 107 l4 4 l9 -10" fill="none" stroke="#c5302f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>

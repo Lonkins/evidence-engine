@@ -1,0 +1,20 @@
+<!-- @dsCard group="Type" viewport="700x260" name="Type scale" subtitle="Editorial ladder — small body, commanding display" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; background: var(--bg); padding: var(--space-4) var(--space-5); }
+  .ladder { display: flex; flex-direction: column; gap: 6px; }
+  .r { display: flex; align-items: baseline; gap: var(--space-3); border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+  .r .lbl { flex: 0 0 96px; }
+  .r .ex { font-family: var(--font-display); color: var(--text); line-height: 1.1; }
+</style></head>
+<body>
+  <div class="ladder">
+    <div class="r"><span class="meta lbl">hero</span><span class="ex" style="font-size:var(--text-hero);font-weight:900">Stand</span></div>
+    <div class="r"><span class="meta lbl">xl</span><span class="ex" style="font-size:var(--text-xl);font-weight:700">The verdict, cited</span></div>
+    <div class="r"><span class="meta lbl">lg</span><span class="ex" style="font-size:var(--text-lg);font-weight:700">Helena Voss</span></div>
+    <div class="r"><span class="meta lbl">md</span><span class="ex" style="font-size:var(--text-md);font-style:italic">A quarter to eight</span></div>
+    <div class="r"><span class="meta lbl">base</span><span class="ex" style="font-size:var(--text-base);font-family:var(--font-type)">The badge log reads 20:47.</span></div>
+    <div class="r"><span class="meta lbl">sm / xs</span><span class="ex" style="font-size:var(--text-sm);font-family:var(--font-type)">temporary day pass · VISITOR-014</span></div>
+  </div>
+</body></html>

@@ -1,0 +1,177 @@
+/* ============================================================================
+   BASE — resets, the room atmosphere, shared utilities & keyframes
+   ----------------------------------------------------------------------------
+   The interrogation room is lit by ONE overhead brass lamp, sits under a film
+   of grain, and falls off into a deep vignette. Drop a single
+   <div class="atmosphere" aria-hidden="true"></div> at the root of any page.
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-void);
+  color: var(--text);
+  font-family: var(--font-type);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  margin: 0;
+  line-height: var(--leading-tight);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+a {
+  color: var(--accent-bright);
+  text-underline-offset: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent-dim);
+  color: var(--text);
+}
+
+/* ---- The room: one lamp + vignette + grain ----------------------------- */
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--keylight), var(--vignette);
+}
+.atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: var(--grain-opacity);
+  background-image: var(--grain-url);
+}
+
+/* ---- Shared micro-typography ------------------------------------------- */
+
+/* Stencil eyebrow / classified label — Oswald, wide tracking, small caps */
+.eyebrow,
+.micro-label {
+  font-family: var(--font-stencil);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* Typewriter meta — Special Elite, for receipts & technical lines */
+.meta {
+  font-family: var(--font-type);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--text-faint);
+}
+
+/* A hairline art-deco rule that fades from the centre */
+.rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
+  border: 0;
+}
+
+/* ---- Scrollbars that belong to the set --------------------------------- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ink-500);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-400);
+}
+
+/* ---- Keyframes --------------------------------------------------------- */
+
+/* Testimony & receipts "type on" left-to-right */
+@keyframes type-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* The stamp punch — overshoots, then settles into a slight rotation */
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--stamp-rot)) scale(1.6);
+  }
+  60% {
+    opacity: 1;
+    transform: rotate(var(--stamp-rot)) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(var(--stamp-rot)) scale(1);
+  }
+}
+
+@keyframes cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,19 @@
+<!-- @dsCard group="Brand" viewport="700x200" name="Motif · the key light" subtitle="One overhead brass lamp + vignette + film grain over every surface" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; background: var(--bg-void); }
+  .stage { position: relative; height: 200px; overflow: hidden; }
+  .stage::before { content:""; position:absolute; inset:0; background: var(--keylight), var(--vignette); }
+  .stage::after { content:""; position:absolute; inset:0; opacity: var(--grain-opacity); background-image: var(--grain-url); }
+  .label { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; }
+  .label h3 { font-family: var(--font-display); font-style: italic; font-weight: 500; color: var(--accent-bright); font-size: var(--text-lg); }
+</style></head>
+<body>
+  <div class="stage">
+    <div class="label">
+      <h3>The room is lit by one lamp.</h3>
+      <p class="meta">--keylight · --vignette · --grain-url &nbsp;→&nbsp; .atmosphere</p>
+    </div>
+  </div>
+</body></html>

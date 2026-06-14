@@ -1,0 +1,23 @@
+/* ============================================================================
+   EVIDENCE ENGINE — Noir Design System
+   ----------------------------------------------------------------------------
+   The single entry point. Consumers link THIS file. It is nothing but an
+   ordered list of @imports — every token, font, and base rule shipped to a
+   consuming project is reachable from here.
+   ========================================================================== */
+
+@import "./tokens/fonts.css";
+@import "./tokens/colors.css";
+@import "./tokens/typography.css";
+@import "./tokens/spacing.css";
+@import "./tokens/effects.css";
+@import "./tokens/base.css";
+
+/* Component styles — shipped so consumers that use the components get their
+   look for free. Each is co-located with its component group. */
+@import "./components/buttons/buttons.css";
+@import "./components/feedback/feedback.css";
+@import "./components/evidence/evidence.css";
+@import "./components/roster/roster.css";
+@import "./components/forms/forms.css";
+@import "./components/engine/engine.css";

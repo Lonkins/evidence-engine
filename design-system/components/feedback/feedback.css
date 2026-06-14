@@ -1,0 +1,95 @@
+/* ============================================================================
+   STAMP — the inked verdict impression
+   ========================================================================== */
+
+.ee-stamp {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-stencil);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-stamp);
+  border: var(--border-stamp) solid currentColor;
+  border-radius: var(--radius-xs);
+  padding: 0.28em 0.6em 0.22em;
+  transform: rotate(var(--stamp-rot));
+  opacity: 0.94;
+  /* the ink soaks unevenly — a faint inner ghost of the border */
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 28%, transparent);
+  white-space: nowrap;
+}
+
+.ee-stamp--animated {
+  animation: stamp-in var(--duration-normal) var(--ease-stamp) both;
+}
+
+.ee-stamp--sm {
+  font-size: var(--text-xs);
+  border-width: 1.5px;
+}
+.ee-stamp--md {
+  font-size: var(--text-md);
+}
+.ee-stamp--lg {
+  font-size: var(--text-xl);
+  letter-spacing: 0.04em;
+  transform: rotate(var(--stamp-rot-lg));
+}
+
+.ee-stamp--contradicted {
+  color: var(--oxblood-500);
+}
+.ee-stamp--grounded {
+  color: var(--evergreen-300);
+}
+.ee-stamp--silent {
+  color: var(--slate-500);
+}
+.ee-stamp--brass {
+  color: var(--brass-300);
+}
+
+/* ============================================================================
+   BADGE — quiet stencil status chip
+   ========================================================================== */
+
+.ee-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-family: var(--font-stencil);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-xs);
+  padding: 0.3em 0.6em 0.22em;
+  color: var(--text-dim);
+}
+
+.ee-badge__glyph {
+  font-size: 0.9em;
+  line-height: 1;
+}
+
+.ee-badge--brass {
+  color: var(--accent);
+  border-color: var(--accent-dim);
+}
+.ee-badge--grounded {
+  color: var(--evergreen-300);
+  border-color: rgba(63, 122, 85, 0.5);
+}
+.ee-badge--contradicted {
+  color: var(--oxblood-500);
+  border-color: var(--oxblood-700);
+}
+.ee-badge--silent {
+  color: var(--slate-500);
+  border-color: rgba(143, 160, 176, 0.4);
+}
+.ee-badge--azure {
+  color: var(--azure-500);
+  border-color: rgba(106, 167, 216, 0.45);
+}
