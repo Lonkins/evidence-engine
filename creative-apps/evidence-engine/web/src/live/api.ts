@@ -2,6 +2,7 @@ import type {
   AskResponse,
   ChallengeResponse,
   ResetResponse,
+  StandAnswerResponse,
 } from "./types";
 
 /**
@@ -87,4 +88,12 @@ export function challenge(
 
 export function reset(sessionId: string): Promise<ResetResponse> {
   return post("/api/reset", { sessionId });
+}
+
+/**
+ * "You take the stand": the player asserts a claim and Foundry IQ checks it
+ * against the case file (or their own source) — the inversion of the game.
+ */
+export function standAnswer(sessionId: string, answer: string): Promise<StandAnswerResponse> {
+  return post("/api/stand-answer", { sessionId, answer });
 }

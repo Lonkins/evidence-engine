@@ -651,6 +651,109 @@ function handleScore(body: JsonBody, res: ServerResponse): void {
   send(res, 200, { score: session.score });
 }
 
+/**
+ * "You take the stand" — the inversion: Foundry IQ interrogates the human. The
+ * player asserts a claim in their own defence, and we run the SAME grounded
+ * check the witnesses face on it: retrieve over the evidence partition, then the
+ * IQ answer-synthesis verdict, with the deterministic check as the disclosed
+ * cross-check. One-shot fact-check — no scoring, no indexing — so every outcome
+ * is on-message: bluff and the file catches you (CONTRADICTED), tell the truth
+ * (GROUNDED), or assert what the file can't speak to (UNVERIFIABLE).
+ */
+async function handleStandAnswer(body: JsonBody, res: ServerResponse): Promise<void> {
+  const sessionId = String(body.sessionId ?? "");
+  const claim = String(body.answer ?? "").trim();
+
+  const session = sessionId ? getSession(sessionId) : undefined;
+  if (!session) return send(res, 404, { error: "Unknown session" });
+  touchSession(session);
+  if (!claim || claim.length > 600) {
+    return send(res, 400, { error: "Your statement must be 1–600 characters" });
+  }
+
+  const trace: TraceEntry[] = [];
+  const verdictThreshold =
+    session.mode === "byo" ? config.byoVerdictThreshold : config.claimEvidenceThreshold;
+
+  const retrieval = await search.kbRetrieve(
+    claim,
+    evidenceFilter(session),
+    "kb.retrieve(evidence)",
+    verdictThreshold
+  );
+  trace.push(retrieval.entry);
+
+  const evidenceDocs: DocText[] = [];
+  for (const ref of retrieval.data.references) {
+    const lookup = await search.lookupDoc(ref.docKey, `index.lookup(${ref.docKey})`);
+    trace.push(lookup.entry);
+    if (lookup.data) {
+      evidenceDocs.push({
+        docKey: ref.docKey,
+        title: String(lookup.data.title ?? ref.title),
+        content: String(lookup.data.content ?? ""),
+      });
+    }
+  }
+  const evidence = checkAgainstEvidence(claim, evidenceDocs);
+
+  let iqVerdict: IqVerdict | null = null;
+  let iqReasoningTokens: number | null = null;
+  if (config.iqVerdictEnabled && config.reasoningEffort !== "minimal") {
+    try {
+      const reason = await search.kbReason(
+        buildVerdictInstruction(claim, "the witness"),
+        evidenceFilter(session),
+        "kb.reason(verdict)",
+        config.reasoningEffort,
+        verdictThreshold
+      );
+      trace.push(reason.entry);
+      for (const act of reason.data.activity) {
+        trace.push(iqActivityEntry(act.label, act.elapsedMs, act.detail));
+      }
+      iqVerdict = parseIqAnswer(reason.data.answer, reason.data.references);
+      iqReasoningTokens = reason.data.reasoningTokens;
+    } catch (error) {
+      trace.push(
+        heuristicEntry(
+          "kb.reason(verdict) — unavailable, using cross-check",
+          0,
+          error instanceof Error ? error.message.slice(0, 120) : "IQ verdict unavailable"
+        )
+      );
+    }
+  }
+  const combined = combineWithCrossCheck(iqVerdict, evidence);
+
+  send(res, 200, {
+    answer: claim,
+    evidence: {
+      verdict: combined.verdict,
+      source: combined.source,
+      agreement: combined.agreement,
+      citations:
+        evidence.citations.length > 0
+          ? evidence.citations.map((doc) => ({
+              docKey: doc.docKey,
+              title: doc.title,
+              excerpt: (evidence.triggers[doc.docKey] ?? [doc.content.slice(0, 400)]).join("\n"),
+            }))
+          : combined.citations.map((ref) => ({
+              docKey: ref.docKey,
+              title: ref.title,
+              excerpt: combined.citedPassage ?? "",
+            })),
+      iq: combined.iq
+        ? { justification: combined.iq.justification, citedPassage: combined.iq.citedPassage }
+        : null,
+      reasoningTokens: combined.source === "iq" ? iqReasoningTokens : null,
+      effort: config.reasoningEffort,
+    },
+    trace,
+  });
+}
+
 function describe(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
@@ -681,6 +784,8 @@ const server = createServer(async (req, res) => {
           return await handleAsk(body, res);
         case "/api/challenge":
           return await handleChallenge(body, res);
+        case "/api/stand-answer":
+          return await handleStandAnswer(body, res);
         case "/api/reset":
           return await handleReset(body, res);
         case "/api/score":

@@ -101,3 +101,22 @@ export interface LiveTurn {
   claims: LiveClaimRef[];
   retrievedDocs: RetrievedDoc[];
 }
+
+/**
+ * "You take the stand" — the inversion. The player asserts a claim and Foundry
+ * IQ checks it against the case file (or their own source), returning the same
+ * grounded verdict the witnesses face. No score: a one-shot fact-check.
+ */
+export interface StandAnswerResponse {
+  answer: string;
+  evidence: {
+    verdict: EvidenceVerdict;
+    source?: VerdictSource;
+    agreement?: boolean;
+    iq?: { justification: string; citedPassage: string | null } | null;
+    reasoningTokens?: number | null;
+    effort?: string;
+    citations: Array<{ docKey: string; title: string; excerpt: string }>;
+  };
+  trace: TraceEntry[];
+}

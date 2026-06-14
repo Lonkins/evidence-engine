@@ -1100,6 +1100,271 @@
   letter-spacing: 0.02em;
 }
 
+/* Objection Cinema — the challenge moment staged as theatre. Translucent, so the
+   engine tap keeps glowing behind it; compositor-friendly props only. */
+.objection {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background: radial-gradient(circle at center, rgba(8, 7, 6, 0.35), rgba(8, 7, 6, 0.62));
+}
+.objection--objection {
+  animation: objection-fade-in 180ms ease-out both;
+}
+.objection__call {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+.objection__word {
+  font-family: var(--font-display, Georgia, "Times New Roman", serif);
+  font-size: clamp(2.6rem, 8vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gold-bright, #c6a04a);
+  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.6);
+  animation: objection-stamp-in 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.objection__sub {
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: var(--text, #e9e4d8);
+  opacity: 0.85;
+}
+.objection--slam {
+  animation: objection-fade-in 120ms ease-out both;
+}
+.objection__slam {
+  transform: rotate(-4deg);
+  animation: objection-slam 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes objection-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes objection-stamp-in {
+  from {
+    opacity: 0;
+    transform: scale(1.4);
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes objection-slam {
+  0% {
+    opacity: 0;
+    transform: rotate(-4deg) scale(2.1);
+  }
+  60% {
+    opacity: 1;
+    transform: rotate(-4deg) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-4deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .objection,
+  .objection--objection,
+  .objection--slam,
+  .objection__word,
+  .objection__slam {
+    animation: none;
+  }
+  .objection__slam {
+    transform: none;
+  }
+}
+
+/* You take the stand — the inversion modal (Foundry IQ interrogates the human). */
+.take-stand {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(6, 5, 4, 0.72);
+}
+.take-stand__card {
+  width: min(640px, 100%);
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 1.4rem 1.5rem 1.6rem;
+  border: 1px solid var(--gold-dim, #6b5a2e);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(24, 21, 17, 0.98), rgba(15, 13, 11, 0.98));
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+}
+.take-stand__head {
+  position: relative;
+  margin-bottom: 0.7rem;
+}
+.take-stand__title {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-display, Georgia, "Times New Roman", serif);
+  font-size: 1.7rem;
+  color: var(--text, #e9e4d8);
+}
+.take-stand__close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-dim, #9a958c);
+  font-size: 1rem;
+  cursor: pointer;
+}
+.take-stand__brief {
+  margin: 0 0 1rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text, #e9e4d8);
+}
+.take-stand__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.take-stand__input {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text, #e9e4d8);
+  font: inherit;
+  resize: vertical;
+}
+.take-stand__input:focus-visible {
+  outline: 2px solid var(--gold-bright, #c6a04a);
+  outline-offset: 1px;
+}
+.take-stand__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+.take-stand__count {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+  color: var(--text-dim, #9a958c);
+}
+.take-stand__submit {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--gold-bright, #c6a04a);
+  border-radius: 4px;
+  background: rgba(198, 160, 74, 0.14);
+  color: var(--gold-bright, #c6a04a);
+  font-size: 0.86rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+.take-stand__submit:hover:not(:disabled) {
+  background: rgba(198, 160, 74, 0.26);
+}
+.take-stand__submit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.take-stand__error {
+  margin: 0;
+  color: #d98b7a;
+  font-size: 0.82rem;
+}
+.take-stand__verdict {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.take-stand__verdict-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.take-stand__statement {
+  margin: 0;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--text, #e9e4d8);
+}
+.take-stand__note {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text, #e9e4d8);
+}
+.take-stand__iq {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--text, #e9e4d8);
+}
+.take-stand__iq-tag {
+  flex: none;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--gold-dim, #6b5a2e);
+  border-radius: 3px;
+  color: var(--gold-bright, #c6a04a);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.take-stand__citations {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.take-stand__cite-doc {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-bright, #c6a04a);
+}
+.take-stand__cite-quote {
+  margin: 0;
+  padding: 0.5rem 0.6rem;
+  border-left: 2px solid var(--gold-bright, #c6a04a);
+  background: rgba(0, 0, 0, 0.28);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--text, #e9e4d8);
+}
+.take-stand__receipt {
+  margin: 0;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+  color: var(--text-dim, #9a958c);
+}
+
 /* Time-of-death stakes on the kill-shot */
 .live-verdict__stakes {
   display: flex;

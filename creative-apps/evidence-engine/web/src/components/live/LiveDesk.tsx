@@ -5,13 +5,21 @@ import { SuspectRail } from "../suspects/SuspectRail";
 import { WitnessStand } from "../suspects/WitnessStand";
 import { DocumentModal } from "../evidence/DocumentModal";
 import { useLiveSession } from "../../live/useLiveSession";
+import { useVerdictSpeech } from "../../live/useVerdictSpeech";
 import { LiveInterrogationPanel } from "./LiveInterrogationPanel";
 import { EngineTracePanel } from "./EngineTracePanel";
 import { InterrogationReport } from "./InterrogationReport";
 import { LiveAccusation } from "./LiveAccusation";
 import { GroundingRecord } from "./GroundingRecord";
+import { ObjectionCurtain } from "./ObjectionCurtain";
+import { TakeTheStand } from "./TakeTheStand";
 import type { ByoConfig } from "../../live/api";
 import "./live.css";
+
+// "Objection Cinema": stage the challenge moment as theatre (a translucent
+// curtain while Foundry IQ reasons, a stamp slam when it resolves). Pure
+// presentation; flip to false to demo the bare, unadorned challenge flow.
+const OBJECTION_CINEMA = true;
 
 interface LiveDeskProps {
   onBackToCaseFile: () => void;
@@ -36,6 +44,10 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
   const [grounding, setGrounding] = useState(true);
   const [accusing, setAccusing] = useState(false);
   const [showRecord, setShowRecord] = useState(false);
+  // "You take the stand": the inversion — Foundry IQ interrogates the player.
+  const [onStand, setOnStand] = useState(false);
+  // Voice in the box (Accessibility): read each verdict aloud. Off by default.
+  const [voiceOn, setVoiceOn] = useState(false);
   // Which inferred witness is on the stand, in a bring-your-own trial.
   const [selectedWitness, setSelectedWitness] = useState<string | null>(null);
   const coldOpenedRef = useRef(false);
@@ -78,6 +90,15 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
       );
     }
   }, [state.status, state.sessionId, state.mode, state.witnesses, dispatch, askQuestion, grounding]);
+
+  // Derived from challenges (present in every status) so the voice hook runs
+  // before the early returns, per the rules of hooks.
+  const allChallenges = Object.values(state.challenges);
+  const recordCount = allChallenges.filter((c) => c.evidence.source !== "ungrounded").length;
+  // The most recently resolved challenge — drives Objection Cinema + voiced verdict.
+  const latestChallenge =
+    allChallenges.length > 0 ? allChallenges[allChallenges.length - 1] : null;
+  useVerdictSpeech(latestChallenge, voiceOn);
 
   if (state.status === "probing" || state.status === "idle") {
     return (
@@ -131,10 +152,6 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
   const activeWitness =
     state.witnesses.find((w) => w.name === selectedWitness) ?? state.witnesses[0] ?? null;
 
-  // The grounding record (the "so what"): challenges that were actually checked.
-  const recordCount = Object.values(state.challenges).filter(
-    (c) => c.evidence.source !== "ungrounded"
-  ).length;
   const sourceLabel = isByo
     ? state.sourceTitle ?? "your source"
     : "The Holbrooke Gallery Affair";
@@ -174,6 +191,24 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
               onClick={() => setShowRecord(true)}
             >
               The Record ({recordCount})
+            </button>
+          )}
+          <button
+            type="button"
+            className="surface-link"
+            onClick={() => setVoiceOn((on) => !on)}
+            aria-pressed={voiceOn}
+            title="Read each verdict aloud"
+          >
+            {voiceOn ? "🔊 Voice on" : "🔈 Voice"}
+          </button>
+          {!isByo && (
+            <button
+              type="button"
+              className="surface-link"
+              onClick={() => setOnStand(true)}
+            >
+              Take the stand
             </button>
           )}
           {isByo ? (
@@ -241,6 +276,12 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
           sourceLabel={sourceLabel}
           onClose={() => setShowRecord(false)}
         />
+      )}
+      {onStand && !isByo && (
+        <TakeTheStand sessionId={sessionId} onClose={() => setOnStand(false)} />
+      )}
+      {OBJECTION_CINEMA && (
+        <ObjectionCurtain pending={Boolean(state.challengePending)} latest={latestChallenge} />
       )}
     </>
   );
