@@ -75,11 +75,11 @@ export function EngineTracePanel({
 
       <div className={`engine-tap__grounding ${grounding ? "" : "engine-tap__grounding--off"}`}>
         <div className="engine-tap__grounding-text">
-          <span className="micro-label">Foundry IQ grounding</span>
+          <span className="micro-label">Grounding · all turns</span>
           <p className="engine-tap__grounding-state">
             {grounding
-              ? "ON — every claim is checked against the case file, live."
-              : "OFF — the engine has nothing to check against. Her word stands."}
+              ? "ON for every turn — each claim is checked against the source, live."
+              : "OFF for every turn — the engine has nothing to check against; the witness's word stands."}
           </p>
         </div>
         <button
@@ -88,8 +88,8 @@ export function EngineTracePanel({
           onClick={onToggleGrounding}
           role="switch"
           aria-checked={grounding}
-          aria-label="Toggle Foundry IQ grounding"
-          title={grounding ? "Pull the plug on Foundry IQ" : "Plug Foundry IQ back in"}
+          aria-label="Toggle Foundry IQ grounding for all turns"
+          title={grounding ? "Pull the plug on Foundry IQ (all turns)" : "Plug Foundry IQ back in (all turns)"}
         >
           <span className="engine-tap__plug-track" aria-hidden="true">
             <span className="engine-tap__plug-knob" />

@@ -95,11 +95,37 @@
   color: var(--gold-bright);
 }
 
-.testimony__q-mark {
+/* Speaker bylines: make Q = you / A = witness explicit, not colour-only. */
+.testimony__speaker {
+  display: inline-block;
+  margin-right: 0.7em;
+  font-family: var(--font-type);
   font-style: normal;
-  font-weight: 900;
-  margin-right: 0.6em;
+  font-weight: 700;
+  font-size: var(--text-xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   color: var(--gold);
+  vertical-align: 0.08em;
+}
+
+.testimony__speaker--reply {
+  color: var(--text-faint);
+}
+
+/* First (auto-fired) turn only: explain why text is already on the board. */
+.testimony__cold-open {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-type);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--text-dim);
+  border-left: 2px solid var(--gold-dim);
+  padding-left: var(--space-2);
+}
+
+.testimony__reply-by {
+  margin: 0 0 var(--space-1);
 }
 
 .testimony__answer {
@@ -121,16 +147,19 @@
 .claim--unpressed {
   position: relative;
   display: inline;
-  background: rgba(201, 161, 74, 0.07);
+  background: rgba(201, 161, 74, 0.1);
   border: none;
   border-bottom: 1px dashed var(--gold);
   color: var(--gold-bright);
   text-align: left;
+  cursor: pointer;
   transition: background var(--duration-fast) var(--ease-out);
 }
 
-.claim--unpressed:hover {
-  background: rgba(201, 161, 74, 0.18);
+.claim--unpressed:hover,
+.claim--unpressed:focus-visible {
+  background: rgba(201, 161, 74, 0.22);
+  outline: none;
 }
 
 .claim__press-hint {
@@ -143,7 +172,8 @@
   transition: opacity var(--duration-fast);
 }
 
-.claim--unpressed:hover .claim__press-hint {
+.claim--unpressed:hover .claim__press-hint,
+.claim--unpressed:focus-visible .claim__press-hint {
   opacity: 1;
 }
 

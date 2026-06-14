@@ -212,6 +212,37 @@
   color: var(--text-faint);
 }
 
+/* Desk-level thesis strip — the persistent "what this is / what's the point"
+   line that survives the whole session (dual framing: engine-aware, in-world). */
+.live-thesis {
+  margin: 0;
+  padding: 0.6rem clamp(var(--space-4), 4vw, 4rem);
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(0deg, rgba(201, 161, 74, 0.05), transparent);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--text-dim);
+}
+
+.live-thesis strong {
+  color: var(--gold-bright);
+  font-weight: 700;
+}
+
+/* Standing "these sentences are tappable" caption under the first answer —
+   replaces the coach nudge that used to vanish after the first challenge. */
+.live-answer__howto {
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-type);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--gold-bright);
+}
+
+.live-answer__howto-chip {
+  border-bottom: 1px dashed var(--gold);
+}
+
 .live-panel__typing {
   font-family: var(--font-type);
   font-size: var(--text-sm);
@@ -315,16 +346,6 @@
   margin-top: var(--space-1);
   color: var(--text-faint);
   font-style: italic;
-}
-
-.live-panel__coach {
-  margin: var(--space-2) 0 0;
-  padding: var(--space-2);
-  border: 1px dashed var(--gold-dim);
-  font-family: var(--font-type);
-  font-size: var(--text-sm);
-  color: var(--gold-bright);
-  line-height: 1.6;
 }
 
 /* Until the first challenge lands, unpressed chips breathe to invite the press. */
@@ -688,6 +709,23 @@
   line-height: 1.7;
   border-top: 1px solid rgba(36, 27, 16, 0.18);
   padding-top: var(--space-2);
+}
+
+/* Dual framing on the close: the same engine ships as a Copilot/MCP tool. */
+.report__tool-note {
+  margin: var(--space-3) 0 0;
+  padding: var(--space-2) var(--space-3);
+  border-left: 3px solid var(--crimson-deep);
+  background: rgba(36, 27, 16, 0.05);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--paper-ink);
+}
+
+.report__tool-note code {
+  font-family: var(--font-type);
+  font-size: 0.9em;
+  color: var(--crimson-deep);
 }
 
 .report__actions {

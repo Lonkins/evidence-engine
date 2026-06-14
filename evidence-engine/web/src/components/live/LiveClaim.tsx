@@ -16,9 +16,10 @@ const EVIDENCE_NOTE = {
   CONTRADICTED:
     "Foundry IQ found a passage that conflicts with this claim — cited below, verbatim. A grounded receipt, not an opinion of lying.",
   // The grey band — the honest heart of the whole thing. Foundry IQ refuses to
-  // vouch for what it can't ground, and says so instead of guessing.
+  // vouch for what it can't ground, and says so instead of guessing. Lead with the
+  // virtue: this is the responsible move, not a failed catch.
   UNSUPPORTED:
-    "Foundry IQ won't vouch for this: the source neither backs it nor knocks it down. That's not a miss — it's the engine refusing to bless a claim it can't ground. And it's the dangerous band: a confident claim with no receipt is exactly where hallucinations hide.",
+    "An honest “no record.” Foundry IQ won't call this true or false, because the source neither backs it nor knocks it down — and saying so, instead of guessing, is exactly the responsible move. It's also the band to watch: a confident claim with no receipt is where hallucinations hide.",
 } as const;
 
 /**

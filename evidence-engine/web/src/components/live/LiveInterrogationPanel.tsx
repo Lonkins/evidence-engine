@@ -24,6 +24,8 @@ interface LiveInterrogationPanelProps {
   grounding: boolean;
   /** In a bring-your-own trial, the single witness — overrides the Holbrooke suspect rail. */
   witness?: { name: string; role: string };
+  /** The witness that received the auto-fired cold-open question — drives first-turn framing. */
+  coldOpenWitness?: string | null;
   onAsk: (speaker: string, question: string) => void;
   onChallenge: (claimId: string) => void;
   onOpenDoc: (docKey: string) => void;
@@ -54,6 +56,7 @@ export function LiveInterrogationPanel({
   live,
   grounding,
   witness,
+  coldOpenWitness,
   onAsk,
   onChallenge,
   onOpenDoc,
@@ -163,11 +166,22 @@ export function LiveInterrogationPanel({
           </p>
         )}
 
-        {turns.map((turn) => (
+        {turns.map((turn, turnIndex) => (
           <article key={turn.turnNo} className="testimony">
+            {coldOpenWitness === person.name && turnIndex === 0 && (
+              <p className="testimony__cold-open" role="note">
+                We opened with a question on your behalf, to get things moving —
+                challenge anything in {person.name}'s reply you don't believe.
+              </p>
+            )}
             <p className="testimony__question">
-              <span className="testimony__q-mark" aria-hidden="true">Q.</span>
+              <span className="testimony__speaker">You asked</span>
               {turn.question}
+            </p>
+            <p className="testimony__reply-by">
+              <span className="testimony__speaker testimony__speaker--reply">
+                {person.name} replied
+              </span>
             </p>
             <div
               className={`testimony__answer live-answer ${
@@ -189,9 +203,10 @@ export function LiveInterrogationPanel({
                         className="live-split-trigger"
                         onClick={() => runSplit(claim.claimId, claim.text)}
                         disabled={splitPending !== null}
-                        title="See this claim with Foundry IQ on vs off"
+                        title="Preview only — see this one claim checked with Foundry IQ off vs on. Doesn't score."
+                        aria-label="Preview this claim with Foundry IQ off versus on. Does not score."
                       >
-                        {splitPending === claim.claimId ? "comparing…" : "⚖ on/off"}
+                        {splitPending === claim.claimId ? "comparing…" : "IQ off ⇄ on"}
                       </button>
                     )}{" "}
                   </span>
@@ -200,20 +215,21 @@ export function LiveInterrogationPanel({
                 <span>{turn.reply}</span>
               )}
             </div>
+            {turnIndex === 0 && (
+              <p className="live-answer__howto" role="note">
+                ↑ Each{" "}
+                <span className="live-answer__howto-chip">underlined sentence</span> is a
+                separate claim — tap any one and Foundry IQ checks it against {corpusNoun},
+                live, then hands you the receipt.
+              </p>
+            )}
             <p className="live-answer__grounding">
               {turn.retrievedDocs.length > 0
                 ? `Grounded on ${turn.retrievedDocs.length} retrieved document(s): ${turn.retrievedDocs
                     .map((doc) => doc.docKey)
                     .join(", ")}`
-                : "No case-file passage cleared the retrieval threshold for this turn — the witness is on their own."}
+                : `No ${corpusNoun} passage cleared the retrieval threshold for this turn — the witness is on their own.`}
             </p>
-            {isFirstChallengePending && turn.turnNo === turns[turns.length - 1].turnNo && (
-              <p className="live-panel__coach" role="status">
-                ↑ Every sentence is a claim. Challenge one you don't believe — exact
-                times are a good place to start. The engine will check it against the
-                case file, live.
-              </p>
-            )}
             {turn.claims
               .map((claim) => live.challenges[claim.claimId])
               .filter((result): result is NonNullable<typeof result> => Boolean(result))

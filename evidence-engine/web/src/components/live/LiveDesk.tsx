@@ -158,6 +158,12 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
   const sourceLabel = isByo
     ? state.sourceTitle ?? "your source"
     : "The Holbrooke Gallery Affair";
+  // The witness the cold-open question was auto-fired at (BYO → first inferred
+  // witness; Holbrooke → Helena). Mirrors the cold-open effect above so the panel
+  // can frame "we opened on your behalf" only on the genuinely seeded turn.
+  const coldOpenWitness = isByo ? state.witnesses[0]?.name ?? null : "Helena Voss";
+  // Source noun for the desk thesis strip — keep Holbrooke's "case file" out of BYO.
+  const corpusNoun = isByo ? "your source" : "the case file";
 
   return (
     <>
@@ -222,6 +228,12 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
           {actions}
         </div>
       </header>
+      <p className="live-thesis" role="note">
+        <strong>Evidence Engine</strong> puts an AI on the stand. It answers
+        confidently — and invents when {corpusNoun} is silent. Challenge any line and{" "}
+        <strong>Foundry IQ</strong> checks it against {corpusNoun}, live, then hands you
+        the receipt.
+      </p>
       <main className="desk-grid live-grid">
         {isByo ? (
           <WitnessStand
@@ -237,6 +249,7 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
           live={state}
           grounding={grounding}
           witness={isByo ? activeWitness ?? undefined : undefined}
+          coldOpenWitness={coldOpenWitness}
           onAsk={(speaker, question) => void askQuestion(sessionId, speaker, question, grounding)}
           onChallenge={(claimId) => void challengeClaim(sessionId, claimId, grounding)}
           onOpenDoc={setOpenDocKey}

@@ -106,6 +106,12 @@ export function InterrogationReport({
           </ul>
         </div>
 
+        <p className="report__tool-note">
+          This isn't only a game. The same grounding engine runs as a Copilot tool —{" "}
+          <code>ground_on</code> and <code>check_claim</code> — so any agent can demand
+          the same cited receipt you just did, against any source.
+        </p>
+
         <p className="report__smallprint">
           Verdicts are evidence-relative: “unsupported by the case file” or “conflicts
           with their earlier statement” — never a finding of fact. “File silent” means
