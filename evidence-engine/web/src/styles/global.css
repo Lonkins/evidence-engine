@@ -84,11 +84,12 @@ summary:focus-visible,
   }
 }
 
-/* Shared micro-label: small caps tracking, used for section headers */
+/* Shared micro-label: the design system's stencil voice (Oswald) for section
+   headers, classified labels and eyebrows — wide tracking, small caps. */
 .micro-label {
-  font-family: var(--font-type);
+  font-family: var(--font-stencil);
   font-size: var(--text-xs);
-  letter-spacing: 0.28em;
+  letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
   color: var(--text-dim);
 }
