@@ -228,3 +228,58 @@ Per [`strategy.md`](.claude/memory/strategy.md) build order:
 1. **Case corpus authoring** — expand the evidence index from 3 to 20–30 documents in a focused domain (e.g. developer productivity research, AI coding tool benchmarks). Richer corpus = better demo recall and more impressive judge interaction.
 2. **Game MCP server** — build the custom MCP server (`src/mcp-server/`) that exposes the retrieval API as named Copilot tools. The KB-native MCP endpoint can be surfaced directly for the basic path; the custom server adds game-specific tools (score tracking, challenge generation, hint retrieval).
 3. **Lock the creative framing** — the concept (Evidence Engine as a game / citation challenge) needs a name, a demo script, and a Discord post before build accelerates.
+
+---
+
+## WP-IQ — answer-synthesis brain + stretch set + unification (June 13–14, 2026)
+
+> **This section supersedes the stale items above.** The board above is frozen at ~June 11. Two of the three "Recommended Next Build Step" items are now long done, and the spike table at the top stops at stage 5 — but the work that matters most for judging (stage 8, answer synthesis as the verdict-producer) landed after this board froze. Read this section as the current state.
+
+### What's now superseded
+
+- **"Expand corpus to 20–30 docs"** — DONE. The case corpus is built out (15 evidence documents in the shared `evidence` index, partitioned by `doc_type`), and the spike artifacts reference the full set. Do not re-scope a corpus expansion as "next."
+- **"Build the Game MCP server"** — DONE, and then some. The MCP server exposes **FIVE** tools, not the keyword-retrieval shim implied above: `load_case`, `interrogate`, `ground_on`, `check_claim`, `accuse`. `ground_on` + `check_claim` are the **Copilot Receipts** path — index your *own* source (a file, notes, a diff) into its own Foundry IQ partition and audit a claim against it, with a faithfulness gate (PASS/HELD).
+- **Stage-5-only spike table (top of file)** — STALE as the headline status. The spike progressed past stage 5 to **stage 8: answer synthesis** (`outputMode: answerSynthesis`, `gpt-4.1-mini` bound to `evidence-kb`, reasoning effort `medium`). The raw end-to-end response is committed at `spike/output/08-retrieve-verdict.json` (`VERDICT: CONTRADICTED` + verbatim deciding passage + `agenticReasoning` ~10,155 reasoning tokens).
+
+### The brain moved: Foundry IQ produces the verdict
+
+The biggest change since this board froze: **the verdict is now produced by Foundry IQ answer synthesis, not by our deterministic regex.** On a challenge, the knowledge base retrieves the relevant passages, the bound model reasons over them with answer synthesis, and the KB itself returns the verdict line — `GROUNDED` / `CONTRADICTED` / `UNVERIFIABLE` — with the deciding passage quoted verbatim.
+
+- **Verdict labels are `GROUNDED` / `CONTRADICTED` / `UNVERIFIABLE`.** Any earlier `SUPPORTED` / `INSUFFICIENT_EVIDENCE` labels are retired (`SUPPORTED` → `GROUNDED`, `INSUFFICIENT_EVIDENCE` → `UNVERIFIABLE`). `UNVERIFIABLE` is first-class — "the source is silent" is never scored as a caught lie.
+- **The deterministic check is now only a disclosed cross-check** (and the fallback when answer synthesis is unavailable, e.g. Azure's content filter intermittently rejecting security-sensitive code) — never the headline decision. When the cross-check diverges from the IQ verdict, the IQ verdict leads and the divergence is surfaced in the engine tap (`AZURE` / `MODEL` / `LOCAL` tags). Any "the regex compares and returns the verdict" framing elsewhere is stale.
+
+### The hero surface is the hosted live web app
+
+The hero product is the hosted **live web app**: a live LLM (GitHub Models free tier, `gpt-4o-mini`) plays witnesses who drift/lie; challenge a claim and you get a live Foundry IQ verdict + verbatim citation, with the engine tap showing the live Azure call. The MCP/Copilot surface and the offline Case File mode are **supporting** surfaces, not the headline. Framing this as "a detective game played only inside Copilot Chat / no web app" is stale.
+
+### One flow, two scenarios with parallel features
+
+The flow unified into one desk. **The Holbrooke Gallery Affair is now the default example.** "Bring Your Own Trial" lets the player paste their own doc/notes/code → 1–3 witnesses are inferred → Foundry IQ checks claims against *their* source (lies are emergent and unscripted). Both scenarios share: a witness rail, **Take the stand** (Foundry IQ interrogates the player), a **Deliver your verdict** close, and the **Grounding Record** (an exportable, cited dossier — the post-catch payoff).
+
+- Holbrooke additionally has the murder accusation, which can reach **SOLVED** (the true killer).
+- BYO has no ground-truth killer, so its close is **CASE_MADE / UNPROVEN** only — `SOLVED` is structurally unreachable. This is a deliberate **honesty guard**, not a missing feature.
+
+### Stretch set-pieces shipped
+
+- **Pull-the-plug split-screen** — grounding ON/OFF A/B in a single frame (Foundry IQ unplugged: her word stands · Foundry IQ in the loop: CONTRADICTED, cited).
+- **Reasoning-token receipt** — renders the KB's reasoning-token count vs `cross-check · 0` so the multi-step reasoning is on screen, not asserted.
+- **Objection Cinema** — the challenge moment staged as a set-piece.
+- **You Take the Stand** — Foundry IQ interrogates the player.
+- **Voice** — voiced verdict (an accessibility feature).
+- **The Grounding Record** — the exportable cited dossier.
+
+### Calibration table is STILL ACCURATE
+
+The live calibration table in **WP9 — Live Interrogation** (above) is **still correct** — do not re-measure or "fix" it. Declarative-claim challenges rerank lower than question-style queries; the thresholds hold:
+
+- **grounded ≥ 2.2 / fabricated ≤ 1.5** for declarative claims → `CLAIM_EVIDENCE_THRESHOLD` = **2.0**.
+- Question-style turn retrieval: in-corpus ~3.8–4.0, out-of-corpus 0 refs → **3.5**.
+- Testimony self-check: gated by the time-conflict heuristic → **1.0**.
+
+All fail closed. The verdict heuristics operate at sentence/log-line level (only segments sharing a term with the claim can contribute a negation or clock-time conflict), so a statement-header timestamp can't manufacture a contradiction.
+
+### Responsible-AI spine (unchanged in intent, sharper in wording)
+
+Evidence-relative verdicts only — never "lying" / "false" / "guilty" as findings of fact; `UNVERIFIABLE` is first-class; counts, not trust-scores; "your source says…"; disclaimers bound to the artifacts they qualify. In BYO, the pasted text is indexed into an isolated Foundry IQ partition only for that trial, purged on reset and swept after inactivity.
+
+> **Current source of truth for framing and voice:** `creative-apps/README.md`. If anything here drifts from it, the README wins.

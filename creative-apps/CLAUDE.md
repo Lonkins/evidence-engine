@@ -38,16 +38,11 @@ Given that the Enterprise Agents track already covers **Foundry IQ** and **Work 
 - OR use Foundry IQ in a genuinely different creative context (not risk assessment)
 - Build an **MCP server for GitHub Copilot in VS Code** — explicitly called out as desired in the challenge
 
-### Concept Selection — Open
+### Concept — Locked: Evidence Engine
 
-Concept has not been locked. Use the four mandatory personas before finalising any concept. Prize Strategist is tiebreaker.
+The concept is **Evidence Engine** — a detective game where you interrogate AI witnesses who lie and **Foundry IQ catches them live**. On a challenge, the Azure AI Search knowledge base (`evidence-kb`) retrieves the case documents, a bound `gpt-4.1-mini` reasons over them with **answer synthesis** (reasoning effort `medium`), and the KB itself returns the verdict — **GROUNDED / CONTRADICTED / UNVERIFIABLE** — with the deciding passage quoted verbatim. The deterministic check runs alongside only as a disclosed cross-check and the offline fallback; the verdict is IQ-produced.
 
-**Categories to consider:**
-- Content generation (story, script, music)
-- Visual creativity (generative art, design tools)
-- Game development (procedural generation, interactive fiction)
-- Creative productivity (remixing, brainstorming)
-- Interactive experiences (character chatbots, educational games)
+The hero surface is the hosted live **web app** (a live model plays witnesses who drift; challenge a claim → live Foundry IQ verdict + verbatim citation, engine tap showing the Azure call). Supporting surfaces: the **MCP server for GitHub Copilot** (five tools — `load_case`, `interrogate`, `ground_on`, `check_claim`, `accuse`) and the offline Case File mode. See `README.md` (source of truth) for full framing.
 
 ### IQ Layer Options
 
@@ -69,21 +64,21 @@ Concept has not been locked. Use the four mandatory personas before finalising a
 
 ---
 
-## Project Structure (to be filled in once concept is locked)
+## Project Structure
 
 ```
 creative-apps/
-├── CLAUDE.md               ← This file
-├── README.md               ← Architecture, Copilot usage documentation, setup guide
-├── src/                    ← Application source
-├── .claude/
-│   └── memory/             ← Track memory files (read before starting work)
-│       ├── MEMORY.md
-│       ├── strategy.md
-│       └── competition-context.md
-└── docs/
-    ├── demo-script.md      ← Video recording guide (create once concept locked)
-    └── discord-post.md     ← Community vote post templates
+├── CLAUDE.md                       ← This file
+├── README.md                       ← Source of truth: architecture, Copilot usage, setup
+├── evidence-engine/
+│   ├── web/                        ← Hero surface: hosted live web app (no keys offline; live Act II)
+│   ├── live-server/                ← Live backend (Azure search key + GitHub Models token)
+│   ├── server/                     ← MCP server for GitHub Copilot (five tools)
+│   ├── docs/                       ← live-mode-proof.json + supporting docs
+│   └── COPILOT_USAGE.md            ← Full Copilot interaction log
+├── spike/                          ← Azure AI Search provisioning scripts + committed raw responses
+└── .claude/
+    └── memory/                     ← Track memory files (read before starting work)
 ```
 
 ---
@@ -108,9 +103,11 @@ Read before starting work. Update when decisions are made.
 
 | File | Content |
 |------|---------|
+| `.claude/memory/MEMORY.md` | Memory index — read first, points to the rest |
 | `.claude/memory/strategy.md` | Concept decision, build status, prize vectors |
 | `.claude/memory/competition-context.md` | Full Creative Apps challenge requirements |
 | `.claude/memory/overnight-log.md` | Autonomous cycle log |
+| `.claude/memory/azure-ai-search-kb-api.md` | Foundry IQ / Azure AI Search knowledge-base API reference (endpoints, retrieve/answer-synthesis params) |
 
 ---
 

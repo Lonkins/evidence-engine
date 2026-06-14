@@ -2,11 +2,13 @@
 
 > **For judges who cannot run the game locally:** This document shows the exact tool call syntax, realistic MCP responses, and the lie-catching moment in full. Read it as a transcript of a real game session, then watch the demo video for the screen recording.
 
+> **This is the MCP / Copilot surface — a supporting surface, not the hero.** The hero product is the hosted live **web app**, where a live model plays witnesses who drift and lie, and challenging a claim returns a live Foundry IQ verdict with a verbatim citation and an engine tap showing the Azure call. This transcript shows the *same* verdict engine as it runs inside GitHub Copilot Chat. The web app and the offline "Case File" mode are the other two surfaces.
+
 ---
 
 ## Setup Summary
 
-The MCP server runs in stdio mode and registers 4 tools with GitHub Copilot in VS Code. The game is played entirely in Copilot Chat (Agent mode). No UI, no web app — the interrogation interface is Copilot Chat itself.
+The MCP server runs in stdio mode and registers **5 tools** with GitHub Copilot in VS Code — `load_case`, `interrogate`, `ground_on`, `check_claim`, and `accuse`. This surface is played in Copilot Chat (Agent mode); the verdict engine is identical to the web app's.
 
 ```
 Player → Copilot Chat → MCP protocol (stdio) → evidence-engine-mcp → Foundry IQ (or local corpus)
@@ -49,6 +51,7 @@ Evidence source: Foundry IQ (Azure AI Search knowledge base)
 
 Interrogate the suspects. Check their claims against the evidence.
 Use `interrogate` to question, `check_claim` to test assertions, `accuse` when confident.
+(`ground_on` lets you swap in your *own* source so `check_claim` audits against it.)
 
 Note: Characters may be unreliable narrators. The citations are how you catch them.
 ```
@@ -198,11 +201,11 @@ check_claim(claim="Victor Holt planned to confront Helena about a forged provena
 
 **Tool response:**
 ```
-# Claim Check: SUPPORTED
+# Claim Check: GROUNDED
 
 Claim: "Victor Holt planned to confront Helena about a forged provenance certificate"
 
-Verdict: SUPPORTED
+Verdict: GROUNDED
 
 ## Supporting Documents
 
@@ -282,7 +285,7 @@ The security log is exhibit HGA-001 — chain-of-custody documented, exported by
 
 ---
 
-## What `INSUFFICIENT_EVIDENCE` Looks Like
+## What `UNVERIFIABLE` Looks Like
 
 Not all claims are answerable. Try:
 
@@ -292,14 +295,14 @@ check_claim(claim="Nora Ashton was inside the gallery that evening")
 
 **Response:**
 ```
-# Claim Check: INSUFFICIENT EVIDENCE
+# Claim Check: UNVERIFIABLE
 
 The evidence file is silent on this point. No documents were retrieved that speak
 to this claim. This does not mean the claim is false — only that the available
 evidence cannot confirm or refute it.
 ```
 
-This is the responsible AI design: the game does not fabricate evidence. If the index has nothing, the tool says so — it does not hallucinate a supporting or contradicting passage.
+This is the responsible AI design: `UNVERIFIABLE` is a first-class verdict — the game does not fabricate evidence. If the index has nothing, Foundry IQ says so rather than manufacturing a supporting or contradicting passage. Absence is not contradiction.
 
 ---
 

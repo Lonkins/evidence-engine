@@ -69,3 +69,25 @@ Ranked viable autonomous actions by expected value:
 **Verification:** server build green; MCP stdio smoke test passes zero-config (initialize → 4 tools listed); `check_claim` on Helena's 7:45pm lie returns CONTRADICTED offline via the real protocol; web 34/34 tests, live-server 18/18 tests, both builds green.
 
 **Still human-gated (unchanged):** demo video recording, hosting, repo public, Discord posts, submission before June 14 EOD.
+
+---
+
+## Cycle — June 13–14, 2026 (consolidated: IQ-brain + stretch set-pieces + BYO + unification)
+
+**Context:** Final push before deadline. The product moved from "deterministic regex returns the verdict, Foundry IQ does retrieval" to **"Foundry IQ produces the verdict."** This entry consolidates all June 13–14 work.
+
+**1. The IQ brain — answer synthesis (spike 08).** The headline change. The knowledge base now runs answer synthesis (`outputMode: answerSynthesis`, `gpt-4.1-mini` bound to `evidence-kb`, reasoning effort `medium`) and *returns the verdict itself* — `VERDICT: CONTRADICTED` + the verbatim deciding passage + `references[]`. Raw end-to-end response committed at `spike/output/08-retrieve-verdict.json` (`modelQueryPlanning → searchIndex → modelAnswerSynthesis → agenticReasoning`, 10,155 reasoning tokens). The deterministic check is **demoted to a disclosed cross-check** + the no-keys fallback — never the headline decision. Verdict labels are now **GROUNDED / CONTRADICTED / UNVERIFIABLE** (the stale SUPPORTED / INSUFFICIENT_EVIDENCE pair was retired). Gated behind `IQ_VERDICT_ENABLED` / `KB_REASONING_EFFORT`.
+
+**2. Stretch set-pieces — making the reasoning visible.** Pull-the-plug split-screen (grounding ON/OFF A/B in one frame — her word stands vs. CONTRADICTED+cited); the reasoning-token receipt (`Foundry IQ · medium effort · N reasoning tokens` vs. `cross-check · 0`); Objection Cinema (the challenge moment staged); You Take the Stand (Foundry IQ interrogates the *player*); Voice (voiced verdict, an accessibility feature); self-conviction by a witness's own earlier indexed testimony, cited with turn number.
+
+**3. Copilot Receipts — `ground_on` + `check_claim` against your OWN source.** MCP tool count moved from four to **five**: `ground_on` indexes the user's pasted source (file/notes/code/diff) into its own Foundry IQ partition, then `check_claim` audits a claim — including one Copilot just made about the code — against *their* material, returning GROUNDED / CONTRADICTED / UNVERIFIABLE + a **faithfulness gate** (PASS/HELD) + reasoning-token count. "Put your PR on the stand." Degrades to the deterministic cross-check (never fakes an IQ verdict); Azure's content filter intermittently rejects synthesis on security-sensitive code — disclosed.
+
+**4. BYO inference + the Grounding Record.** Bring Your Own Trial now **infers 1–3 witnesses** from the pasted source rather than asking the user to author them; lies are emergent/unscripted, checked live against their text. Every catch files into the exportable **Grounding Record** (kept / contradicted / unverifiable, each cited) — the post-catch payoff, so you leave with a cited dossier, not just a stamp.
+
+**5. Scoped unification — one flow, two scenarios, parallel features.** Holbrooke is now the **default example** (not a separate "Act I"); the chooser is neutral. BOTH scenarios share a witness rail, "Take the stand" (IQ interrogates the player), a **"Deliver your verdict"** close, and the Grounding Record. Holbrooke keeps the murder accusation that can reach **SOLVED** (true killer); BYO has no ground-truth killer, so its close is **CASE_MADE / UNPROVEN only** — SOLVED is structurally unreachable as an honesty guard.
+
+**Deferred (scoped out, not done):** the verdict-enum and witness-rail refactor — the unification was applied at the flow/close level; a full shared-enum + shared-rail component refactor was deferred to avoid June 14 regression risk.
+
+**RA spine reaffirmed:** evidence-relative verdicts (never "lying"/"false"/"guilty"), UNVERIFIABLE first-class, counts not trust-scores, "your source says…", disclaimers bound to artifacts; the engine tap tags every step AZURE / MODEL / LOCAL so the IQ-vs-cross-check split is disclosed, not discovered.
+
+**Verification:** live-server build green with a new `sessions.test.ts`; existing web + live-server suites green. Hosting, repo-public, demo video, Discord, and final submission remain human-gated.

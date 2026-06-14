@@ -296,7 +296,7 @@ to this claim.
 ```
 
 **Narration:**
-> "When the evidence doesn't answer a claim, the game says so. It doesn't guess. INSUFFICIENT_EVIDENCE is a first-class game state — not a fallback error message."
+> "When the evidence doesn't answer a claim, the game says so. It doesn't guess. UNVERIFIABLE is a first-class verdict — the source is silent, and silence is not a lie — never a fallback error message."
 
 This is the 30-second responsible AI addendum if you want to add it before the architecture close.
 

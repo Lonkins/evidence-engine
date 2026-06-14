@@ -7,6 +7,78 @@ Strategist breaks ties.
 
 ---
 
+## Entry 11 — June 14, 2026: Stretch set-pieces, scoped flow unification, and a deferred refactor
+
+With the engine, BYO, and Receipts all landed, the work after Entry 10 was about
+making Foundry IQ *legible on screen* and making the two scenarios feel like one
+product — without touching the un-live-testable hero path this close to the
+deadline. Three threads, each weighed against the four personas.
+
+### (a) The stretch set-pieces — make the reasoning visible
+
+Presentation-layer moves on data the engine already produces (no new
+answer-synthesis calls on the hero moment):
+
+- **Pull-the-plug split-screen.** The grounding ON/OFF toggle (Entry 5) now also
+  renders as a side-by-side *single frame* — the same sentence with Foundry IQ
+  unplugged ("her word stands") next to Foundry IQ in the loop (CONTRADICTED,
+  cited). Turns "remove IQ and detection collapses" into one screenshot.
+- **Reasoning-token receipt.** Each verdict carries
+  `Foundry IQ · medium effort · N reasoning tokens` sourced from the KB's native
+  `activity[]` (already returned) vs. `cross-check · 0` for the deterministic
+  check — the multi-step reasoning is *on screen*, not asserted.
+- **Objection Cinema.** The challenge moment is staged as a set-piece so the catch
+  reads as the climax it is, not a quiet state change.
+- **You Take the Stand.** Foundry IQ interrogates the *player* — the same grounded
+  retrieve, turned around, so the judge feels the engine from the other side.
+- **Voice.** A voiced verdict — primarily an accessibility feature, secondarily a
+  demo beat.
+
+Rationale: the engineer and strategist both flagged "IQ is reasoning" as
+asserted-not-shown; these surface the existing trace cheaply. None adds a second
+medium-effort LLM call on the climax (the determinism/latency risk the engineer
+named in Entry 9).
+
+### (b) Scoped unification of the two flows (after a four-persona review)
+
+The personas converged on *closing the gap between the scenarios*, not adding more
+game. Shipped, scoped:
+
+- **BYO got a "Deliver your verdict" close.** BYO previously ended on "End &
+  debrief"; it now mirrors Holbrooke's close — but resolves to **CASE_MADE /
+  UNPROVEN only**. **SOLVED is structurally unreachable** for a pasted source with
+  no ground-truth killer (an honesty guard, not a missing feature): you cannot
+  "solve" a source that has no planted answer, so the close never claims you did.
+- **"Take the stand" made parallel.** Both scenarios now share the player-on-the-
+  stand beat, so the two desks differ only in their scenario-inherent endgame.
+- **Gallery-opener leak + plants 0/0 tile fixed.** The Holbrooke opener was
+  leaking into BYO copy, and BYO rendered a meaningless "plants 0/0" tile (BYO has
+  no scripted plants). Both removed — BYO no longer borrows Holbrooke's ground-truth
+  framing.
+- **Holbrooke positioned as the DEFAULT EXAMPLE.** "The Holbrooke Gallery Affair"
+  is now the default example the judge lands on (the reliable, deterministic hero
+  path), with Bring Your Own Trial the parallel-featured alternative — not a
+  neutral 50/50 chooser that makes the judge pick before they understand the
+  product.
+
+Rationale: the rival's attack was "the two flows feel like two products"; the RAI
+judge's was "don't let BYO imply a ground truth it doesn't have." Both are
+addressed by giving BYO parallel features *minus* the one thing it structurally
+can't honestly claim (SOLVED).
+
+### (c) Deferred: the internal refactor (post-deadline)
+
+Tempting cleanup, explicitly **deferred**: kill the `SessionMode` enum, merge the
+two rail components (`SuspectRail` + the BYO witness rail) into one, and move the
+retrieval threshold into scenario data rather than branching on mode. The personas
+judged this **high-risk / low-visible-reward**: it touches the shared shell that
+both verified flows depend on, the judges never see internal structure, and the
+hero path is **un-live-testable in this environment** — a regression introduced
+now could not be caught before the deadline. A submitted B+ beats an unsubmitted
+A+. Logged here as the first post-deadline cleanup.
+
+---
+
 ## Entry 10 — June 14, 2026: Copilot "Receipts" — audit claims about your own source
 
 From the "so what" review, the one buildable idea that lifts a *required, thin*

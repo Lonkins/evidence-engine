@@ -6,7 +6,11 @@
 
 ---
 
-## Template A — Full Post (Recommended)
+> ⚠️ **Templates A / B / C below are SUPERSEDED.** They lead with the MCP/Copilot-Chat
+> surface as the headline product — the hero is now the hosted live web app. Use
+> **Template 4** above. A/B/C are kept for reference (labels corrected) only.
+
+## Template A — Full Post (superseded — see Template 4)
 
 Post this with the demo video attached or linked.
 
@@ -22,7 +26,7 @@ The core mechanic: `check_claim` returns `CONTRADICTED` and shows you the exact 
 - 🔌 MCP server (stdio) — runs inside GitHub Copilot Chat in VS Code
 - 📚 15-document synthetic case corpus — the Holbrooke Gallery Affair
 - 🔎 Foundry IQ agentic retrieval — retrieves case documents with citations on every tool call
-- ✅ `INSUFFICIENT_EVIDENCE` when the index is silent — no hallucinated passages
+- ✅ `UNVERIFIABLE` when the source is silent — no hallucinated passages
 
 The case: a gallery owner found dead. Three suspects. One lied about when they left. The security access log disagrees with the witness statement by over an hour. Find the contradiction, cite the evidence, solve the case.
 
@@ -44,25 +48,26 @@ doesn't match the security log. MCP server + Foundry IQ. Demo 👇 #AgentsLeague
 
 ---
 
-## Template C — Technical Developer Audience
+## Template C — Technical Developer Audience (superseded — see Template 4)
 
 Use in a follow-up thread or if the channel skews technical.
 
 ---
 
-Built an MCP server for the Creative Apps track — the full source is on GitHub.
+The hosted web app is the hero; it also ships as an MCP server for the Creative Apps track — the full source is on GitHub.
 
 The interesting part is the `check_claim` tool architecture:
 
 ```
 Player types a claim →
-  retrieve(claim) via Foundry IQ agentic retrieval API →
-  fetchDocumentByKey() for each returned reference →
-  classify: SUPPORTED / CONTRADICTED / INSUFFICIENT_EVIDENCE
-  (CONTRADICTED = retrieval found the document; document contains contradiction signals)
+  retrieve(claim) via Foundry IQ knowledge base →
+  answer synthesis (gpt-4.1-mini bound to evidence-kb, reasoning effort medium) →
+  the KB ITSELF returns the verdict: GROUNDED / CONTRADICTED / UNVERIFIABLE
+  + the deciding passage quoted verbatim + a faithfulness gate (PASS/HELD)
+  (a deterministic check runs alongside as a DISCLOSED cross-check, never the headline)
 ```
 
-The Foundry IQ API used is the **2026-05-01-preview** `/knowledgebases/{name}/retrieve` endpoint with `messages` input format and `retrievalReasoningEffort: minimal`. Local fallback is keyword search over the 15 corpus `.md` files.
+The Foundry IQ API used is the **2026-05-01-preview** `/knowledgebases/{name}/retrieve` endpoint with `outputMode: answerSynthesis`. Local fallback is the deterministic cross-check over the 15 corpus `.md` files when answer synthesis is unavailable — clearly labelled, never faked as an IQ verdict.
 
 The game runs in **dev mode** (local corpus) without any Azure config. Set `AZURE_SEARCH_ENDPOINT` and `AZURE_SEARCH_KEY` in the server `.env` to switch to Foundry IQ semantic retrieval.
 
@@ -88,22 +93,30 @@ The game runs in **dev mode** (local corpus) without any Azure config. Set `AZUR
 
 ## Template 4 — Live Wire launch (June 12, USE THIS ONE)
 
-> 🕵️ **Catch the AI lying — live.**
+> 🕵️ **Catch the AI lying — live, in your browser.**
 >
-> Evidence Engine is a noir detective game where the suspects are played by a
-> live LLM, grounded through **Foundry IQ on every turn** — and deliberately
-> allowed to drift. Challenge any sentence and the engine checks it against
-> the case file in real time: **CONTRADICTED**, with the passage quoted
-> verbatim. Press hard enough and they contradict their own indexed testimony.
+> Evidence Engine is a hosted noir detective game where the suspects are played
+> by a live LLM, grounded through **Foundry IQ on every turn** — and deliberately
+> allowed to drift. Challenge any sentence and **the knowledge base itself returns
+> the verdict** — `GROUNDED` / `CONTRADICTED` / `UNVERIFIABLE` — with the deciding
+> passage quoted verbatim. The engine-tap panel shows the live Azure call that
+> produced it. Press hard enough and they contradict their own indexed testimony.
 >
-> Every witness hides one planted lie. The knowledge base already knows.
+> 🔥 **Then put your OWN doc on trial.** Paste a spec, your notes, or a chunk of
+> code — Foundry IQ indexes it, infers the witnesses, and checks every claim they
+> make against *your* source. Real hallucination detection on text we never saw.
 >
-> 🎮 Play (no install): [hosted link]
-> 🎬 60-second kill shot: [video/GIF — challenge → stamp]
-> 🔧 MCP server for Copilot Chat + Azure AI Search free tier, $0 stack: [repo]
+> 🎮 Play in your browser (no install, no keys): [hosted link]
+> 🎬 60-second kill shot: [video/GIF — challenge → verdict + cited receipt]
+> 🔧 Also ships as an MCP server for Copilot Chat. Azure AI Search free tier, $0 stack: [repo]
 >
-> Built with GitHub Copilot · Foundry IQ agentic retrieval · GitHub Models
+> Built with GitHub Copilot · Foundry IQ answer synthesis · GitHub Models
 
 **Attach:** the challenge→CONTRADICTED GIF (cut from the demo video, <10s loop).
 **Timing:** post as soon as hosting + video exist — votes compound; don't wait
 for the deadline crowd.
+
+**Alt stretch hook** (swap the 🔥 line if BYO isn't demo-ready): *"Pull the plug
+on Foundry IQ and watch the catch collapse — split-screen, the same sentence with
+grounding ON vs OFF. With the KB in the loop: CONTRADICTED, cited. Without it: her
+word stands."*

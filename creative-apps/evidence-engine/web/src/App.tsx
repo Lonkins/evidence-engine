@@ -11,9 +11,11 @@ import { EvidenceBoard } from "./components/evidence/EvidenceBoard";
 import { DocumentModal } from "./components/evidence/DocumentModal";
 import { AccusationModal } from "./components/accusation/AccusationModal";
 import { LiveDesk } from "./components/live/LiveDesk";
-import type { DeskMode } from "./components/live/ModeSwitch";
 import { TrainingBanner } from "./components/live/TrainingBanner";
 import "./app.css";
+
+/** Which surface the desk is showing: the live interrogation, or the offline Case File. */
+type DeskMode = "casefile" | "live";
 
 function Desk() {
   const { state, dispatch } = useGame();

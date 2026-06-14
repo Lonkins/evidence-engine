@@ -39,7 +39,7 @@ shallow retrieval call. Remove Foundry IQ and five of seven steps collapse.
 | **Challenge** | Presses a sentence they doubt | **`answerSynthesis` (medium effort): the KB reasons and emits the verdict + verbatim citation** — IQ is the brain | ✅ live (B0/B1, June 13) |
 | **Cross-reference** | — | (a) self-consistency vs the witness's own earlier testimony; (b) *federation*: which sub-corpus (forensics/comms/financial) breaks the alibi | (a) ✅ live · (b) gated |
 | **Cite** | Reads the receipt | Verbatim passage + docKey, joined by `ref_id` so the quote is provably grounded; regex runs as a disclosed cross-check | ✅ live |
-| **Wiretap** | Watches IQ think | The KB's native `activity[]` (search count, reasoning tokens, effort tier) streams into the engine tap | ✅ partial (token count live; full activity stream = #A4) |
+| **Wiretap** | Watches IQ think | The KB's native `activity[]` (search count, reasoning tokens, effort tier) streams into the engine tap | ✅ live (A4, June 13) |
 | **Pull the plug** | Flips grounding OFF/ON | OFF → nothing to check, her word stands; ON → CONTRADICTED lands. The thesis, made interactive | ✅ live |
 | **Accuse** | Names the killer, attaches exhibits | Right suspect + convicting evidence = solved; lied-but-innocent = `OVERRULED` | ✅ live (A2, June 13) |
 | **Debrief** | "What you just practised" | fluent ≠ true · a citation beats confidence · unverifiable ≠ false | ✅ live (Act III) |
@@ -97,6 +97,28 @@ shallow retrieval call. Remove Foundry IQ and five of seven steps collapse.
 - Foundry IQ reasoning line on verdicts + `agenticReasoning` token count in the trace.
 - IQ-driven verdict core (`iq-verdict.ts` / `kbReason`), speculative, flag-gated.
 - README credibility fix; design-log Entries 4–5.
+
+### Stretch set — shipped June 13–14
+
+The reasoning-made-visible set-pieces, now live on the hero web surface:
+
+- **Pull-the-plug split-screen** — grounding ON/OFF as an A/B in one frame: the same
+  sentence with Foundry IQ unplugged (her word stands) next to Foundry IQ in the loop
+  (CONTRADICTED, cited).
+- **Reasoning-token receipt** — every verdict carries `Foundry IQ · medium effort ·
+  N reasoning tokens` vs `cross-check · 0`, so the multi-step reasoning is on screen,
+  not asserted.
+- **Objection Cinema** — the challenge moment staged as a set-piece.
+- **You Take the Stand** — Foundry IQ interrogates the *player*, shared by both
+  scenarios.
+- **Voice** — voiced verdict (an accessibility feature).
+- **Unified "Deliver your verdict" close** — one verdict-delivery close for both
+  scenarios (Holbrooke can reach SOLVED via the murder accusation; BYO is structurally
+  capped at CASE_MADE / UNPROVEN — an honesty guard).
+
+Still not built: **A3** ("she adapts" — the witness shifts her story under a pinned
+plant) and **A7** (load-bearing red herrings — catching the lie that points at the
+wrong person).
 
 ---
 

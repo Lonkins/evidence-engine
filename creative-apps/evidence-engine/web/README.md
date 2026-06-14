@@ -5,6 +5,12 @@ remains the GitHub Copilot Chat way to play; this app is the experience the game
 deserves on a screen — a noir detective desk where citations are first-class
 visual objects.
 
+> **This is the offline, no-keys fallback surface.** The hero experience is now the
+> **live interrogation** (Act II + `../live-server`), where a live model plays the
+> witnesses and Foundry IQ returns each verdict against the case file — plus **Bring
+> your own trial**, where it checks claims against *your* pasted source. This scripted
+> desk is the zero-setup path judges can play without provisioning Azure.
+
 ## The interaction model
 
 This is deliberately **not** a chat transcript with footnotes:
@@ -44,7 +50,7 @@ This is deliberately **not** a chat transcript with footnotes:
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # 34 unit tests (engine + case-data integrity)
+npm test           # 42 unit tests (engine + case-data integrity)
 npm run build      # static site in dist/ — typechecks first
 ```
 

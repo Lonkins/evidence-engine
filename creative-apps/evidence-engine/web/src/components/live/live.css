@@ -25,60 +25,6 @@
   .live-dot { animation: none; }
 }
 
-/* ── Mode switch ───────────────────────────────────────────────────────── */
-
-.mode-switch {
-  display: flex;
-  flex-shrink: 0;
-  border: 1px solid var(--line-strong);
-  background: var(--ink-1);
-  box-shadow: var(--shadow-card);
-}
-
-.mode-switch__side {
-  appearance: none;
-  border: 0;
-  background: transparent;
-  color: var(--text-dim);
-  font-family: var(--font-type);
-  font-size: var(--text-xs);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  padding: var(--space-1) var(--space-2);
-  cursor: pointer;
-  transition: color var(--duration-fast) var(--ease-out),
-    background-color var(--duration-fast) var(--ease-out);
-}
-
-.mode-switch__side:hover,
-.mode-switch__side:focus-visible {
-  color: var(--gold-bright);
-}
-
-.mode-switch__side--on {
-  background: var(--ink-3);
-  color: var(--gold-bright);
-}
-
-.mode-switch__side--live.mode-switch__side--on {
-  color: var(--text);
-  background: var(--crimson-deep);
-}
-
-.mode-switch__sub {
-  display: block;
-  font-size: 0.8em;
-  letter-spacing: 0.08em;
-  text-transform: none;
-  color: var(--text-faint);
-  margin-top: 1px;
-}
-
-.mode-switch__side--on .mode-switch__sub {
-  color: inherit;
-  opacity: 0.75;
-}
-
 /* ── Act I training banner ─────────────────────────────────────────────── */
 
 .training-banner {
