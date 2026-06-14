@@ -194,9 +194,10 @@ export function LiveVerdictCard({ result, onOpenDoc }: LiveVerdictCardProps) {
       >
         {result.self.verdict === "SELF_CONTRADICTION" ? (
           <>
-            <p className="live-verdict__self-head">
-              ✗ Conflicts with their own earlier testimony
+            <p className="live-verdict__self-label micro-label">
+              Against their own testimony
             </p>
+            <Stamp tone="contradicted">Self-contradiction</Stamp>
             {result.self.conflicts.map((conflict, index) => (
               <blockquote key={index} className="live-verdict__self-quote">
                 “{conflict.statement}”

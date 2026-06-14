@@ -51,6 +51,9 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
   const [deliveringVerdict, setDeliveringVerdict] = useState(false);
   // Voice in the box (Accessibility): read each verdict aloud. Off by default.
   const [voiceOn, setVoiceOn] = useState(false);
+  // Secondary controls live behind one "Case actions" overflow so the first read
+  // is just the spine + the single climax action.
+  const [actionsOpen, setActionsOpen] = useState(false);
   // Which inferred witness is on the stand, in a bring-your-own trial.
   const [selectedWitness, setSelectedWitness] = useState<string | null>(null);
   const coldOpenedRef = useRef(false);
@@ -172,52 +175,10 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
           <span className="case-header__badge case-header__badge--live" aria-hidden="true">
             LIVE
           </span>
-          <div>
-            <h1 className="case-header__title">The Interrogation Room</h1>
-            <p className="case-header__sub">
-              {isByo ? (
-                <>
-                  {state.witnesses.length > 1
-                    ? `${state.witnesses.length} witnesses grounded in`
-                    : "Grounded in"}{" "}
-                  <em>“{state.sourceTitle ?? "your source"}”</em> · Foundry IQ checks every
-                  claim against it, live — catch what they can't back up
-                </>
-              ) : (
-                <>
-                  A real AI plays the witnesses · Foundry IQ checks every claim against the
-                  case file, live · they will lie — catch them with the receipt
-                </>
-              )}
-            </p>
-          </div>
+          <h1 className="case-header__title">The Interrogation Room</h1>
         </div>
         <div className="live-header__tools">
-          {recordCount > 0 && (
-            <button
-              type="button"
-              className="surface-link surface-link--record"
-              onClick={() => setShowRecord(true)}
-            >
-              The Record ({recordCount})
-            </button>
-          )}
-          <button
-            type="button"
-            className="surface-link"
-            onClick={() => setVoiceOn((on) => !on)}
-            aria-pressed={voiceOn}
-            title="Read each verdict aloud"
-          >
-            {voiceOn ? "🔊 Voice on" : "🔈 Voice"}
-          </button>
-          <button
-            type="button"
-            className="surface-link"
-            onClick={() => setOnStand(true)}
-          >
-            Take the stand
-          </button>
+          {/* The one always-visible climax — everything else demotes to the overflow. */}
           <button
             type="button"
             className="surface-link surface-link--accuse"
@@ -225,7 +186,51 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
           >
             Deliver your verdict
           </button>
-          {actions}
+          <details
+            className="case-actions"
+            open={actionsOpen}
+            onToggle={(event) => setActionsOpen(event.currentTarget.open)}
+          >
+            <summary className="surface-link case-actions__summary" aria-label="More case actions">
+              Case actions
+            </summary>
+            {/* A native disclosure list — Tab-navigable; no ARIA menu pattern (it would
+                promise arrow-key nav we don't implement). */}
+            <div className="case-actions__menu">
+              <button
+                type="button"
+                className="case-actions__item"
+                onClick={() => {
+                  setOnStand(true);
+                  setActionsOpen(false);
+                }}
+              >
+                Take the stand
+              </button>
+              <button
+                type="button"
+                className="case-actions__item"
+                onClick={() => setVoiceOn((on) => !on)}
+                aria-pressed={voiceOn}
+              >
+                <span aria-hidden="true">{voiceOn ? "🔊" : "🔈"}</span>{" "}
+                {voiceOn ? "Voice on" : "Voice"}
+              </button>
+              {recordCount > 0 && (
+                <button
+                  type="button"
+                  className="case-actions__item case-actions__item--record"
+                  onClick={() => {
+                    setShowRecord(true);
+                    setActionsOpen(false);
+                  }}
+                >
+                  The Record ({recordCount})
+                </button>
+              )}
+              {actions && <div className="case-actions__extra">{actions}</div>}
+            </div>
+          </details>
         </div>
       </header>
       <p className="live-thesis" role="note">
@@ -301,7 +306,11 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
         />
       )}
       {OBJECTION_CINEMA && (
-        <ObjectionCurtain pending={Boolean(state.challengePending)} latest={latestChallenge} />
+        <ObjectionCurtain
+          cinema={allChallenges.length < 3}
+          pending={Boolean(state.challengePending)}
+          latest={latestChallenge}
+        />
       )}
     </>
   );

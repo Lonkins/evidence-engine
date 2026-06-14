@@ -77,7 +77,9 @@
 }
 
 .accused-card {
-  background: linear-gradient(165deg, var(--ink-2), var(--ink-1));
+  background:
+    linear-gradient(180deg, rgba(232, 201, 126, 0.05), transparent 32%),
+    linear-gradient(165deg, var(--ink-2), var(--ink-1));
   border: 1px solid var(--line);
   border-radius: 4px;
   padding: var(--space-3);
@@ -86,6 +88,7 @@
   align-items: center;
   gap: var(--space-1);
   color: inherit;
+  box-shadow: var(--shadow-stamped);
   transition: border-color var(--duration-fast), transform var(--duration-fast) var(--ease-out),
     box-shadow var(--duration-fast) var(--ease-out);
 }
@@ -100,11 +103,28 @@
   box-shadow: 0 0 0 1px var(--crimson), 0 0 56px rgba(197, 48, 47, 0.18);
 }
 
+/* Push the focus ring outside the crimson chosen-glow so it reads as focus. */
+.accused-card:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
 .accused-card__portrait {
+  position: relative;
   width: 110px;
   border-radius: 3px;
-  background: radial-gradient(ellipse at 30% 20%, #241d12, #0d0a07 75%);
+  background: radial-gradient(ellipse at 50% 0%, #2a2114, #0d0a07 78%);
   overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.55);
+}
+
+/* The lamp overhead — same single source as the rail mugs. */
+.accused-card__portrait::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 72% 42% at 50% -8%, rgba(232, 201, 126, 0.18), transparent 62%);
+  pointer-events: none;
 }
 
 /* Bring-your-own witnesses have no bespoke portrait — show a monogram instead. */
@@ -149,7 +169,10 @@
   font-size: var(--text-xs);
   letter-spacing: 0.06em;
   color: var(--paper-ink);
-  background: linear-gradient(175deg, var(--paper), var(--paper-2));
+  background:
+    var(--halftone),
+    linear-gradient(175deg, var(--paper), var(--paper-2));
+  background-size: var(--halftone-size), auto;
   border: none;
   border-radius: 2px;
   padding: 0.6em 1em 0.45em;
@@ -166,6 +189,12 @@
 
 .attach-slip:hover {
   opacity: 0.9;
+}
+
+/* Dark-on-paper focus ring — gold would only clear ~2.3:1 on the slip's stock. */
+.attach-slip:focus-visible {
+  outline: 2px solid var(--paper-ink);
+  outline-offset: 2px;
 }
 
 .attach-slip--attached {
@@ -292,5 +321,12 @@
 @media (max-width: 720px) {
   .accusation__suspects {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accusation__stage,
+  .accusation__holding {
+    animation: none;
   }
 }

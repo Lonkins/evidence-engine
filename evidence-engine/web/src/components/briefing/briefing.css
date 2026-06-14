@@ -125,24 +125,33 @@
   flex: 1 1 320px;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.55rem;
   text-align: left;
-  padding: 1.2em 1.3em 1.1em;
-  background: var(--ink-1);
+  padding: 1.3em 1.4em 1.2em;
+  /* A case-file dossier: lit along the top edge, sitting on the desk. */
+  background:
+    linear-gradient(180deg, rgba(232, 201, 126, 0.06), transparent 38%),
+    linear-gradient(160deg, var(--ink-2), var(--ink-1) 72%);
   border: 1px solid var(--line);
+  border-top-color: var(--line-strong);
   border-radius: 4px;
+  box-shadow: var(--shadow-stamped);
   cursor: pointer;
   transition: transform var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out),
-    background var(--duration-fast) var(--ease-out);
+    box-shadow var(--duration-fast) var(--ease-out);
 }
 
 .scenario-card:hover,
 .scenario-card:focus-visible {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: var(--line-strong);
-  background: var(--ink-2);
-  outline: none;
+  box-shadow: var(--shadow-stamped), 0 0 34px rgba(201, 161, 74, 0.1);
+}
+
+.scenario-card:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
 }
 
 .scenario-card--byo {
@@ -152,17 +161,25 @@
 .scenario-card--byo:hover,
 .scenario-card--byo:focus-visible {
   border-color: var(--gold);
+  box-shadow: var(--shadow-stamped), 0 0 38px rgba(201, 161, 74, 0.16);
 }
 
+/* The classification tag — a stamped chip in the dossier corner. */
 .scenario-card__tag {
+  align-self: flex-start;
+  font-family: var(--font-type);
   font-size: var(--text-xs);
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--text-faint);
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 0.25em 0.6em 0.12em;
 }
 
 .scenario-card--byo .scenario-card__tag {
   color: var(--gold-bright);
+  border-color: var(--gold-dim);
 }
 
 .scenario-card__title {
@@ -178,10 +195,18 @@
 }
 
 .scenario-card__go {
-  margin-top: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  font-family: var(--font-type);
   font-size: var(--text-sm);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   color: var(--gold-bright);
+  transition: letter-spacing var(--duration-fast) var(--ease-out);
+}
+
+.scenario-card:hover .scenario-card__go,
+.scenario-card:focus-visible .scenario-card__go {
+  letter-spacing: 0.1em;
 }
 
 /* Bring-your-own intake screen */
