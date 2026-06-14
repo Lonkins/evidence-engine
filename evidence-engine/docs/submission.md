@@ -146,13 +146,13 @@ Contact: babkek1337@gmail.com
 
 - [ ] Demo video recorded and uploaded (see `docs/demo-script.md`)
 - [ ] GitHub repo set to public
-- [ ] Azure AI Search free tier provisioned with `evidence-kb` knowledge base (see `spike/` directory and `HANDOFF.md` in the spike worktree)
+- [ ] Azure AI Search free tier provisioned with `evidence-kb` knowledge base (see the `spike/` directory)
 - [ ] Corpus documents uploaded to `evidence-kb` index; live partition fields added (`spike/07-add-live-fields.sh`)
 - [ ] `live-server/.env` filled with `AZURE_SEARCH_ENDPOINT`, `AZURE_SEARCH_ADMIN_KEY`, `GITHUB_MODELS_TOKEN`, `IQ_VERDICT_ENABLED=true`
 - [ ] End-to-end live verdict validated against the KB (`live-server: npm run test:live` writes `live-mode-proof.json`)
 - [ ] Web app deployed / hosting link live, or run locally (`web: npm run dev`)
 - [ ] Screenshots captured for submission: `docs/screenshots/` (beats listed in `docs/screenshots/README.md`)
-- [ ] Discord post submitted in `#creative-apps` with demo video (see `docs/discord-post.md` Template A)
+- [ ] Discord post submitted in `#creative-apps` with the demo video
 - [ ] This form submitted before June 14, 2026 EOD
 
 ---
@@ -169,5 +169,5 @@ Copy this if you are doing everything on the last day:
 6. Fill [FILL] values in this document (video URL, GitHub URL)
 7. Make GitHub repo public
 8. Submit form on hackathon portal — copy each section from this file
-9. Post Template A from `docs/discord-post.md` in `#creative-apps` on Discord (with video link)
+9. Post the announcement in `#creative-apps` on Discord (with the video link)
 10. Reply to your own Discord post within 1 hour (engagement bump)

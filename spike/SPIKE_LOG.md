@@ -201,7 +201,7 @@ Key discoveries from `$metadata` (AgentOutputModality enum):
 ## Stage 8 API Shape Notes (2026-05-01-preview) — Answer Synthesis / IQ-brain verdict
 
 Script: `08-answer-synthesis.sh`. Proof: `output/08-retrieve-verdict.json`. This is
-the build that makes "Foundry IQ is the verdict brain" true (design-log Entry 4/6).
+the build that makes "Foundry IQ is the verdict brain" true.
 
 ### Model binding — Knowledge Base (PUT /knowledgebases/evidence-kb)
 

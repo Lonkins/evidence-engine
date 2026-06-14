@@ -1,7 +1,0 @@
-server/node_modules/
-server/dist/
-server/data/
-appPackage/build/
-env/.env.local
-env/.env.dev.user
-.DS_Store

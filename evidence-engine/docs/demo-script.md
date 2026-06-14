@@ -54,7 +54,7 @@ cited document." Close on the cold-open line.
 
 ## v2 — KILL-SHOT SCRIPT (June 12, 2026 — record this one)
 
-> Principle (design-log entry 2): don't tour features — show ONE moment, fast.
+> Principle: don't tour features — show ONE moment, fast.
 > Payoff on screen inside 60 seconds.
 
 ### Pre-flight (additional to v1 checklist below)

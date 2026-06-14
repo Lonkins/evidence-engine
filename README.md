@@ -182,7 +182,7 @@ Configure VS Code (`.vscode/mcp.json` is already included). Open Copilot Chat an
 
 ### Full Setup (Foundry IQ)
 
-1. Run the spike scripts in `../spike/` (see `spike/README.md`) to provision Azure AI Search and create the knowledge base.
+1. Run the spike scripts in [`spike/`](spike/README.md) to provision Azure AI Search and create the knowledge base.
 2. Copy `server/.env.example` to `server/.env` and fill in:
    - `AZURE_SEARCH_ENDPOINT`
    - `AZURE_SEARCH_KEY`
