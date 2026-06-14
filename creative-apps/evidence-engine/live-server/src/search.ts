@@ -143,7 +143,13 @@ export class SearchClient {
     effort: "low" | "medium",
     thresholdOverride?: number
   ): Promise<{
-    data: { answer: string; references: KbReference[]; activity: IqActivityStep[] };
+    data: {
+      answer: string;
+      references: KbReference[];
+      activity: IqActivityStep[];
+      /** Agentic reasoning tokens the KB spent producing the verdict (null if absent). */
+      reasoningTokens: number | null;
+    };
     entry: TraceEntry;
   }> {
     const path = `/knowledgebases/${this.config.knowledgeBaseName}/retrieve`;
@@ -196,7 +202,7 @@ export class SearchClient {
 
       return {
         status: response.status,
-        data: { answer, references, activity },
+        data: { answer, references, activity, reasoningTokens: reasoning?.reasoningTokens ?? null },
         detail: `${references.length} grounding ref(s), answer ${answer.length} chars${reasoningNote}`,
       };
     });

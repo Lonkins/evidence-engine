@@ -936,6 +936,170 @@
   text-transform: uppercase;
 }
 
+/* The reasoning-token receipt — the "multi-step thinking" axis, on screen. */
+.live-verdict__receipt {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  margin: 0.45rem 0 0;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--text-dim, #9a958c);
+}
+
+.live-verdict__receipt-tag {
+  flex: none;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+/* Reasoned verdicts wear the gold; the cross-check and unplugged read muted. */
+.live-verdict__receipt--iq {
+  color: var(--gold-bright);
+}
+.live-verdict__receipt--heuristic,
+.live-verdict__receipt--ungrounded {
+  color: var(--text-dim, #9a958c);
+}
+
+/* "See the difference" — the pull-the-plug A/B trigger on a live claim. */
+.live-claim-wrap {
+  white-space: normal;
+}
+.live-split-trigger {
+  margin-left: 0.3rem;
+  padding: 0.05rem 0.4rem;
+  border: 1px solid var(--gold-dim, #6b5a2e);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--gold-bright, #c6a04a);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 150ms ease, background 150ms ease;
+}
+.live-split-trigger:hover:not(:disabled) {
+  opacity: 1;
+  background: rgba(198, 160, 74, 0.12);
+}
+.live-split-trigger:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* The split-screen kill shot — one claim, two engines, side by side. */
+.split-verdict {
+  margin: 1rem 0 0;
+  padding: 1rem 1.1rem 1.2rem;
+  border: 1px solid var(--gold-dim, #6b5a2e);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(20, 18, 15, 0.6), rgba(12, 11, 9, 0.85));
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+.split-verdict__head {
+  position: relative;
+  margin-bottom: 0.85rem;
+}
+.split-verdict__claim {
+  margin: 0.2rem 0 0;
+  font-style: italic;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+.split-verdict__close {
+  position: absolute;
+  top: -0.2rem;
+  right: -0.2rem;
+  border: none;
+  background: transparent;
+  color: var(--text-dim, #9a958c);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.split-verdict__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+@media (max-width: 640px) {
+  .split-verdict__grid {
+    grid-template-columns: 1fr;
+  }
+}
+.split-verdict__pane {
+  padding: 0.85rem;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.split-verdict__pane--off {
+  background: rgba(255, 255, 255, 0.02);
+  filter: saturate(0.5);
+}
+.split-verdict__pane--on {
+  background: rgba(179, 64, 47, 0.06);
+  border-color: rgba(179, 64, 47, 0.4);
+}
+.split-verdict__pane-label {
+  margin: 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim, #9a958c);
+}
+.split-verdict__pane-note {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text);
+}
+.split-verdict__quote {
+  margin: 0;
+  padding: 0.5rem 0.6rem;
+  border-left: 2px solid var(--gold-bright, #c6a04a);
+  background: rgba(0, 0, 0, 0.25);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--text);
+}
+.split-verdict__quote-doc {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-bright, #c6a04a);
+}
+.split-verdict__receipt {
+  margin: auto 0 0;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  color: var(--text-dim, #9a958c);
+}
+.split-verdict__thesis {
+  margin: 0.95rem 0 0;
+  text-align: center;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+.split-verdict__thesis-mark {
+  display: inline-block;
+  font-weight: 700;
+  color: var(--gold-bright, #c6a04a);
+  letter-spacing: 0.02em;
+}
+
 /* Time-of-death stakes on the kill-shot */
 .live-verdict__stakes {
   display: flex;

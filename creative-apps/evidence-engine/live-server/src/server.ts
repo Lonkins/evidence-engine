@@ -27,9 +27,11 @@ import {
   appendHistory,
   createSession,
   deleteSession,
+  expiredByoSessions,
   getHistory,
   getSession,
   nextTurn,
+  touchSession,
   type Session,
   type Witness,
 } from "./sessions.js";
@@ -38,6 +40,32 @@ import type { TraceEntry } from "./trace.js";
 
 const config = loadConfig();
 const search = new SearchClient(config);
+
+// Data hygiene: purge abandoned bring-your-own partitions. A BYO session that is
+// never explicitly reset (the user just closes the tab) would otherwise leave its
+// pasted source sitting in the shared index. Every few minutes, drop the
+// partitions of BYO sessions idle past the TTL — reusing the hard-guarded
+// deleteCaseDocs (byo- ids only), so it can never touch the Holbrooke corpus.
+const BYO_SWEEP_INTERVAL_MS = 5 * 60_000;
+
+async function sweepAbandonedByo(): Promise<void> {
+  const expired = expiredByoSessions(config.byoTtlMinutes * 60_000);
+  for (const session of expired) {
+    try {
+      await search.deleteCaseDocs(session.caseId);
+    } catch (error) {
+      console.error(`[live-server] BYO sweep failed for ${session.caseId}:`, describe(error));
+    } finally {
+      deleteSession(session.sessionId);
+    }
+  }
+}
+
+const byoSweepTimer = setInterval(() => {
+  void sweepAbandonedByo();
+}, BYO_SWEEP_INTERVAL_MS);
+// Don't let the sweep timer keep the process alive on its own.
+byoSweepTimer.unref?.();
 
 /** The evidence partition this session interrogates (Holbrooke corpus or a BYO upload). */
 function evidenceFilter(session: Session): string {
@@ -200,6 +228,7 @@ async function handleAsk(body: JsonBody, res: ServerResponse): Promise<void> {
 
   const session = sessionId ? getSession(sessionId) : undefined;
   if (!session) return send(res, 404, { error: "Unknown session — create one via POST /api/session" });
+  touchSession(session);
   if (!question || question.length > 600) {
     return send(res, 400, { error: "Question must be 1–600 characters" });
   }
@@ -323,6 +352,7 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
 
   const session = sessionId ? getSession(sessionId) : undefined;
   if (!session) return send(res, 404, { error: "Unknown session" });
+  touchSession(session);
   const claim = session.claims.get(claimId);
   if (!claim) return send(res, 404, { error: "Unknown claim" });
 
@@ -333,6 +363,11 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
   // with grounding on is what produces the CONTRADICTED stamp — the thesis,
   // made interactive. Not scored as a catch or a false objection.
   const grounding = body.grounding !== false;
+  // Preview mode powers the "pull the plug" split-screen: the UI fires this
+  // endpoint twice (grounding off + on) for the SAME claim to show the delta
+  // side by side. A preview challenge must NOT mutate the scorecard or consume
+  // the claim — it is a demonstration, not a scored move.
+  const preview = body.preview === true;
   if (!grounding) {
     trace.push(
       heuristicEntry(
@@ -342,7 +377,7 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
       )
     );
     const combined = ungroundedVerdict();
-    if (!claim.challenged) {
+    if (!preview && !claim.challenged) {
       claim.challenged = true;
       session.score.challenges += 1;
     }
@@ -351,7 +386,7 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
       claimText: claim.text,
       speaker: claim.speaker,
       turnNo: claim.turnNo,
-      evidence: { verdict: combined.verdict, source: combined.source, agreement: false, citations: [], iq: null },
+      evidence: { verdict: combined.verdict, source: combined.source, agreement: false, citations: [], iq: null, reasoningTokens: null },
       self: { verdict: "SELF_CONSISTENT", conflicts: [] },
       plant: undefined,
       score: session.score,
@@ -397,6 +432,7 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
   // cross-check. Falls back safely to the deterministic verdict if the IQ call
   // is unavailable, so the demo never hard-fails on the new path.
   let iqVerdict: IqVerdict | null = null;
+  let iqReasoningTokens: number | null = null;
   if (config.iqVerdictEnabled && config.reasoningEffort !== "minimal") {
     try {
       // BYO corpora rerank on an uncalibrated scale; use a lower grounding floor
@@ -417,6 +453,7 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
         trace.push(iqActivityEntry(act.label, act.elapsedMs, act.detail));
       }
       iqVerdict = parseIqAnswer(reason.data.answer, reason.data.references);
+      iqReasoningTokens = reason.data.reasoningTokens;
     } catch (error) {
       // Disclosed degradation: log a heuristic trace line and keep the
       // deterministic verdict. Never silently substitute while claiming IQ.
@@ -507,8 +544,8 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
       : undefined;
   const plantConfirmed = Boolean(matchedPlant) && isCatch;
 
-  // Score the challenge once per claim.
-  if (!claim.challenged) {
+  // Score the challenge once per claim. Preview (split-screen A/B) never scores.
+  if (!preview && !claim.challenged) {
     claim.challenged = true;
     session.score.challenges += 1;
     if (combined.verdict === "CONTRADICTED") {
@@ -558,6 +595,11 @@ async function handleChallenge(body: JsonBody, res: ServerResponse): Promise<voi
       iq: combined.iq
         ? { justification: combined.iq.justification, citedPassage: combined.iq.citedPassage }
         : null,
+      // The receipt: how hard the brain worked. Reasoning tokens come from the
+      // KB's answerSynthesis call (null when the deterministic cross-check
+      // decided, i.e. no model reasoning was spent).
+      reasoningTokens: combined.source === "iq" ? iqReasoningTokens : null,
+      effort: config.reasoningEffort,
     },
     self: {
       verdict: self.verdict,

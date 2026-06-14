@@ -6,6 +6,52 @@
 
 ---
 
+## v3 — COLD-OPEN SPINE (June 14, 2026 — record THIS one)
+
+> Same kill-shot discipline as v2, with a payoff-first cold open and two new
+> set-pieces (the split-screen, the reasoning-token receipt). Lead with the
+> moment, not the title card. Shot detail for each beat is in v2 below.
+
+**0:00–0:12 — Cold open (true black, monospace typewriter, no music yet):**
+> AI assistants lie to you every day.
+> This is a game where you catch one — in the act.
+
+HARD CUT (no title card yet) straight to the **CONTRADICTED** stamp landing on
+Helena's `19:45` alibi with the badge-log passage quoted verbatim. Payoff before
+the logo. *(This exact sentence is also README line 1 and the Discord opener — one
+caption everywhere. Keep "lie" to the spoken hook only; on-screen verdicts stay
+GROUNDED / CONTRADICTED / UNVERIFIABLE.)*
+
+**0:12–0:55 — The kill shot** (v2 beats 1–4): ask Helena her departure, watch the
+engine tap fire `AZURE kb.reason(verdict)`, challenge `19:45` → CONTRADICTED +
+verbatim citation. Land on the **Receipt** line under the verdict —
+*"Foundry IQ · medium effort · N reasoning tokens"* — and say it out loud:
+> "That verdict isn't a regex. The knowledge base reasoned over the case file —
+> here's the receipt for the thinking it did."
+
+**0:55–1:15 — The split-screen (the loopable GIF — the close of the social cut):**
+Press **⚖ on/off** on a claim. One sentence, two panes: LEFT *Foundry IQ unplugged
+— "no record", her word stands*; RIGHT the **CONTRADICTED** stamp with its citation.
+> "Same claim, same model. The only difference is Foundry IQ. Pull the plug and
+> the catch collapses — that's the brain."
+Freeze on the two-pane frame. This is the eight seconds that travels.
+
+**1:15–1:45 — "You scripted both sides?" → Bring your own trial:** paste a short
+source the judges have never seen; the witness drifts; challenge → UNVERIFIABLE or
+CONTRADICTED against *their* text. The lie is emergent — the scripting critique dies.
+
+**1:45–2:25 — Copilot Receipts** (the "especially welcomed" MCP surface): in VS Code,
+`@ground_on` a repo file, then `@check_claim` a plausible-but-wrong claim about it →
+**HELD** with the verbatim line + reasoning-token count, inside Copilot Chat.
+> "Same engine, where developers already work — it catches the assistant lying
+> about your own code, with the receipt."
+
+**2:25–2:55 — Architecture + the Grounding Record:** the one-index diagram (v2 beat 9),
+then the exportable **Grounding Record** — "you leave the interrogation holding a
+cited document." Close on the cold-open line.
+
+---
+
 ## v2 — KILL-SHOT SCRIPT (June 12, 2026 — record this one)
 
 > Principle (design-log entry 2): don't tour features — show ONE moment, fast.

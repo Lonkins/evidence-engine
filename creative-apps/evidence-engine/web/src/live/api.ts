@@ -79,9 +79,10 @@ export function ask(
 export function challenge(
   sessionId: string,
   claimId: string,
-  grounding = true
+  grounding = true,
+  preview = false
 ): Promise<ChallengeResponse> {
-  return post("/api/challenge", { sessionId, claimId, grounding });
+  return post("/api/challenge", { sessionId, claimId, grounding, preview });
 }
 
 export function reset(sessionId: string): Promise<ResetResponse> {

@@ -57,6 +57,10 @@ export interface ChallengeResponse {
     agreement?: boolean;
     /** The KB's own reasoning + verbatim cited passage, when IQ produced it. */
     iq?: { justification: string; citedPassage: string | null } | null;
+    /** Reasoning tokens the KB spent on the IQ verdict; null on the cross-check / unplugged path. */
+    reasoningTokens?: number | null;
+    /** Reasoning-effort tier used for the IQ verdict (e.g. "medium"). */
+    effort?: string;
     citations: Array<{ docKey: string; title: string; excerpt: string }>;
   };
   self: {

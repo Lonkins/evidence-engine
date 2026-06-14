@@ -21,6 +21,28 @@ const EVIDENCE_NOTE = {
     "Foundry IQ won't vouch for this: the source neither backs it nor knocks it down. That's not a miss — it's the engine refusing to bless a claim it can't ground. And it's the dangerous band: a confident claim with no receipt is exactly where hallucinations hide.",
 } as const;
 
+/**
+ * The "receipt": how hard Foundry IQ worked for this verdict. Turns the
+ * invisible multi-step-reasoning axis into something on screen — reasoned
+ * (answer synthesis, with the KB's own token count) vs the deterministic
+ * cross-check (zero model reasoning) vs unplugged (nothing reasoned at all).
+ */
+function receiptLine(result: ChallengeResponse): string {
+  const { source, reasoningTokens, effort } = result.evidence;
+  if (source === "ungrounded") {
+    return "Foundry IQ unplugged · nothing reasoned, nothing checked";
+  }
+  if (source === "iq") {
+    const tier = effort ? `${effort} effort` : "answer synthesis";
+    const tokens =
+      typeof reasoningTokens === "number"
+        ? `${reasoningTokens.toLocaleString()} reasoning tokens`
+        : "reasoned over the case file";
+    return `Foundry IQ · ${tier} · ${tokens}`;
+  }
+  return "Deterministic cross-check · 0 reasoning tokens (Foundry IQ verdict unavailable)";
+}
+
 interface LiveClaimChipProps {
   claim: LiveClaimRef;
   result: ChallengeResponse | undefined;
@@ -117,6 +139,11 @@ export function LiveVerdictCard({ result, onOpenDoc }: LiveVerdictCardProps) {
           {result.evidence.iq.justification}
         </p>
       )}
+
+      <p className={`live-verdict__receipt live-verdict__receipt--${result.evidence.source ?? "iq"}`}>
+        <span className="live-verdict__receipt-tag" aria-hidden="true">Receipt</span>
+        {receiptLine(result)}
+      </p>
 
       {showStakes && (
         <p className="live-verdict__stakes" role="status">

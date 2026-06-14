@@ -19,13 +19,22 @@ export interface Config {
    * trusts the KB's synthesised citation.
    */
   byoVerdictThreshold: number;
+  /**
+   * Minutes of inactivity after which an abandoned bring-your-own session's
+   * pasted-source partition is swept from the shared index, so user text does
+   * not linger when a tab is closed without an explicit reset.
+   */
+  byoTtlMinutes: number;
   testimonyThreshold: number;
   /**
    * When true, the challenge verdict is produced by the KB's grounded
    * reasoning (answerSynthesis) and the deterministic check is demoted to a
-   * disclosed cross-check. Default false until a model is wired to the KB and
-   * the answer-synthesis provisioning spike passes (design-log Entry 4) — so
-   * the current demo path is unchanged until the upgrade is verified live.
+   * disclosed cross-check. The answer-synthesis provisioning spike has PASSED
+   * (design-log Entry 6; raw proof `spike/output/08-retrieve-verdict.json`),
+   * so this is the verified hero path. It defaults false only so the
+   * zero-config local fallback (no Azure model bound to the KB) runs the
+   * deterministic check alone; the live deployment sets IQ_VERDICT_ENABLED=true
+   * and KB_REASONING_EFFORT=medium.
    */
   iqVerdictEnabled: boolean;
   /**
@@ -61,6 +70,7 @@ export function loadConfig(): Config {
     // ≤ 1.5 (see HANDOFF.md, Live Interrogation calibration table).
     claimEvidenceThreshold: parseFloat(process.env.CLAIM_EVIDENCE_THRESHOLD ?? "2.0"),
     byoVerdictThreshold: parseFloat(process.env.BYO_VERDICT_THRESHOLD ?? "1.0"),
+    byoTtlMinutes: parseFloat(process.env.BYO_TTL_MINUTES ?? "30"),
     // Testimony sentences are short; any hit is then gated by the temporal
     // conflict heuristic, so the retrieval bar can sit low without false alarms.
     testimonyThreshold: parseFloat(process.env.TESTIMONY_THRESHOLD ?? "1.0"),

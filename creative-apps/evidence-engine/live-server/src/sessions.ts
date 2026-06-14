@@ -57,6 +57,8 @@ export interface Scorecard {
 export interface Session {
   sessionId: string;
   createdAt: string;
+  /** Last time the session was interacted with — drives the BYO TTL sweep. */
+  lastSeenAt: string;
   /** Which evidence partition this session interrogates. */
   caseId: string;
   mode: SessionMode;
@@ -85,9 +87,11 @@ export function createSession(options: NewSessionOptions = {}): Session {
     const oldest = sessions.keys().next().value;
     if (oldest) sessions.delete(oldest);
   }
+  const now = new Date().toISOString();
   const session: Session = {
     sessionId: randomUUID(),
-    createdAt: new Date().toISOString(),
+    createdAt: now,
+    lastSeenAt: now,
     caseId: options.caseId ?? CASE_ID,
     mode: options.mode ?? "holbrooke",
     witnesses: options.witnesses ?? [],
@@ -134,4 +138,25 @@ export function appendHistory(session: Session, speaker: string, messages: ChatM
 
 export function getHistory(session: Session, speaker: string): ChatMessage[] {
   return session.historyBySpeaker.get(speaker) ?? [];
+}
+
+/** Mark a session as recently active so the TTL sweep leaves it alone. */
+export function touchSession(session: Session): void {
+  session.lastSeenAt = new Date().toISOString();
+}
+
+/**
+ * Bring-your-own sessions idle longer than `ttlMs` — their pasted-source
+ * partitions are due for a hygiene purge (the user closed the tab without
+ * resetting). Holbrooke sessions are never returned: they hold no user data and
+ * their partition is the built-in corpus, which must never be deleted.
+ */
+export function expiredByoSessions(ttlMs: number, now: number = Date.now()): Session[] {
+  const expired: Session[] = [];
+  for (const session of sessions.values()) {
+    if (session.mode !== "byo" || !session.caseId.startsWith("byo-")) continue;
+    const idleMs = now - new Date(session.lastSeenAt).getTime();
+    if (idleMs >= ttlMs) expired.push(session);
+  }
+  return expired;
 }

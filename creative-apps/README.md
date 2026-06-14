@@ -1,6 +1,6 @@
 # Evidence Engine
 
-> "Every AI lies sometimes. In Evidence Engine, every claim a character makes is backed by agentic retrieval over the case file, with citations — and when the evidence doesn't support a claim, the game knows. We turned hallucination-resistance into gameplay."
+> "An AI witness lies to your face. **Foundry IQ catches it live** — its knowledge base reads the case file, reasons over it with answer synthesis, and returns the verdict with a verbatim cited receipt. Then bring your *own* source — a doc, your notes, a chunk of code — and put the AI on the stand grounded in your material. We turned hallucination-detection into gameplay."
 
 **Track:** Creative Apps with GitHub Copilot  
 **Hackathon:** Agents League (Microsoft), June 4–14, 2026  
@@ -9,33 +9,49 @@
 
 ## Judge in 2 minutes
 
-1. **Play instantly (no keys, no backend):** open the hosted app *(hosting link —
-   pending)* or `cd evidence-engine/web && npm install && npm run dev`. Act I is the
-   offline training case — it teaches the move in under a minute.
-   Press the claim *"I left at a quarter to eight"* → watch the CONTRADICTED stamp cite
-   the badge log, verbatim.
-2. **See Foundry IQ live (3 commands):**
+1. **Play instantly (offline, no keys, no backend):** open the hosted app *(hosting
+   link — pending)* or `cd evidence-engine/web && npm install && npm run dev`. The
+   live interrogation is the front door; for a zero-setup taste, click **"Offline
+   demo · no keys"** to reach the scripted example case — press the claim
+   *"I left at a quarter to eight"* and watch the `CONTRADICTED` stamp cite the badge
+   log, verbatim.
+2. **See Foundry IQ as the brain (live):**
    ```bash
    cd evidence-engine/live-server && npm install && npm run build
-   cp .env.example .env   # search endpoint+key; GITHUB_MODELS_TOKEN=$(gh auth token)
-   npm start              # then: cd ../web && npm run dev → switch to Act II · Live interrogation
+   cp .env.example .env   # Azure search endpoint + admin key; a model bound to the KB;
+   #                        IQ_VERDICT_ENABLED=true · KB_REASONING_EFFORT=medium
+   #                        GITHUB_MODELS_TOKEN=$(gh auth token)
+   npm start              # then, in another shell: cd ../web && npm run dev
    ```
-   Ask Helena when she left. Challenge the time she gives you. The engine-tap panel
-   logs every live knowledge-base call — retrieval, testimony indexing, verdict — as
-   it happens.
-3. **Proof without running anything:** [`evidence-engine/docs/live-mode-proof.json`](evidence-engine/docs/live-mode-proof.json)
-   is a sanitized end-to-end trace against the live KB. The full Azure provisioning
-   trail — stage-by-stage run log plus the committed raw responses from the live
-   service (timestamped, `@odata.context` naming the endpoint and API version) — is in
-   [`spike/README.md`](spike/README.md).
+   Ask Helena when she left; challenge the time. The knowledge base runs **answer
+   synthesis** and returns the `CONTRADICTED` verdict with the deciding passage quoted
+   verbatim — the engine-tap panel shows the live `AZURE` reasoning step producing it.
+   Flip **"pull the plug"** off and the catch collapses: her word stands.
+3. **Bring your own trial:** from the front page, paste your own doc, notes, or code.
+   Foundry IQ indexes it, infers the witnesses, and checks each thing they say against
+   *your* source — `GROUNDED` / `CONTRADICTED` / `UNVERIFIABLE`, cited.
+4. **Proof without running anything:** [`spike/output/08-retrieve-verdict.json`](spike/output/08-retrieve-verdict.json)
+   is the raw KB answer-synthesis response that produces a verdict (`VERDICT:
+   CONTRADICTED` + verbatim passage + `agenticReasoning` 10,155 tokens).
+   [`evidence-engine/docs/live-mode-proof.json`](evidence-engine/docs/live-mode-proof.json)
+   is a sanitized end-to-end trace; the full Azure provisioning trail (stage-by-stage
+   log + committed raw responses, `@odata.context` naming the endpoint and API version)
+   is in [`spike/README.md`](spike/README.md).
 
 ---
 
 ## What It Is
 
-Evidence Engine is a detective game played inside GitHub Copilot Chat in VS Code. You interrogate suspects in a murder case. Every response is grounded in the actual case file via **Foundry IQ** (Azure AI Search agentic retrieval) — the characters cite their evidence, and you use those citations to catch them in lies.
+Evidence Engine is a detective game where you interrogate AI witnesses who lie — and **Foundry IQ catches them in the act.** When you challenge a claim, the Azure AI Search knowledge base retrieves the relevant case documents, a bound model reasons over them with **answer synthesis**, and the KB itself returns the verdict — `GROUNDED`, `CONTRADICTED`, or `UNVERIFIABLE` — with the deciding passage quoted verbatim. The verdict is produced by Foundry IQ, not by a hand-written rule; a deterministic check runs alongside it only as a **disclosed cross-check** (see [Responsible AI](#responsible-ai)).
 
-The core mechanic: **citation integrity is the win condition.** One character lied. The security log proves it. Find it.
+The core mechanic: **a contradiction with a cited receipt is the win condition.** Pull the plug on Foundry IQ and the catch collapses — the witness's word stands. That toggle is in the UI.
+
+### Two ways to play, one engine
+
+- **The example case — *The Holbrooke Gallery Affair*.** A polished, deterministic murder mystery: three witnesses, one provable lie, a full accusation endgame. The reliable hero path.
+- **Bring your own trial.** Paste *your own* source — a spec, your notes, a story, a snippet of code. Foundry IQ indexes it, infers 1–3 witnesses from the material, and puts them on the stand grounded only in what you pasted. The lies here are **emergent, not scripted** — the model invents, and Foundry IQ checks every claim against *your* source. This is real hallucination detection, on text we never saw.
+
+Every catch files into a growing, exportable **Grounding Record** (kept / contradicted / unverifiable, each cited) — so you leave an interrogation with a cited document, not just a stamp. And the same verdict engine ships as an **MCP server for GitHub Copilot** (`ground_on` + `check_claim`): load your own file and have Copilot audit a claim — including one it just made about your code — against it, with a faithfulness gate.
 
 ### Three ways to play
 
@@ -66,7 +82,9 @@ graph TD
     Corpus -- "indexed documents" --> FoundryIQ
 ```
 
-**Why Foundry IQ is load-bearing:** Remove the knowledge base and the game cannot function. There is no hardcoded "Helena is guilty." The `check_claim` tool retrieves the security log and surfaces the contradiction because the log is in the index. This is the only concept in our evaluation where the IQ layer was genuinely the game mechanic, not a decoration.
+**Why Foundry IQ is load-bearing:** the verdict is *produced by the knowledge base*, not by our code. On a challenge, the KB runs answer synthesis (`outputMode: answerSynthesis`, reasoning effort `medium`, `gpt-4.1-mini` bound to `evidence-kb`) and returns the `VERDICT: CONTRADICTED` line plus the verbatim deciding passage and its `references[]`. There is no hardcoded "Helena is guilty"; remove the knowledge base and there is nothing to reason over, so the catch collapses — which is exactly what the in-UI "pull the plug" toggle demonstrates. The raw end-to-end response is committed at [`spike/output/08-retrieve-verdict.json`](spike/output/08-retrieve-verdict.json) (`modelQueryPlanning → searchIndex → modelAnswerSynthesis → agenticReasoning`, 10,155 reasoning tokens). A deterministic check runs alongside as a disclosed cross-check; when the two diverge, the IQ verdict leads and the divergence is shown in the engine tap.
+
+**Three set-pieces make the reasoning visible.** Press **⚖ on/off** on any live claim for a side-by-side *split screen* — the same sentence with Foundry IQ unplugged (no record, her word stands) next to Foundry IQ in the loop (CONTRADICTED, cited). Every verdict carries a **receipt** — `Foundry IQ · medium effort · N reasoning tokens` — so the multi-step reasoning is on screen, not merely asserted. And a witness can be convicted by *her own earlier words*: each reply is indexed into Foundry IQ as she speaks, so challenging a later claim retrieves her turn-1 testimony and catches the self-contradiction, verbatim, with the turn number — the AI assembling the proof of its own drift as it talks.
 
 ### Live Interrogation architecture (Act II)
 
@@ -98,9 +116,14 @@ The drift is the game: the witness model is instructed to ground in retrieved pa
 | Tool | Input | What it does |
 |------|-------|-------------|
 | `load_case` | — | Returns the case briefing and suspect list |
-| `interrogate` | `character`, `question` | Retrieves relevant case documents, returns evidence context + citations for Copilot to synthesise character dialogue |
-| `check_claim` | `claim` | Tests a factual claim against the case file — returns SUPPORTED, CONTRADICTED, or INSUFFICIENT\_EVIDENCE with document citations |
+| `interrogate` | `character`, `question` | Retrieves relevant case documents (Foundry IQ), returns evidence context + citations for Copilot to synthesise character dialogue |
+| `ground_on` | `title`, `content` | **Copilot Receipts.** Indexes *your own* source (a file, notes, a doc) into Foundry IQ as its own partition, so `check_claim` audits against your material instead of the built-in case |
+| `check_claim` | `claim` | Foundry IQ answer-synthesis verdict against the loaded source (or the case file): **GROUNDED / CONTRADICTED / UNVERIFIABLE**, with the verbatim citation, a **faithfulness gate** (PASS/HELD), and the reasoning-token count. Degrades to the deterministic cross-check if answer synthesis is unavailable — never fakes an IQ verdict |
 | `accuse` | `suspect`, `evidence_doc_keys` | Evaluates the accusation: correct suspect + required evidence = case solved |
+
+The Copilot story: `@ground_on` a file from your repo, then `@check_claim` a statement Copilot just made about it — if the source doesn't back it, the verdict is `HELD` with a cited line, so you don't act on an ungrounded claim. The verification engine lives where developers already work.
+
+**Put your PR on the stand.** Point it at a diff: `@ground_on` the patch, then `@check_claim` each line of the PR description. *"Refactors the fetch wrapper"* → **GROUNDED** (PASS). *"Adds retry on 500s"* when the diff actually deletes the retry → **CONTRADICTED** (HELD), the removed line cited verbatim. *"Improves rate limiting"* when the diff is silent on it → **UNVERIFIABLE** (HELD) — the honest grey band: absence is not contradiction. The dullest dev chore becomes an interrogation, and Foundry IQ is the lie detector.
 
 ---
 
@@ -200,23 +223,24 @@ cd evidence-engine/live-server && npm run test:live
 
 - Every character response is grounded in retrieved documents from the case file
 - Citations are structural: the server fetches documents by `docKey` from the index to verify cited passages exist
-- When retrieval returns nothing, the game explicitly returns `INSUFFICIENT_EVIDENCE` — it does not generate unsupported claims
+- When retrieval returns nothing, the verdict is explicitly `UNVERIFIABLE` ("the source is silent") — it does not manufacture a contradiction or present unsupported claims as fact
 - The game is designed for catch-the-lie gameplay; it does not claim characters are "truthful AI" or that the system is hallucination-proof
 
 ### What Evidence Engine does not do
 
 - It does not generate unsupported factual claims as authoritative
-- It does not use real crimes, real people, or real victims — the case is entirely synthetic
-- It does not store or process any personal data
+- The built-in case uses no real crimes, real people, or real victims — it is entirely synthetic
+- In **Bring your own trial**, the text you paste is indexed into Foundry IQ *only* to run that trial, in its own isolated partition. It is purged when you reset and swept automatically after a period of inactivity; the intake asks you to paste demo-safe text only (no personal, confidential, or copyrighted material). The built-in case stores no personal data.
 
 ### Limitations
 
 - The LLM (GitHub Copilot) synthesises character dialogue between retrieval and the player. Synthesis can misparaphrase retrieved evidence. **The citations are provided so players can verify against the source document, not because synthesis is infallible.**
 - Local dev mode uses keyword search, not semantic retrieval — results are less precise than Foundry IQ
-- **Act II (Live Interrogation) is built around drift.** The witness model may invent details — that is the design, and the UI says so on screen. Verdicts are evidence-relative: "unsupported by the case file" or "conflicts with their earlier statement", never "false" or "lying" as findings of fact.
+- **Live interrogation is built around drift.** The witness model may invent details — that is the design, and the UI says so on screen. Verdicts are evidence-relative: "unsupported by the case file" or "conflicts with their earlier statement", never "false" or "lying" as findings of fact.
 - **Scoring requires positive evidence.** Only CONTRADICTED (with a cited passage) or a self-contradiction counts as a catch. "The case file is silent" is flagged as *unverifiable* — never scored as a caught hallucination, because unverifiable ≠ false. Challenging supported claims costs you.
-- **Ground truth exists where it matters.** Each witness is scripted to assert one specific planted fabrication; the report reveals how many plants you actually pinned. Catches against plants are provable, not heuristic opinion. The engine-tap trace tags every step `AZURE` (live Foundry IQ call), `MODEL` (GitHub Models), or `LOCAL` (deterministic verdict heuristics) — the split is disclosed, not discovered.
-- Live challenge verdicts combine live retrieval with deterministic heuristics (explicit negation phrases and clock-time conflicts within claim-relevant sentences). The heuristics can miss paraphrased contradictions and cannot weigh testimony that carries no times — the cited passages are shown verbatim so the player remains the judge.
+- **The verdict is Foundry IQ's, not a regex's.** On a challenge, the knowledge base runs answer synthesis over the retrieved passages and returns the verdict (`GROUNDED` / `CONTRADICTED` / `UNVERIFIABLE`) with the deciding passage quoted verbatim. A deterministic check (explicit negation phrases + clock-time conflicts within claim-relevant sentences) runs *alongside* as a disclosed cross-check; when it diverges from the IQ verdict, the IQ verdict leads and the divergence is surfaced in the engine tap. The tap tags every step `AZURE` (live Foundry IQ call), `MODEL` (GitHub Models witness), or `LOCAL` (the deterministic cross-check) — the split is disclosed, not discovered. *(The zero-config local fallback, run without Azure keys, uses the deterministic check alone and labels itself as such.)*
+- **Ground truth where it matters.** In the Holbrooke case each witness is scripted to assert one planted fabrication, so the report can show how many plants you pinned — provably, not by heuristic opinion. In *Bring your own trial* there is no script: the lies are emergent, and the verdict is whatever Foundry IQ finds in *your* pasted source. The deterministic cross-check can still miss paraphrased contradictions and time-free testimony — the cited passages are shown verbatim so you remain the judge.
+- **Copilot Receipts caveat.** Azure's content filter intermittently rejects answer synthesis on security-sensitive *code*; `check_claim` discloses this and degrades to the deterministic cross-check rather than crashing. The IQ verdict path is reliable on docs, notes, and prose.
 - The self-consistency check only fires on conflicting clock times; two semantically contradictory but time-free statements will read as consistent.
 - Retrieval thresholds are calibrated per query shape (question-style 3.5; declarative claims 2.0; testimony 1.0 — measured live, June 11 2026). Out-of-distribution phrasing can still fail closed ("the case file is silent") on claims the file does address.
 
@@ -227,7 +251,7 @@ cd evidence-engine/live-server && npm run test:live
 See [COPILOT_USAGE.md](evidence-engine/COPILOT_USAGE.md) for the full log of Copilot interactions during development.
 
 Highlights:
-- Copilot Chat designed the 4-tool architecture and identified the citation integrity requirement
+- Copilot Chat designed the MCP tool architecture and identified the citation integrity requirement
 - Inline suggestions completed the MCP SDK scaffolding and Foundry IQ API calls
 - Copilot provided the responsible AI framing: "characters may be unreliable narrators — the citations let you catch them"
 

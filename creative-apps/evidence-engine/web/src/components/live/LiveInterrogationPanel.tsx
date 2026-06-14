@@ -2,9 +2,21 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useGame } from "../../GameContext";
 import { SUSPECTS } from "../../data/caseData";
 import type { LiveSessionState } from "../../live/useLiveSession";
+import * as api from "../../live/api";
+import type { ChallengeResponse } from "../../live/types";
 import { LiveClaimChip, LiveVerdictCard } from "./LiveClaim";
+import { SplitVerdict } from "./SplitVerdict";
 import "../interrogation/interrogation.css";
 import "./live.css";
+
+interface SplitState {
+  claimId: string;
+  claimText: string;
+  /** Grounding off (plug pulled). */
+  left: ChallengeResponse;
+  /** Grounding on (Foundry IQ in the loop). */
+  right: ChallengeResponse;
+}
 
 interface LiveInterrogationPanelProps {
   live: LiveSessionState;
@@ -40,6 +52,29 @@ export function LiveInterrogationPanel({
   const { state } = useGame();
   const [draft, setDraft] = useState("");
   const threadRef = useRef<HTMLDivElement>(null);
+  // "See the difference": one claim challenged twice (grounding off + on) in
+  // PREVIEW mode, shown side by side. Preview never touches the score or the
+  // Grounding Record — it is a demonstration of the thesis.
+  const [split, setSplit] = useState<SplitState | null>(null);
+  const [splitPending, setSplitPending] = useState<string | null>(null);
+
+  const runSplit = async (claimId: string, claimText: string) => {
+    if (!live.sessionId || splitPending) return;
+    setSplitPending(claimId);
+    try {
+      const [left, right] = await Promise.all([
+        api.challenge(live.sessionId, claimId, false, true),
+        api.challenge(live.sessionId, claimId, true, true),
+      ]);
+      // Reveal both only when both resolve, so the latency asymmetry between the
+      // instant unplugged path and the live IQ reason never leaks on screen.
+      setSplit({ claimId, claimText, left, right });
+    } catch {
+      // The normal challenge path is unaffected; swallow preview errors quietly.
+    } finally {
+      setSplitPending(null);
+    }
+  };
 
   // The person on the stand: the BYO witness if supplied, else the selected
   // Holbrooke suspect.
@@ -132,13 +167,24 @@ export function LiveInterrogationPanel({
             >
               {turn.claims.length > 0 ? (
                 turn.claims.map((claim) => (
-                  <span key={claim.claimId}>
+                  <span key={claim.claimId} className="live-claim-wrap">
                     <LiveClaimChip
                       claim={claim}
                       result={live.challenges[claim.claimId]}
                       pending={live.challengePending === claim.claimId}
                       onChallenge={onChallenge}
-                    />{" "}
+                    />
+                    {!live.challenges[claim.claimId] && live.sessionId && (
+                      <button
+                        type="button"
+                        className="live-split-trigger"
+                        onClick={() => runSplit(claim.claimId, claim.text)}
+                        disabled={splitPending !== null}
+                        title="See this claim with Foundry IQ on vs off"
+                      >
+                        {splitPending === claim.claimId ? "comparing…" : "⚖ on/off"}
+                      </button>
+                    )}{" "}
                   </span>
                 ))
               ) : (
@@ -181,6 +227,15 @@ export function LiveInterrogationPanel({
           </p>
         )}
       </div>
+
+      {split && (
+        <SplitVerdict
+          claimText={split.claimText}
+          left={split.left}
+          right={split.right}
+          onClose={() => setSplit(null)}
+        />
+      )}
 
       <form className="live-panel__composer" onSubmit={submit}>
         <input
