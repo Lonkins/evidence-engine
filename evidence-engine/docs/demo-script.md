@@ -36,9 +36,13 @@ The MCP/Copilot server ships **unconfigured** (`server/.env.example` has
 degrades and the receipt reads **"deterministic cross-check (Foundry IQ verdict
 unavailable)"** — the exact opposite of the thesis, in writing, on screen. Before rolling:
 
-1. Create `evidence-engine/server/.env` with **`IQ_VERDICT_ENABLED=true`** and
-   **`KB_REASONING_EFFORT=medium`** (+ the Azure search endpoint/key). Rebuild
-   `server/dist`.
+1. **`server/.env` — configured + verified.** The MCP server reads `.env` (via
+   `dotenv/config`), so it needs `IQ_VERDICT_ENABLED=true` + `KB_REASONING_EFFORT=medium`
+   + the Azure endpoint and **`AZURE_SEARCH_KEY`** (the MCP server's name for the admin
+   key — note it's *not* `AZURE_SEARCH_ADMIN_KEY` like live-server; copy the value across).
+   This is done and gitignored; verified end-to-end — a real `check_claim` returns
+   **CONTRADICTED · ~10,000 reasoning tokens**, not the "cross-check" fallback. Rebuild
+   `server/dist`. *(If you record on a different machine, recreate this file there.)*
 2. **`ground_on` the target file (`live-server/src/search.ts`) *before* recording.**
    `ground_on` does a single upload with no propagation wait — a cold on-camera index can
    return `UNVERIFIABLE` instead of the scripted `CONTRADICTED`. Start the take with the
@@ -83,7 +87,7 @@ reproducible than relying on emergent witness drift.
 | **3** | 40–75s | **Pull-the-plug split.** On the first claim chip, press **IQ off ⇄ on**. Side by side: LEFT *Foundry IQ unplugged — "no record, nothing checked"*; RIGHT **CONTRADICTED** + the verbatim "24 hours" line from the judge's *own* pasted text + *"medium effort · N reasoning tokens."* Keep **"Foundry IQ is reasoning…"** on screen during the ~8–12s two-call wait. Let *"That's the brain"* land. | The single most concentrated proof Foundry IQ is load-bearing — the **Best Use of IQ Tools** clincher. The token count is the KB's own activity log, not a counter we run. |
 | **4** | 75–100s | **Verdict spectrum in one sweep.** Press two more chips from the *same* reply: one the source supports → **GROUNDED** (citation shown); one it's silent on (the engineer-count question) → **UNVERIFIABLE**. Caption it: *"the source is silent, so it won't guess."* Add one line: *"The witness isn't malicious — it's a model filling gaps confidently. The engine is the part that checks."* | Responsible-AI core + the verdict isn't binary. Pre-empts "is the demo staged to fail?" |
 | **5** | 100–120s | **BYO close.** Deliver the verdict → **CASE_MADE** (show it's *structurally* incapable of returning SOLVED on your own source). Export the **Grounding Record** with its disclaimer legible. Caption: *"It will never say SOLVED on your source — that guardrail is in the code, not the marketing."* | RAI capstone you can *prove on screen*, and a clean pivot to "now the same engine, where developers actually work." |
-| **6** | 120–170s | **Copilot climax (VS Code).** `search.ts` already `ground_on`'d (pre-flight). Briefly flash `.vscode/mcp.json` pointing at the real Azure endpoint. Ask Copilot something so it asserts the wrong claim — *"the retrieve path runs at medium reasoning effort"* — then `check_claim` it → **CONTRADICTED + faithfulness gate HELD**, the verbatim `minimal` line from `search.ts:75` cited, receipt **"Foundry IQ — answer synthesis · N reasoning tokens."** Then check a *true* claim (`kbReason` uses answer synthesis at medium) → **GROUNDED / PASS**, so it reads as a verdict engine, not a buzzer. **Verify on camera the receipt says "Foundry IQ," not "cross-check."** | The Creative-Apps-*with-Copilot* climax and the **only** beat scoring both headline prizes at once: a Copilot hallucination about our *own* code, caught with a receipt the judge can verify in the file on screen. |
+| **6** | 120–170s | **Copilot climax (VS Code).** Have **`live-server/src/search.ts`** open (line 75 visible) and already `ground_on`'d in pre-flight. Briefly flash `.vscode/mcp.json` pointing at the real Azure endpoint. Get Copilot to assert the false claim — or type it straight into `check_claim`: ***"The kbRetrieve dialogue-grounding step runs Foundry IQ at medium reasoning effort."*** → **CONTRADICTED + faithfulness gate HELD**, citing the verbatim **`retrievalReasoningEffort: { kind: "minimal" }`** line (search.ts:75), receipt **"Foundry IQ — answer synthesis · N reasoning tokens."** Then a *true* claim — *"kbReason synthesises the verdict at medium effort"* (search.ts:162) → **GROUNDED / PASS** — so it reads as a verdict engine, not a buzzer. **Verify on camera the receipt says "Foundry IQ," not "cross-check."** Keep the claim about the *config fact* (retrieve = minimal, verdict = medium); don't invite a tangent about whether "minimal" is deprecated. | The Creative-Apps-*with-Copilot* climax and the **only** beat scoring both headline prizes at once: a Copilot hallucination about our *own* code, caught with a receipt the judge can verify in the file on screen. |
 | **7** | 170–180s | **Two-receipt close.** Two-pane final frame: the web Grounding Record beside the VS Code `CONTRADICTED` + HELD receipt — the same Foundry IQ call signature visible in both. Hold on it. | Makes "one engine, two surfaces" *visual*, not spoken. The last thing the judge reads is the stacked Copilot + IQ proof. |
 
 **Close line (over the empty paste box, no "lie"):** *"An AI will state things your
@@ -103,6 +107,12 @@ not a logo crawl.
    `CONTRADICTED`+receipt frame if it stalls mid-record.
 3. **Copilot beat** — if the live run is shaky or the receipt reads "cross-check," hard-cut
    to the pre-recorded clean take. The judge never knows.
+
+**Simpler alternative catch** (if you'd rather a claim no domain knowledge is needed for):
+ground a snippet showing `GITHUB_MODELS_MODEL=openai/gpt-4o-mini` and `check_claim` *"the
+witnesses are played by GPT-4o"* → **CONTRADICTED**, the `gpt-4o-mini` line cited. Any
+judge reads "4o" vs "4o-mini" at a glance. (The `search.ts` reasoning-effort catch is the
+stronger, on-theme pick — this is the fallback.)
 
 **Proof artifacts (point any "is it real?" reference here):**
 `evidence-engine/docs/integration-proof.json` (live KB answer-synthesis trace) and
