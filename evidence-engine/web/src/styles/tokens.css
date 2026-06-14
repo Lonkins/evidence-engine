@@ -23,10 +23,41 @@
   --verified-bright: #5d9d75;
   --silent: #8fa0b0;
 
+  /* Semantic verdict palette — the catch / keep / honest-silence, in one place.
+     Components reference these, not raw hexes, so a verdict-colour change is one edit.
+     Brass/gold = the engine; oxblood/crimson = the catch; blue-grey = honest refusal. */
+  --verdict-grounded: var(--verified-bright);
+  --verdict-contradicted: var(--crimson);
+  --verdict-silent: var(--silent);
+  --verdict-grounded-ink: #2f6b3a; /* on aged paper (record rows, report) */
+  --verdict-contradicted-ink: var(--crimson-deep);
+
+  /* Danger hairline — the unplugged / contradiction edge (was ~6 raw hexes in live.css) */
+  --danger-edge: #b3402f;
+  --danger-soft: #e08a7c;
+
+  /* Light & texture — one overhead interrogation lamp + a disciplined grain/halftone.
+     The key light is a single top-centre cone so every surface shares one source. */
+  --keylight: radial-gradient(
+    ellipse 60% 45% at 50% -8%,
+    rgba(232, 201, 126, 0.16) 0%,
+    rgba(201, 161, 74, 0.06) 34%,
+    transparent 68%
+  );
+  --keylight-focus: radial-gradient(
+    circle 34rem at 50% 16%,
+    rgba(232, 201, 126, 0.08),
+    transparent 70%
+  );
+  --grain-opacity: 0.05;
+  --halftone: radial-gradient(rgba(0, 0, 0, 0.5) 0.5px, transparent 0.6px);
+  --halftone-size: 3px 3px;
+
   /* Text on ink */
   --text: #e8ddc4;
   --text-dim: #a3977d;
-  --text-faint: #6e6450;
+  /* Raised from #6e6450 → clears WCAG-AA (~5:1) on the ink ramp while staying "faint". */
+  --text-faint: #8a7f64;
 
   /* Keylines */
   --line: rgba(201, 161, 74, 0.16);
@@ -56,9 +87,18 @@
   --duration-slow: 700ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-stamp: cubic-bezier(0.34, 1.8, 0.4, 1);
+  /* Per-instance stamp rotation defaults (Stamp.tsx overrides inline for jitter). */
+  --stamp-rot: -2.5deg;
+  --stamp-rot-large: -4deg;
+  /* Typewriter reveal duration (testimony + receipts type on). */
+  --type-reveal-ms: 520ms;
 
   /* Depth */
   --shadow-card: 0 1px 0 rgba(255, 235, 190, 0.05) inset, 0 10px 28px rgba(0, 0, 0, 0.55);
   --shadow-paper: 0 2px 4px rgba(0, 0, 0, 0.5), 0 14px 36px rgba(0, 0, 0, 0.55);
   --shadow-pop: 0 24px 70px rgba(0, 0, 0, 0.75);
+  /* Pinned-evidence lift — a stamped receipt sitting on the desk, not a flat panel. */
+  --shadow-stamped: 0 1px 0 rgba(255, 235, 190, 0.06) inset, 0 2px 3px rgba(0, 0, 0, 0.55),
+    0 14px 30px rgba(0, 0, 0, 0.5);
+  --shadow-keylit: 0 -1px 24px rgba(232, 201, 126, 0.07);
 }

@@ -273,11 +273,21 @@
   max-height: 88vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(178deg, var(--paper) 0%, var(--paper-2) 80%, var(--paper-3) 100%);
+  /* Aged stock under a faint halftone dot screen — ink-on-newsprint. */
+  background:
+    var(--halftone),
+    linear-gradient(178deg, var(--paper) 0%, var(--paper-2) 80%, var(--paper-3) 100%);
+  background-size: var(--halftone-size), auto;
   color: var(--paper-ink);
   border-radius: 3px;
   box-shadow: var(--shadow-pop);
   animation: paper-in var(--duration-normal) var(--ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doc-modal__paper {
+    animation: none;
+  }
 }
 
 @keyframes paper-in {

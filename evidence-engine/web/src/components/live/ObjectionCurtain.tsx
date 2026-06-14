@@ -22,6 +22,12 @@ interface ObjectionCurtainProps {
   pending: boolean;
   /** The most recently resolved challenge — drives the slam stamp. */
   latest: ChallengeResponse | null;
+  /**
+   * When true, hold the "Objection" curtain while IQ reasons (the teaching
+   * theatre). Once the player has the rhythm, the caller passes false: we keep
+   * the satisfying verdict slam but stop interrupting the flow with the curtain.
+   */
+  cinema?: boolean;
 }
 
 /**
@@ -33,7 +39,7 @@ interface ObjectionCurtainProps {
  * changes, pointer-events none, honours prefers-reduced-motion, and gated by a
  * kill-switch in LiveDesk so the bare path can always be demoed.
  */
-export function ObjectionCurtain({ pending, latest }: ObjectionCurtainProps) {
+export function ObjectionCurtain({ pending, latest, cinema = true }: ObjectionCurtainProps) {
   const [phase, setPhase] = useState<Phase>("idle");
   const wasPending = useRef(false);
   const slamResult = useRef<ChallengeResponse | null>(null);
@@ -43,7 +49,8 @@ export function ObjectionCurtain({ pending, latest }: ObjectionCurtainProps) {
     wasPending.current = pending;
 
     if (pending && !wasPendingPrev) {
-      setPhase("objection");
+      // Once retired, skip the held curtain — the verdict still slams on resolve.
+      if (cinema) setPhase("objection");
       return;
     }
     if (!pending && wasPendingPrev) {
@@ -55,7 +62,7 @@ export function ObjectionCurtain({ pending, latest }: ObjectionCurtainProps) {
       }
       setPhase("idle");
     }
-  }, [pending, latest]);
+  }, [pending, latest, cinema]);
 
   if (phase === "idle") return null;
 

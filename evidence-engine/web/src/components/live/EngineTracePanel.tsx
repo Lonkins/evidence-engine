@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Scorecard, TraceEntry } from "../../live/types";
 import "./live.css";
 
@@ -48,10 +48,15 @@ export function EngineTracePanel({
 }: EngineTracePanelProps) {
   const logRef = useRef<HTMLOListElement>(null);
   const traceCount = trace.length;
+  // The verbose teletype lives in a drawer — open by default on a big desk where
+  // there's room to watch the brain work, collapsed where the spine needs the height.
+  const [traceOpen, setTraceOpen] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 1440px)").matches
+  );
 
   useEffect(() => {
-    logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
-  }, [traceCount]);
+    if (traceOpen) logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
+  }, [traceCount, traceOpen]);
 
   return (
     <aside className="engine-tap" aria-label="Engine trace — live Foundry IQ calls">
@@ -98,6 +103,12 @@ export function EngineTracePanel({
         </button>
       </div>
 
+      <p className="engine-tap__grounding-note">
+        This switch flips grounding for <em>every future turn</em>. To preview a single
+        claim both ways — without scoring — use{" "}
+        <strong>IQ&nbsp;off&nbsp;⇄&nbsp;on</strong> on a sentence.
+      </p>
+
       {score && (
         <dl className="engine-tap__score" aria-label="Interrogation scorecard">
           <div className="tap-tally tap-tally--gold">
@@ -115,28 +126,43 @@ export function EngineTracePanel({
         </dl>
       )}
 
-      <ol className="engine-tap__log" ref={logRef}>
-        {trace.length === 0 && (
-          <li className="tap-line tap-line--idle">— line open, waiting for traffic —</li>
+      {/* A custom disclosure (not <details>): a real <div> flex container reliably
+          sizes the scrolling <ol>, where Chromium's <details>::details-content box
+          would not — letting the log grow to full height and spill over the footer. */}
+      <div className={`engine-tap__drawer ${traceOpen ? "engine-tap__drawer--open" : ""}`}>
+        <button
+          type="button"
+          className="engine-tap__drawer-summary"
+          onClick={() => setTraceOpen((open) => !open)}
+          aria-expanded={traceOpen}
+        >
+          Engine trace{traceCount > 0 ? ` · ${traceCount} calls` : ""}
+        </button>
+        {traceOpen && (
+          <ol className="engine-tap__log" ref={logRef}>
+            {trace.length === 0 && (
+              <li className="tap-line tap-line--idle">— line open, waiting for traffic —</li>
+            )}
+            {trace.map((entry, index) => (
+              <li key={index} className={`tap-line ${entry.status >= 400 ? "tap-line--error" : ""}`}>
+                <span className="tap-line__glyph" aria-hidden="true">{stepGlyph(entry.step)}</span>
+                <span className="tap-line__step">
+                  <span className={`tap-origin tap-origin--${entry.origin}`}>
+                    {ORIGIN_LABEL[entry.origin]}
+                  </span>
+                  {entry.step}
+                </span>
+                <span className="tap-line__meta">
+                  {entry.method} · {entry.latencyMs}ms · {entry.status}
+                </span>
+                {entry.detail && <span className="tap-line__detail">{entry.detail}</span>}
+                <span className="tap-line__target">{entry.target}</span>
+              </li>
+            ))}
+            <li className="tap-line tap-line--cursor" aria-hidden="true">▮</li>
+          </ol>
         )}
-        {trace.map((entry, index) => (
-          <li key={index} className={`tap-line ${entry.status >= 400 ? "tap-line--error" : ""}`}>
-            <span className="tap-line__glyph" aria-hidden="true">{stepGlyph(entry.step)}</span>
-            <span className="tap-line__step">
-              <span className={`tap-origin tap-origin--${entry.origin}`}>
-                {ORIGIN_LABEL[entry.origin]}
-              </span>
-              {entry.step}
-            </span>
-            <span className="tap-line__meta">
-              {entry.method} · {entry.latencyMs}ms · {entry.status}
-            </span>
-            {entry.detail && <span className="tap-line__detail">{entry.detail}</span>}
-            <span className="tap-line__target">{entry.target}</span>
-          </li>
-        ))}
-        <li className="tap-line tap-line--cursor" aria-hidden="true">▮</li>
-      </ol>
+      </div>
 
       <footer className="engine-tap__foot">
         <button className="engine-tap__end" onClick={onEndSession} disabled={!canEnd}>

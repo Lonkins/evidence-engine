@@ -148,16 +148,6 @@ export function LiveInterrogationPanel({
         </p>
       )}
 
-      <p className="live-panel__disclosure">
-        {person.name} is played by a live model, grounded in {corpusNoun} through
-        Foundry IQ on every turn — but free to drift beyond it. The drift is the game:
-        challenge any sentence and the engine checks it against {corpusNoun}, live.
-        <span className="live-panel__scope">
-          The engine can only check claims against {corpusNoun} — like real grounding,
-          it can't see what isn't indexed.
-        </span>
-      </p>
-
       <div className="interrogation__thread" ref={threadRef}>
         {turns.length === 0 && !live.askPending && (
           <p className="interrogation__empty">
@@ -189,28 +179,39 @@ export function LiveInterrogationPanel({
               }`}
             >
               {turn.claims.length > 0 ? (
-                turn.claims.map((claim) => (
-                  <span key={claim.claimId} className="live-claim-wrap">
-                    <LiveClaimChip
-                      claim={claim}
-                      result={live.challenges[claim.claimId]}
-                      pending={live.challengePending === claim.claimId}
-                      onChallenge={onChallenge}
-                    />
-                    {!live.challenges[claim.claimId] && live.sessionId && (
-                      <button
-                        type="button"
-                        className="live-split-trigger"
-                        onClick={() => runSplit(claim.claimId, claim.text)}
-                        disabled={splitPending !== null}
-                        title="Preview only — see this one claim checked with Foundry IQ off vs on. Doesn't score."
-                        aria-label="Preview this claim with Foundry IQ off versus on. Does not score."
-                      >
-                        {splitPending === claim.claimId ? "comparing…" : "IQ off ⇄ on"}
-                      </button>
-                    )}{" "}
-                  </span>
-                ))
+                turn.claims.map((claim, claimIndex) => {
+                  // The pull-the-plug A/B is a one-time teaching beat: it rides only the
+                  // first claim of the first reply, until the player's first challenge.
+                  // After that it retires so every sentence isn't carrying a second button.
+                  const showSplit =
+                    turnIndex === 0 &&
+                    claimIndex === 0 &&
+                    challengeCount === 0 &&
+                    !live.challenges[claim.claimId] &&
+                    Boolean(live.sessionId);
+                  return (
+                    <span key={claim.claimId} className="live-claim-wrap">
+                      <LiveClaimChip
+                        claim={claim}
+                        result={live.challenges[claim.claimId]}
+                        pending={live.challengePending === claim.claimId}
+                        onChallenge={onChallenge}
+                      />
+                      {showSplit && (
+                        <button
+                          type="button"
+                          className="live-split-trigger"
+                          onClick={() => runSplit(claim.claimId, claim.text)}
+                          disabled={splitPending !== null}
+                          title="Preview only — see this one claim checked with Foundry IQ off vs on. Doesn't score."
+                          aria-label="Preview this claim with Foundry IQ off versus on. Does not score."
+                        >
+                          {splitPending === claim.claimId ? "comparing…" : "IQ off ⇄ on"}
+                        </button>
+                      )}{" "}
+                    </span>
+                  );
+                })
               ) : (
                 <span>{turn.reply}</span>
               )}
@@ -219,8 +220,7 @@ export function LiveInterrogationPanel({
               <p className="live-answer__howto" role="note">
                 ↑ Each{" "}
                 <span className="live-answer__howto-chip">underlined sentence</span> is a
-                separate claim — tap any one and Foundry IQ checks it against {corpusNoun},
-                live, then hands you the receipt.
+                separate claim — tap one to challenge it.
               </p>
             )}
             <p className="live-answer__grounding">

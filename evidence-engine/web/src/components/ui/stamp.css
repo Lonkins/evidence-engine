@@ -7,7 +7,8 @@
   padding: 0.2em 0.65em 0.12em;
   border: 2px solid currentColor;
   border-radius: 3px;
-  transform: rotate(-2.5deg);
+  /* Per-instance jitter (set inline by Stamp.tsx) so no two stamps land the same. */
+  transform: rotate(var(--stamp-rot, -2.5deg));
   position: relative;
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.45' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0.25'/%3E%3CfeComposite operator='over' in2='SourceGraphic'/%3E%3C/filter%3E%3Crect width='120' height='40' fill='white' filter='url(%23r)'/%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.45' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0.25'/%3E%3CfeComposite operator='over' in2='SourceGraphic'/%3E%3C/filter%3E%3Crect width='120' height='40' fill='white' filter='url(%23r)'/%3E%3C/svg%3E");
@@ -21,9 +22,9 @@
   color: var(--crimson);
 }
 
+/* Honest refusal — a deliberate stamp (solid), never tentative, never crimson. */
 .stamp--silent {
   color: var(--silent);
-  border-style: dashed;
 }
 
 .stamp--gold {
@@ -35,25 +36,31 @@
   border-width: 4px;
   border-radius: 6px;
   padding: 0.25em 0.8em 0.15em;
-  transform: rotate(-4deg);
+  transform: rotate(var(--stamp-rot-large, -4deg));
 }
 
 .stamp--animate {
   animation: stamp-in var(--duration-normal) var(--ease-stamp) both;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .stamp--animate {
+    animation: none;
+  }
+}
+
 @keyframes stamp-in {
   0% {
     opacity: 0;
-    transform: rotate(-2.5deg) scale(2.1);
+    transform: rotate(var(--stamp-rot, -2.5deg)) scale(2.1);
   }
   60% {
     opacity: 1;
-    transform: rotate(-2.5deg) scale(0.94);
+    transform: rotate(var(--stamp-rot, -2.5deg)) scale(0.94);
   }
   100% {
     opacity: 1;
-    transform: rotate(-2.5deg) scale(1);
+    transform: rotate(var(--stamp-rot, -2.5deg)) scale(1);
   }
 }
 
@@ -65,14 +72,14 @@
 @keyframes stamp-in-large {
   0% {
     opacity: 0;
-    transform: rotate(-4deg) scale(2.6);
+    transform: rotate(var(--stamp-rot-large, -4deg)) scale(2.6);
   }
   55% {
     opacity: 1;
-    transform: rotate(-4deg) scale(0.92);
+    transform: rotate(var(--stamp-rot-large, -4deg)) scale(0.92);
   }
   100% {
     opacity: 1;
-    transform: rotate(-4deg) scale(1);
+    transform: rotate(var(--stamp-rot-large, -4deg)) scale(1);
   }
 }

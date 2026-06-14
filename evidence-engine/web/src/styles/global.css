@@ -21,7 +21,9 @@ body {
   overflow: hidden;
 }
 
-/* Lamplit atmosphere: layered gradients + film grain + vignette */
+/* Interrogation-room light: ONE overhead key light + a deep vignette + film grain.
+   (Was two diffuse offset glows — now a single lamp cone over the stand, per the
+   hybrid noir direction. The lamp is a token so every surface shares one source.) */
 .atmosphere {
   position: fixed;
   inset: 0;
@@ -34,16 +36,15 @@ body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 70% 55% at 28% 8%, rgba(201, 161, 74, 0.1), transparent 60%),
-    radial-gradient(ellipse 60% 70% at 85% 90%, rgba(122, 38, 38, 0.07), transparent 65%),
-    radial-gradient(ellipse 120% 110% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.62) 100%);
+    var(--keylight),
+    radial-gradient(ellipse 120% 110% at 50% 50%, transparent 52%, rgba(0, 0, 0, 0.66) 100%);
 }
 
 .atmosphere::after {
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.05;
+  opacity: var(--grain-opacity);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -62,6 +63,7 @@ button {
 
 button:focus-visible,
 input:focus-visible,
+summary:focus-visible,
 [tabindex]:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
@@ -69,6 +71,17 @@ input:focus-visible,
 
 ::selection {
   background: var(--gold-dim);
+}
+
+/* Typewriter reveal — testimony and receipts "type on" left-to-right.
+   Compositor-friendly (clip-path); per-component reduced-motion opt-outs accompany each use. */
+@keyframes type-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
 }
 
 /* Shared micro-label: small caps tracking, used for section headers */
