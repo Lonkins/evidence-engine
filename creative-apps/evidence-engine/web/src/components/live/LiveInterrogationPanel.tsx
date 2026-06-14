@@ -29,10 +29,19 @@ interface LiveInterrogationPanelProps {
   onOpenDoc: (docKey: string) => void;
 }
 
-const SUGGESTED_OPENERS = [
+// Scenario-specific openers. The Holbrooke prompts name the gallery and the badge
+// log; they must NOT leak into a bring-your-own trial about the user's own source
+// (that reads as a faked/scripted integration — the opposite of the whole pitch).
+const HOLBROOKE_OPENERS = [
   "Walk me through your movements that evening.",
   "What time exactly did you leave the gallery?",
   "The badge log tells a different story. When did you really leave?",
+];
+
+const BYO_OPENERS = [
+  "In your own words — what is this about?",
+  "Walk me through the most important facts.",
+  "Is there anything you're leaving out?",
 ];
 
 /**
@@ -257,7 +266,7 @@ export function LiveInterrogationPanel({
       </form>
       {turns.length === 0 && (
         <div className="live-panel__openers">
-          {SUGGESTED_OPENERS.map((opener) => (
+          {(witness ? BYO_OPENERS : HOLBROOKE_OPENERS).map((opener) => (
             <button
               key={opener}
               type="button"

@@ -15,24 +15,26 @@ const VERDICT_STAMP: Record<
 
 const VERDICT_NOTE: Record<StandAnswerResponse["evidence"]["verdict"], string> = {
   SUPPORTED:
-    "The case file backs you up — that one holds. Grounded statements survive cross-examination.",
+    "The record backs you up — that one holds. Grounded statements survive cross-examination.",
   CONTRADICTED:
-    "Caught. The file says otherwise, cited below — verbatim. Confidence didn't save you; the receipt convicts.",
+    "Caught. The record says otherwise, cited below — verbatim. Confidence didn't save you; the receipt convicts.",
   UNSUPPORTED:
-    "The file can't speak to that, so it won't be taken as fact. Unverifiable isn't false — but it isn't proof either. You'd need a receipt.",
+    "The record can't speak to that, so it won't be taken as fact. Unverifiable isn't false — but it isn't proof either. You'd need a receipt.",
 };
 
 interface TakeTheStandProps {
   sessionId: string;
+  /** What the engine checks the player's claim against — e.g. "the case file" or the BYO source title. */
+  sourceLabel: string;
   onClose: () => void;
 }
 
 /**
- * The inversion: Foundry IQ interrogates the human. The player asserts a claim
- * in their own defence; the same grounded engine that catches the witnesses now
- * checks the player — bluff and the file catches you, with the receipt.
+ * The inversion: Foundry IQ interrogates the human. The player asserts a claim,
+ * and the same grounded engine that catches the witnesses now checks the player —
+ * bluff and the record catches you, with the receipt.
  */
-export function TakeTheStand({ sessionId, onClose }: TakeTheStandProps) {
+export function TakeTheStand({ sessionId, sourceLabel, onClose }: TakeTheStandProps) {
   const [draft, setDraft] = useState("");
   const [result, setResult] = useState<StandAnswerResponse | null>(null);
   const [pending, setPending] = useState(false);
@@ -80,10 +82,9 @@ export function TakeTheStand({ sessionId, onClose }: TakeTheStandProps) {
         </header>
 
         <p className="take-stand__brief">
-          You've spent the case catching the witnesses. Now it's your turn under oath.
-          Make a claim in Helena's defence — anything you assert, <strong>Foundry IQ
-          checks against the case file, live.</strong> Bluff, and the record catches
-          <em> you</em>.
+          You've spent the session catching the witnesses. Now it's your turn under oath.
+          Make a claim — anything you assert, <strong>Foundry IQ checks it against{" "}
+          {sourceLabel}, live.</strong> Bluff, and the record catches <em>you</em>.
         </p>
 
         {!result ? (
@@ -94,7 +95,7 @@ export function TakeTheStand({ sessionId, onClose }: TakeTheStandProps) {
               onChange={(event) => setDraft(event.target.value)}
               rows={3}
               maxLength={600}
-              placeholder="e.g. Helena was home well before the gallery alarm went off."
+              placeholder="State it plainly — and stake your credibility on it."
               aria-label="Your statement under oath"
               disabled={pending}
             />

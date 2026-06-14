@@ -48,14 +48,16 @@ export function InterrogationReport({
           <p className="report__line">{grade.line}</p>
         </header>
 
-        <p className="report__plants">
-          Planted fabrications pinned:{" "}
-          <strong>
-            {score.plantsCaught} of {score.plantsTotal}
-          </strong>{" "}
-          — each witness was scripted to assert one specific false detail. These are
-          ground truth: catching one means it provably was fabricated.
-        </p>
+        {score.plantsTotal > 0 && (
+          <p className="report__plants">
+            Planted fabrications pinned:{" "}
+            <strong>
+              {score.plantsCaught} of {score.plantsTotal}
+            </strong>{" "}
+            — each witness was scripted to assert one specific false detail. These are
+            ground truth: catching one means it provably was fabricated.
+          </p>
+        )}
 
         <dl className="report__grid">
           <div className="report__stat">

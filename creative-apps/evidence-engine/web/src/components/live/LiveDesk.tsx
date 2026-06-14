@@ -13,6 +13,7 @@ import { LiveAccusation } from "./LiveAccusation";
 import { GroundingRecord } from "./GroundingRecord";
 import { ObjectionCurtain } from "./ObjectionCurtain";
 import { TakeTheStand } from "./TakeTheStand";
+import { ByoVerdict } from "./ByoVerdict";
 import type { ByoConfig } from "../../live/api";
 import "./live.css";
 
@@ -46,6 +47,8 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
   const [showRecord, setShowRecord] = useState(false);
   // "You take the stand": the inversion — Foundry IQ interrogates the player.
   const [onStand, setOnStand] = useState(false);
+  // The bring-your-own close — "Deliver your verdict" against the user's source.
+  const [deliveringVerdict, setDeliveringVerdict] = useState(false);
   // Voice in the box (Accessibility): read each verdict aloud. Off by default.
   const [voiceOn, setVoiceOn] = useState(false);
   // Which inferred witness is on the stand, in a bring-your-own trial.
@@ -202,32 +205,20 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
           >
             {voiceOn ? "🔊 Voice on" : "🔈 Voice"}
           </button>
-          {!isByo && (
-            <button
-              type="button"
-              className="surface-link"
-              onClick={() => setOnStand(true)}
-            >
-              Take the stand
-            </button>
-          )}
-          {isByo ? (
-            <button
-              type="button"
-              className="surface-link"
-              onClick={() => void endSession(sessionId)}
-            >
-              End &amp; debrief
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="surface-link surface-link--accuse"
-              onClick={() => setAccusing(true)}
-            >
-              Name the killer
-            </button>
-          )}
+          <button
+            type="button"
+            className="surface-link"
+            onClick={() => setOnStand(true)}
+          >
+            Take the stand
+          </button>
+          <button
+            type="button"
+            className="surface-link surface-link--accuse"
+            onClick={() => (isByo ? setDeliveringVerdict(true) : setAccusing(true))}
+          >
+            Deliver your verdict
+          </button>
           {actions}
         </div>
       </header>
@@ -270,6 +261,18 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
           }}
         />
       )}
+      {deliveringVerdict && isByo && (
+        <ByoVerdict
+          witnesses={state.witnesses}
+          sourceTitle={state.sourceTitle ?? undefined}
+          challenges={state.challenges}
+          onClose={() => setDeliveringVerdict(false)}
+          onEnd={() => {
+            setDeliveringVerdict(false);
+            void endSession(sessionId);
+          }}
+        />
+      )}
       {showRecord && (
         <GroundingRecord
           challenges={state.challenges}
@@ -277,8 +280,12 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
           onClose={() => setShowRecord(false)}
         />
       )}
-      {onStand && !isByo && (
-        <TakeTheStand sessionId={sessionId} onClose={() => setOnStand(false)} />
+      {onStand && (
+        <TakeTheStand
+          sessionId={sessionId}
+          sourceLabel={isByo ? state.sourceTitle ?? "your source" : "the case file"}
+          onClose={() => setOnStand(false)}
+        />
       )}
       {OBJECTION_CINEMA && (
         <ObjectionCurtain pending={Boolean(state.challengePending)} latest={latestChallenge} />

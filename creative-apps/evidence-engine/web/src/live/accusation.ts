@@ -92,3 +92,31 @@ export function evaluateLiveAccusation(
 
   return { accused, accusedName, outcome, exhibits };
 }
+
+/**
+ * The bring-your-own close — "Deliver your verdict." A user's own source has NO
+ * ground truth: there is no killer, no scripted plant, no "correct" answer. So
+ * this resolver is structurally incapable of returning SOLVED — the only honest
+ * outcomes are whether the player built a cited case (CASE_MADE) or named someone
+ * with no receipt (UNPROVEN). Outcomes are source-relative, never findings of
+ * fact: "contradicted by your source", never "lying" or "guilty".
+ */
+export type ByoVerdictOutcome = "CASE_MADE" | "UNPROVEN";
+
+export interface ByoVerdictResult {
+  witnessName: string;
+  outcome: ByoVerdictOutcome;
+  exhibits: LiveExhibit[];
+}
+
+export function evaluateByoVerdict(
+  witnessName: string,
+  challenges: Record<string, ChallengeResponse>
+): ByoVerdictResult {
+  const exhibits = exhibitsAgainst(witnessName, challenges);
+  return {
+    witnessName,
+    outcome: exhibits.length > 0 ? "CASE_MADE" : "UNPROVEN",
+    exhibits,
+  };
+}

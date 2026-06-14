@@ -51,10 +51,29 @@
   color: var(--text);
 }
 
+.accusation__deck {
+  max-width: 52ch;
+  margin: var(--space-2) auto 0;
+  color: var(--text-dim, #9a958c);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
 .accusation__suspects {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-3);
+}
+
+/* The bring-your-own verdict has 1–3 inferred witnesses, not a fixed three —
+   centre and wrap them instead of forcing a 3-column grid. */
+.accusation__suspects--flex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.accusation__suspects--flex .accused-card {
+  width: 150px;
 }
 
 .accused-card {
@@ -86,6 +105,18 @@
   border-radius: 3px;
   background: radial-gradient(ellipse at 30% 20%, #241d12, #0d0a07 75%);
   overflow: hidden;
+}
+
+/* Bring-your-own witnesses have no bespoke portrait — show a monogram instead. */
+.accused-card__portrait--initial {
+  width: 84px;
+  height: 84px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--gold-bright, #c6a04a);
 }
 
 .accused-card__name {

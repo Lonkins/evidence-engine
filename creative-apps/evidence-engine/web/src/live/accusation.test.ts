@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { evaluateLiveAccusation, exhibitsAgainst } from "./accusation";
+import { evaluateByoVerdict, evaluateLiveAccusation, exhibitsAgainst } from "./accusation";
 import type { ChallengeResponse } from "./types";
 
 function challenge(
@@ -85,5 +85,36 @@ describe("evaluateLiveAccusation", () => {
     ]);
     expect(evaluateLiveAccusation("helena", "Helena Voss", challenges).outcome).toBe("UNPROVEN");
     expect(evaluateLiveAccusation("nora", "Nora Ashton", {}).outcome).toBe("UNPROVEN");
+  });
+});
+
+describe("evaluateByoVerdict (bring-your-own close)", () => {
+  test("CASE_MADE — a pinned contradiction against the named witness", () => {
+    const challenges = byId([
+      challenge({ claimId: "1", speaker: "The Author", verdict: "CONTRADICTED", citedPassage: "the source says 14:00" }),
+    ]);
+    const result = evaluateByoVerdict("The Author", challenges);
+    expect(result.outcome).toBe("CASE_MADE");
+    expect(result.exhibits).toHaveLength(1);
+  });
+
+  test("UNPROVEN — named a witness with no pinned contradiction", () => {
+    const challenges = byId([
+      challenge({ claimId: "1", speaker: "The Author", verdict: "UNSUPPORTED" }),
+    ]);
+    expect(evaluateByoVerdict("The Author", challenges).outcome).toBe("UNPROVEN");
+    expect(evaluateByoVerdict("The Author", {}).outcome).toBe("UNPROVEN");
+  });
+
+  test("SOLVED is structurally unreachable for a BYO source (no ground truth)", () => {
+    // Even a strong, cited case against the witness can only be CASE_MADE — never
+    // SOLVED. A user's own source has no killer to be 'right' about.
+    const challenges = byId([
+      challenge({ claimId: "1", speaker: "Helena Voss", verdict: "CONTRADICTED" }),
+      challenge({ claimId: "2", speaker: "Helena Voss", self: "SELF_CONTRADICTION" }),
+    ]);
+    const outcome = evaluateByoVerdict("Helena Voss", challenges).outcome;
+    expect(outcome).toBe("CASE_MADE");
+    expect(outcome).not.toBe("SOLVED");
   });
 });
