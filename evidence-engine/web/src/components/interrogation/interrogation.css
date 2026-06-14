@@ -113,17 +113,6 @@
   color: var(--text-dim);
 }
 
-/* First (auto-fired) turn only: explain why text is already on the board. */
-.testimony__cold-open {
-  margin: 0 0 var(--space-2);
-  font-family: var(--font-type);
-  font-size: var(--text-xs);
-  line-height: 1.6;
-  color: var(--text-dim);
-  border-left: 2px solid var(--gold-dim);
-  padding-left: var(--space-2);
-}
-
 .testimony__reply-by {
   margin: 0 0 var(--space-1);
 }

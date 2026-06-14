@@ -532,25 +532,6 @@
 .tap-tally--gold dd { color: var(--gold-bright); }
 .tap-tally--crimson dd { color: var(--crimson); }
 
-/* Keeps the two grounding controls distinct: the all-turns switch vs the per-claim preview. */
-.engine-tap__grounding-note {
-  margin: 0 0 var(--space-3);
-  font-size: var(--text-xs);
-  line-height: 1.55;
-  color: var(--text-dim);
-}
-
-.engine-tap__grounding-note strong {
-  color: var(--gold-bright);
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.engine-tap__grounding-note em {
-  font-style: italic;
-  color: var(--text);
-}
-
 /* The teletype trace, demoted into a disclosure so it doesn't crowd the first read.
    When open it becomes the flex scroll region; overflow:hidden makes the inner log's
    min-height:0 + overflow-y:auto resolve (a <details> flex container otherwise lets
@@ -848,107 +829,7 @@
   color: var(--gold-bright);
 }
 
-/* ---------------------------------------------------------------------------
-   Pull-the-plug grounding toggle (engine tap)
-   --------------------------------------------------------------------------- */
-.engine-tap__grounding {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin: 0.75rem 0;
-  padding: 0.6rem 0.7rem;
-  border: 1px solid var(--gold-dim);
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.25);
-  transition: border-color 200ms ease, background 200ms ease;
-}
-
-.engine-tap__grounding--off {
-  border-color: var(--danger-edge);
-  background: rgba(179, 64, 47, 0.12);
-}
-
-.engine-tap__grounding-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.engine-tap__grounding-state {
-  margin: 0;
-  font-size: 0.74rem;
-  line-height: 1.3;
-  color: var(--text);
-}
-
-.engine-tap__plug {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.3rem 0.5rem;
-  background: transparent;
-  border: 1px solid var(--line-strong);
-  border-radius: 4px;
-  cursor: pointer;
-  color: var(--text);
-  font: inherit;
-  letter-spacing: 0.08em;
-  font-size: 0.7rem;
-}
-
-.engine-tap__plug-track {
-  position: relative;
-  display: inline-block;
-  width: 34px;
-  height: 16px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
-  transition: background 200ms ease;
-}
-
-.engine-tap__plug-knob {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--text);
-  transition: transform 200ms ease, background 200ms ease;
-}
-
-.engine-tap__plug--on .engine-tap__plug-track {
-  background: var(--gold-dim);
-}
-
-.engine-tap__plug--on .engine-tap__plug-knob {
-  transform: translateX(18px);
-  background: var(--gold-bright);
-}
-
-.engine-tap__plug--on {
-  color: var(--gold-bright);
-  border-color: var(--gold-dim);
-}
-
-.engine-tap__plug--off {
-  color: var(--danger-soft);
-  border-color: var(--danger-edge);
-}
-
-/* Unplugged banner in the interrogation panel */
-.live-panel__unplugged {
-  margin: 0 0 0.85rem;
-  padding: 0.7rem 0.85rem;
-  border-left: 3px solid var(--danger-edge);
-  background: rgba(179, 64, 47, 0.12);
-  color: var(--text);
-  font-size: 0.85rem;
-  line-height: 1.5;
-}
-
-/* Ungrounded challenged claim chip */
+/* Ungrounded challenged claim chip (the split-preview's "plug pulled" pane) */
 .claim--ungrounded {
   border-style: dashed !important;
   opacity: 0.85;

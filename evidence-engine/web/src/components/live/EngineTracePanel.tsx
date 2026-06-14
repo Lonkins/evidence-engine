@@ -5,9 +5,6 @@ import "./live.css";
 interface EngineTracePanelProps {
   trace: TraceEntry[];
   score: Scorecard | null;
-  /** Foundry IQ grounding on/off — the "pull the plug" switch. */
-  grounding: boolean;
-  onToggleGrounding: () => void;
   onEndSession: () => void;
   canEnd: boolean;
 }
@@ -41,8 +38,6 @@ function stepGlyph(step: string): string {
 export function EngineTracePanel({
   trace,
   score,
-  grounding,
-  onToggleGrounding,
   onEndSession,
   canEnd,
 }: EngineTracePanelProps) {
@@ -76,37 +71,6 @@ export function EngineTracePanel({
         Crack the witnesses: pin{" "}
         <strong>{Math.max(0, 3 - totalCatches(score))} more</strong> contradiction
         {Math.max(0, 3 - totalCatches(score)) === 1 ? "" : "s"} against the record.
-      </p>
-
-      <div className={`engine-tap__grounding ${grounding ? "" : "engine-tap__grounding--off"}`}>
-        <div className="engine-tap__grounding-text">
-          <span className="micro-label">Grounding · all turns</span>
-          <p className="engine-tap__grounding-state">
-            {grounding
-              ? "ON for every turn — each claim is checked against the source, live."
-              : "OFF for every turn — the engine has nothing to check against; the witness's word stands."}
-          </p>
-        </div>
-        <button
-          type="button"
-          className={`engine-tap__plug ${grounding ? "engine-tap__plug--on" : "engine-tap__plug--off"}`}
-          onClick={onToggleGrounding}
-          role="switch"
-          aria-checked={grounding}
-          aria-label="Toggle Foundry IQ grounding for all turns"
-          title={grounding ? "Pull the plug on Foundry IQ (all turns)" : "Plug Foundry IQ back in (all turns)"}
-        >
-          <span className="engine-tap__plug-track" aria-hidden="true">
-            <span className="engine-tap__plug-knob" />
-          </span>
-          <span className="engine-tap__plug-label">{grounding ? "ON" : "OFF"}</span>
-        </button>
-      </div>
-
-      <p className="engine-tap__grounding-note">
-        This switch flips grounding for <em>every future turn</em>. To preview a single
-        claim both ways — without scoring — use{" "}
-        <strong>IQ&nbsp;off&nbsp;⇄&nbsp;on</strong> on a sentence.
       </p>
 
       {score && (

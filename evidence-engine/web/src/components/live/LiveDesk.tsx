@@ -40,9 +40,6 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
   const { dispatch } = useGame();
   const { state, connect, askQuestion, challengeClaim, endSession } = useLiveSession();
   const [openDocKey, setOpenDocKey] = useState<string | null>(null);
-  // "Pull the plug": grounding on = Foundry IQ checks every claim; off = the
-  // engine has nothing to check against, so the witness's word stands.
-  const [grounding, setGrounding] = useState(true);
   const [accusing, setAccusing] = useState(false);
   const [showRecord, setShowRecord] = useState(false);
   // "You take the stand": the inversion — Foundry IQ interrogates the player.
@@ -56,46 +53,31 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
   const [actionsOpen, setActionsOpen] = useState(false);
   // Which inferred witness is on the stand, in a bring-your-own trial.
   const [selectedWitness, setSelectedWitness] = useState<string | null>(null);
-  const coldOpenedRef = useRef(false);
+  const initSelectedRef = useRef(false);
   const connectedRef = useRef(false);
 
   // Connect exactly once. Without this guard, React StrictMode's double-mount (dev)
-  // fires connect() twice and opens two sessions — the cold-open then asks against
-  // one session while the challenge targets the other ("Unknown claim"). The ref
-  // persists across the StrictMode remount, so the second invocation is a no-op.
-  // The offline-gate "Retry" button calls connect() directly and is unaffected.
+  // fires connect() twice and opens two sessions. The ref persists across the
+  // StrictMode remount, so the second invocation is a no-op. The offline-gate
+  // "Retry" button calls connect() directly and is unaffected.
   useEffect(() => {
     if (connectedRef.current) return;
     connectedRef.current = true;
     void connect(byo);
   }, [connect, byo]);
 
-  // Cold open (A1): the moment the line is live, drop the player mid-interrogation.
-  // Holbrooke → Helena already on the stand with her planted alibi. Bring-your-own
-  // → the custom witness, asked to lay out the facts so there's something to
-  // challenge in seconds. Fires exactly once per mounted session.
+  // When the line goes live, put the default witness on the stand — but never speak
+  // for the player. The thread opens empty; the player asks the first question.
+  // (BYO → the first inferred witness; Holbrooke → Helena.) Runs once per session.
   useEffect(() => {
-    if (state.status !== "ready" || !state.sessionId || coldOpenedRef.current) return;
-    coldOpenedRef.current = true;
+    if (state.status !== "ready" || !state.sessionId || initSelectedRef.current) return;
+    initSelectedRef.current = true;
     if (state.mode === "byo" && state.witnesses.length > 0) {
-      const first = state.witnesses[0];
-      setSelectedWitness(first.name);
-      void askQuestion(
-        state.sessionId,
-        first.name,
-        "In your own words — what is this about, and what are the most important facts?",
-        grounding
-      );
+      setSelectedWitness(state.witnesses[0].name);
     } else {
       dispatch({ type: "SELECT_SUSPECT", suspectId: "helena" });
-      void askQuestion(
-        state.sessionId,
-        "Helena Voss",
-        "What time did you leave the gallery that evening?",
-        grounding
-      );
     }
-  }, [state.status, state.sessionId, state.mode, state.witnesses, dispatch, askQuestion, grounding]);
+  }, [state.status, state.sessionId, state.mode, state.witnesses, dispatch]);
 
   // Derived from challenges (present in every status) so the voice hook runs
   // before the early returns, per the rules of hooks.
@@ -161,10 +143,6 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
   const sourceLabel = isByo
     ? state.sourceTitle ?? "your source"
     : "The Holbrooke Gallery Affair";
-  // The witness the cold-open question was auto-fired at (BYO → first inferred
-  // witness; Holbrooke → Helena). Mirrors the cold-open effect above so the panel
-  // can frame "we opened on your behalf" only on the genuinely seeded turn.
-  const coldOpenWitness = isByo ? state.witnesses[0]?.name ?? null : "Helena Voss";
   // Source noun for the desk thesis strip — keep Holbrooke's "case file" out of BYO.
   const corpusNoun = isByo ? "your source" : "the case file";
 
@@ -252,18 +230,14 @@ export function LiveDesk({ onBackToCaseFile, actions, byo }: LiveDeskProps) {
         )}
         <LiveInterrogationPanel
           live={state}
-          grounding={grounding}
           witness={isByo ? activeWitness ?? undefined : undefined}
-          coldOpenWitness={coldOpenWitness}
-          onAsk={(speaker, question) => void askQuestion(sessionId, speaker, question, grounding)}
-          onChallenge={(claimId) => void challengeClaim(sessionId, claimId, grounding)}
+          onAsk={(speaker, question) => void askQuestion(sessionId, speaker, question)}
+          onChallenge={(claimId) => void challengeClaim(sessionId, claimId)}
           onOpenDoc={setOpenDocKey}
         />
         <EngineTracePanel
           trace={state.trace}
           score={state.score}
-          grounding={grounding}
-          onToggleGrounding={() => setGrounding((on) => !on)}
           canEnd={state.score !== null || Object.keys(state.transcripts).length > 0}
           onEndSession={() => void endSession(sessionId)}
         />

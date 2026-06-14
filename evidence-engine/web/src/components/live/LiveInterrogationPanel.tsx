@@ -20,12 +20,8 @@ interface SplitState {
 
 interface LiveInterrogationPanelProps {
   live: LiveSessionState;
-  /** Whether Foundry IQ grounding is currently on (the "pull the plug" switch). */
-  grounding: boolean;
   /** In a bring-your-own trial, the single witness — overrides the Holbrooke suspect rail. */
   witness?: { name: string; role: string };
-  /** The witness that received the auto-fired cold-open question — drives first-turn framing. */
-  coldOpenWitness?: string | null;
   onAsk: (speaker: string, question: string) => void;
   onChallenge: (claimId: string) => void;
   onOpenDoc: (docKey: string) => void;
@@ -54,9 +50,7 @@ const BYO_OPENERS = [
  */
 export function LiveInterrogationPanel({
   live,
-  grounding,
   witness,
-  coldOpenWitness,
   onAsk,
   onChallenge,
   onOpenDoc,
@@ -139,15 +133,6 @@ export function LiveInterrogationPanel({
         </div>
       </header>
 
-      {!grounding && (
-        <p className="live-panel__unplugged" role="status">
-          <strong>Foundry IQ is unplugged.</strong> Nothing checks the witness now — her
-          claims can't be verified or caught. This is the case <em>without</em> grounding:
-          a fluent liar and no way to know. Plug it back in (engine tap, right) and
-          re-challenge to watch the catch land.
-        </p>
-      )}
-
       <div className="interrogation__thread" ref={threadRef}>
         {turns.length === 0 && !live.askPending && (
           <p className="interrogation__empty">
@@ -158,12 +143,6 @@ export function LiveInterrogationPanel({
 
         {turns.map((turn, turnIndex) => (
           <article key={turn.turnNo} className="testimony">
-            {coldOpenWitness === person.name && turnIndex === 0 && (
-              <p className="testimony__cold-open" role="note">
-                We opened with a question on your behalf, to get things moving —
-                challenge anything in {person.name}'s reply you don't believe.
-              </p>
-            )}
             <p className="testimony__question">
               <span className="testimony__speaker">You asked</span>
               {turn.question}
