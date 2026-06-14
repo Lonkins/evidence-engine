@@ -29,13 +29,17 @@ interface SplitVerdictProps {
  * thesis: remove Foundry IQ and the catch collapses.
  */
 export function SplitVerdict({ claimText, left, right, onClose }: SplitVerdictProps) {
-  // `left` is the unplugged run; we read it only to keep the two panes honestly
-  // sourced from real calls. The displayed left state is always "no record".
-  void left;
   const grounded = GROUNDED_STAMP[right.evidence.verdict];
   const citation = right.evidence.citations[0];
   const tokens = right.evidence.reasoningTokens;
   const effort = right.evidence.effort ?? "medium";
+
+  // The unplugged pane is a genuine render of the grounding-OFF call, not a fixed
+  // string: with grounding off the engine retrieves nothing, so it returns an
+  // ungrounded result — no record, nothing reasoned — and we show exactly that.
+  const leftUngrounded = left.evidence.source === "ungrounded";
+  const leftStamp = leftUngrounded ? "No record" : GROUNDED_STAMP[left.evidence.verdict].text;
+  const leftTokens = left.evidence.reasoningTokens;
 
   return (
     <section className="split-verdict" role="group" aria-label="Foundry IQ grounding on versus off">
@@ -55,12 +59,16 @@ export function SplitVerdict({ claimText, left, right, onClose }: SplitVerdictPr
       <div className="split-verdict__grid">
         <article className="split-verdict__pane split-verdict__pane--off">
           <p className="split-verdict__pane-label">Foundry IQ — unplugged</p>
-          <Stamp tone="silent">No record</Stamp>
+          <Stamp tone="silent">{leftStamp}</Stamp>
           <p className="split-verdict__pane-note">
             Nothing retrieved, so nothing checked. The witness's word stands — a confident
             claim, and no way to know.
           </p>
-          <p className="split-verdict__receipt">nothing reasoned · nothing checked</p>
+          <p className="split-verdict__receipt">
+            {!leftUngrounded && typeof leftTokens === "number"
+              ? `${left.evidence.effort ?? effort} effort · ${leftTokens.toLocaleString()} reasoning tokens`
+              : "nothing reasoned · nothing checked"}
+          </p>
         </article>
 
         <article className="split-verdict__pane split-verdict__pane--on">
