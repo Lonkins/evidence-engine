@@ -75,7 +75,7 @@ function evidenceFilter(session: Session): string {
 // Source-chunking bounds for "bring your own trial".
 const MAX_CHUNK_CHARS = 1800;
 const MAX_CHUNKS = 40;
-const MIN_SOURCE_CHARS = 80;
+const MIN_SOURCE_CHARS = 40;
 const MAX_SOURCE_CHARS = 24000;
 
 /** Split user-supplied source text into indexable chunks (paragraph-greedy). */

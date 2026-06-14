@@ -7,7 +7,7 @@ interface ByoIntakeProps {
   onCancel: () => void;
 }
 
-const MIN_CHARS = 80;
+const MIN_CHARS = 40;
 const MAX_CHARS = 24000;
 
 /**
@@ -18,13 +18,28 @@ const MAX_CHARS = 24000;
 export function ByoIntake({ onSubmit, onCancel }: ByoIntakeProps) {
   const [source, setSource] = useState("");
   const [title, setTitle] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const trimmed = source.trim();
   const tooShort = trimmed.length > 0 && trimmed.length < MIN_CHARS;
-  const valid = trimmed.length >= MIN_CHARS && trimmed.length <= MAX_CHARS;
 
+  // Always give feedback on click — never silently do nothing.
   const submit = () => {
-    if (!valid) return;
+    if (trimmed.length === 0) {
+      setError("Paste a short source first — a sentence or two is enough.");
+      return;
+    }
+    if (trimmed.length < MIN_CHARS) {
+      setError(
+        `A little more, please — at least ${MIN_CHARS} characters so the witness has something to stand on (you have ${trimmed.length}).`
+      );
+      return;
+    }
+    if (trimmed.length > MAX_CHARS) {
+      setError(`That's too long — keep it under ${MAX_CHARS.toLocaleString()} characters.`);
+      return;
+    }
+    setError(null);
     onSubmit({ source: trimmed, title: title.trim() || undefined });
   };
 
@@ -56,7 +71,10 @@ export function ByoIntake({ onSubmit, onCancel }: ByoIntakeProps) {
           <textarea
             className="byo-intake__textarea"
             value={source}
-            onChange={(event) => setSource(event.target.value)}
+            onChange={(event) => {
+              setSource(event.target.value);
+              if (error) setError(null);
+            }}
             rows={9}
             placeholder="Paste a document, your notes, a story, or code…"
             maxLength={MAX_CHARS}
@@ -84,11 +102,17 @@ export function ByoIntake({ onSubmit, onCancel }: ByoIntakeProps) {
         </p>
       </div>
 
+      {error && (
+        <p className="byo-intake__error" role="alert">
+          {error}
+        </p>
+      )}
+
       <div className="byo-intake__actions">
         <button type="button" className="surface-link" onClick={onCancel}>
           Back
         </button>
-        <button type="button" className="title-card__open" onClick={submit} disabled={!valid}>
+        <button type="button" className="title-card__open" onClick={submit}>
           Put it on the stand
         </button>
       </div>

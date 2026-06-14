@@ -273,6 +273,18 @@
   color: var(--text-dim);
 }
 
+.byo-intake__error {
+  margin: 0 0 0.4rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--crimson, #b3402f);
+  border-left-width: 3px;
+  border-radius: 4px;
+  background: rgba(179, 64, 47, 0.1);
+  color: var(--text, #e9e4d8);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
 .byo-intake__actions {
   display: flex;
   gap: 1.2rem;
