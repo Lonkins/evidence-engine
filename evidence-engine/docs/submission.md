@@ -95,8 +95,6 @@ Full documentation: `COPILOT_USAGE.md`
 
 **Watch the 3-minute demo:** https://youtu.be/IKJPIBMSy2E
 
-See `docs/demo-script.md` for the full 3-minute narrated recording guide.
-
 **Annotated walkthrough (available now, pending video):** `docs/game-walkthrough.md` documents the complete expected session, including the live challenge, the `CONTRADICTED` verdict with the security-log citation (`09-security-log.md`, timestamp `20:47:33`) quoted verbatim, the Grounding Record export, and the accusation reaching `SOLVED`. Judges can evaluate the mechanic from this transcript without a live provisioned instance.
 
 **Recommended demo flow (3 minutes):**
