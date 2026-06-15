@@ -47,20 +47,20 @@ Evidence Engine is a detective game where you interrogate AI witnesses who lie �
 
 The core mechanic: **a contradiction with a cited receipt is the win condition.** Pull the engine and the catch collapses — the witness's word stands. The UI proves it: on the first claim of a witness's first reply, an **IQ off ⇄ on** button opens a side-by-side split — the same sentence with Foundry IQ unplugged ("no record") next to Foundry IQ in the loop (`CONTRADICTED`, cited). It's a non-scoring preview.
 
-### Two ways to play, one engine
+### Two scenarios, one engine
 
 - **The example case — *The Holbrooke Gallery Affair*.** A polished, deterministic murder mystery: three witnesses, one provable lie, a full accusation endgame. The reliable hero path.
 - **Bring your own trial.** Paste *your own* source — a spec, your notes, a story, a snippet of code. Foundry IQ indexes it, infers 1–3 witnesses from the material, and puts them on the stand grounded only in what you pasted. The lies here are **emergent, not scripted** — the model invents, and Foundry IQ checks every claim against *your* source. This is real hallucination detection, on text we never saw.
 
 Every catch files into a growing, exportable **Grounding Record** (kept / contradicted / unverifiable, each cited) — so you leave an interrogation with a cited document, not just a stamp. And the same verdict engine ships as an **MCP server for GitHub Copilot** (`ground_on` + `check_claim`): load your own file and have Copilot audit a claim — including one it just made about your code — against it, with a faithfulness gate.
 
-### Three ways to play
+### Three surfaces
 
 | Surface | Where | What it gives you | Talks to Foundry IQ? |
 |---------|-------|-------------------|----------------------|
 | **Copilot Chat (MCP)** | VS Code, via the five MCP tools below | Free-form interrogation with LLM-synthesised dialogue, grounded by Foundry IQ retrieval | **Yes — live**, when Azure env vars are set (local keyword fallback otherwise, clearly labelled) |
-| **Web: Act I · Training Case** | [`evidence-engine/web/`](evidence-engine/web/) — static, hostable anywhere, no keys | A noir detective desk: pressable claim chips that flip to stamped VERIFIED / CONTRADICTED / NO RECORD verdicts, an evidence board, a full-screen accusation set-piece. Citation quotes verified verbatim by tests. | **No — fully offline by design.** This is the judge-without-keys path; the UI never claims otherwise |
-| **Web: Act II · Live Interrogation** | Same web app + [`evidence-engine/live-server/`](evidence-engine/live-server/) | **Open free-form chat with the suspects.** A live model plays each witness, grounded through a Foundry IQ retrieve on *every* turn — and deliberately allowed to drift. Every sentence becomes a challengeable claim, indexed into the knowledge base as testimony the moment it is spoken. Challenge any claim and the engine runs two live retrieves: one against the evidence partition, one against that witness's own earlier testimony. A wiretap-styled "engine tap" panel shows every live call (method, latency, status) in real time. | **Yes — live on every turn and every verdict.** If the backend is unreachable, the UI says "LINE DEAD" and points back to the Act I training case — it never silently substitutes local retrieval |
+| **Web app — offline mode (no keys)** | [`evidence-engine/web/`](evidence-engine/web/) — static, hostable anywhere, no keys | A noir detective desk: pressable claim chips that flip to stamped VERIFIED / CONTRADICTED / NO RECORD verdicts, an evidence board, a full-screen accusation set-piece. Citation quotes verified verbatim by tests. | **No — fully offline by design.** This is the judge-without-keys path; the UI never claims otherwise |
+| **Web app — live mode (the hero)** | Same web app + [`evidence-engine/live-server/`](evidence-engine/live-server/) | **Open free-form chat with the suspects.** A live model plays each witness, grounded through a Foundry IQ retrieve on *every* turn — and deliberately allowed to drift. Every sentence becomes a challengeable claim, indexed into the knowledge base as testimony the moment it is spoken. Challenge any claim and the engine runs two live retrieves: one against the evidence partition, one against that witness's own earlier testimony. A wiretap-styled "engine tap" panel shows every live call (method, latency, status) in real time. | **Yes — live on every turn and every verdict.** If the backend is unreachable, the UI says "LINE DEAD" and points back to the offline mode — it never silently substitutes local retrieval |
 
 ---
 
@@ -87,11 +87,11 @@ graph TD
 
 **Three set-pieces make the reasoning visible.** On the first claim of a witness's first reply, press **IQ off ⇄ on** for a side-by-side *split screen* — the same sentence with Foundry IQ unplugged (no record, her word stands) next to Foundry IQ in the loop (CONTRADICTED, cited); it's a non-scoring preview. Every verdict carries a **receipt** — `Foundry IQ · medium effort · N reasoning tokens` — so the multi-step reasoning is on screen, not merely asserted. And a witness can be convicted by *her own earlier words*: each reply is indexed into Foundry IQ as she speaks, so challenging a later claim retrieves her turn-1 testimony and catches the self-contradiction, verbatim, with the turn number — the AI assembling the proof of its own drift as it talks.
 
-### Live Interrogation architecture (Act II)
+### Live web-app architecture
 
 ```mermaid
 graph TD
-    Browser["🕵️ Browser<br/>web app, Act II<br/>(no keys, ever)"]
+    Browser["🕵️ Browser<br/>web app · live mode<br/>(no keys, ever)"]
     Live["live-server<br/>(Node, holds both secrets:<br/>search admin key + GitHub Models token)"]
     KB["Foundry IQ<br/>knowledge base evidence-kb<br/>agentic /retrieve + filterAddOn"]
     Index["ONE shared index 'evidence'<br/>partitioned by doc_type:<br/>15 'evidence' docs + per-session 'testimony' docs"]

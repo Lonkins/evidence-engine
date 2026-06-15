@@ -2,7 +2,6 @@
 
 > Pre-filled submission form for the Creative Apps track.
 > Copy each section into the corresponding field on the submission portal.
-> Fields marked [FILL] require a human action before submitting.
 
 ---
 
@@ -94,7 +93,7 @@ Full documentation: `COPILOT_USAGE.md`
 
 ## Demo Video
 
-[FILL: YouTube / Loom link after recording — target June 13]
+**Watch the 3-minute demo:** https://youtu.be/IKJPIBMSy2E
 
 See `docs/demo-script.md` for the full 3-minute narrated recording guide.
 
@@ -112,7 +111,7 @@ See `docs/demo-script.md` for the full 3-minute narrated recording guide.
 
 ## GitHub Repository
 
-[FILL: public GitHub URL — ensure repo is public before submitting]
+https://github.com/Lonkins/evidence-engine
 
 Key files for judges:
 - `evidence-engine/web/` — hosted web app (hero surface: live interrogation + Bring Your Own Trial)
@@ -144,4 +143,4 @@ Contact: babkek1337@gmail.com
 
 ## Pre-submission status
 
-The Azure AI Search knowledge base is provisioned and verified end-to-end (the live verdict path writes `docs/live-mode-proof.json`); the web app, live-server, and MCP server all build clean. Remaining human steps before submitting: record the demo video, set the repo public, and fill the `[FILL]` links above.
+The Azure AI Search knowledge base is provisioned and verified end-to-end (the live verdict path writes `docs/live-mode-proof.json`); the web app, live-server, and MCP server all build clean. The repository is public and the 3-minute demo video is recorded ([youtu.be/IKJPIBMSy2E](https://youtu.be/IKJPIBMSy2E)).
