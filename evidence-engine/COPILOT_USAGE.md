@@ -73,7 +73,7 @@ Copilot provided the correct `.vscode/mcp.json` structure including the `type: "
 
 **Date:** 2026-06-11  
 **Session type:** Full demo run — the four case-flow tools exercised in Copilot Chat Agent Mode (`ground_on`, the fifth, is covered in section 8)  
-**Evidence:** See `docs/screenshots/` for screen-captured tool responses
+**Evidence:** the MCP tools run live in Copilot Chat in the 3-minute demo video (https://youtu.be/IKJPIBMSy2E)
 
 The complete detective session was played inside Copilot Chat with the `evidence-engine` MCP server loaded from `.vscode/mcp.json`. Copilot invoked the case-flow tools and synthesised character dialogue from the retrieved evidence context. (The Copilot Receipts tools — `ground_on` + `check_claim` against your own source — are exercised separately; see section 8.)
 
