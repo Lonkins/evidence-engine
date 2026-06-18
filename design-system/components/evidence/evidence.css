@@ -1,0 +1,127 @@
+/* ============================================================================
+   CITATION SLIP — a cited passage as a pinned paper exhibit
+   ========================================================================== */
+
+.ee-slip {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-type);
+  background: var(--halftone), var(--paper-stock);
+  background-size: var(--halftone-size), auto;
+  color: var(--bone-ink);
+  border: none;
+  border-radius: var(--radius-xs);
+  padding: var(--space-2) var(--space-3);
+  box-shadow: var(--shadow-stamped);
+  transform: rotate(-0.4deg);
+  transition: transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+button.ee-slip {
+  cursor: pointer;
+}
+.ee-slip:nth-of-type(even) {
+  transform: rotate(0.5deg);
+}
+button.ee-slip:hover {
+  transform: rotate(0deg) translateY(-2px) scale(1.005);
+  box-shadow: var(--shadow-pop);
+}
+
+.ee-slip__doc {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55em;
+  font-family: var(--font-stencil);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--bone-ink);
+}
+.ee-slip__pin {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #e46a64, var(--oxblood-700));
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  align-self: center;
+}
+.ee-slip__kind {
+  margin-left: auto;
+  font-weight: var(--weight-regular);
+  color: var(--bone-ink-soft);
+  letter-spacing: var(--tracking-wide);
+}
+.ee-slip__quote {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  border-left: 2px solid var(--bone-400);
+  padding-left: var(--space-2);
+  color: var(--bone-ink-deep);
+}
+
+/* ============================================================================
+   CLAIM CHIP — a challengeable claim inside testimony
+   ========================================================================== */
+
+.ee-claim {
+  font: inherit;
+  line-height: inherit;
+  padding: 0.05em 0.15em;
+  border-radius: 2px;
+}
+
+.ee-claim--unpressed {
+  position: relative;
+  display: inline;
+  background: rgba(201, 161, 74, 0.16);
+  border: none;
+  border-bottom: 1px dashed var(--accent);
+  color: var(--accent-bright);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+.ee-claim--unpressed:hover,
+.ee-claim--unpressed:focus-visible {
+  background: rgba(201, 161, 74, 0.3);
+  outline: none;
+}
+.ee-claim__press-hint {
+  font-family: var(--font-stencil);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-left: 0.5em;
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+.ee-claim--unpressed:hover .ee-claim__press-hint,
+.ee-claim--unpressed:focus-visible .ee-claim__press-hint {
+  opacity: 1;
+}
+
+.ee-claim--pressed {
+  border-bottom: 1px solid currentColor;
+}
+.ee-claim--supported {
+  color: var(--evergreen-300);
+}
+.ee-claim--contradicted {
+  color: var(--oxblood-500);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(197, 48, 47, 0.7);
+}
+.ee-claim--unsupported {
+  color: var(--slate-500);
+  border-bottom-style: dotted;
+}
+.ee-claim__glyph {
+  margin-left: 0.4em;
+  font-weight: var(--weight-bold);
+}

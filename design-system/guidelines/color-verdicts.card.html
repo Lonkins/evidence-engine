@@ -1,0 +1,22 @@
+<!-- @dsCard group="Colors" viewport="700x180" name="Verdict signals" subtitle="The catch / the keep / the honest silence — colour as evidence" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; background: var(--bg); padding: var(--space-4); }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); }
+  .v { border-radius: var(--radius-sm); border: 1px solid var(--line); border-left-width: 3px; padding: var(--space-3); background: var(--surface-raised); }
+  .v--g { border-left-color: var(--verdict-grounded); }
+  .v--c { border-left-color: var(--verdict-contradicted); }
+  .v--s { border-left-color: var(--verdict-silent); }
+  .v dt { font-family: var(--font-stencil); font-size: var(--text-xs); letter-spacing: var(--tracking-wider); text-transform: uppercase; margin-bottom: 4px; }
+  .v--g dt { color: var(--verdict-grounded); } .v--c dt { color: var(--verdict-contradicted); } .v--s dt { color: var(--verdict-silent); }
+  .v dd { margin: 0; font-family: var(--font-type); font-size: var(--text-xs); color: var(--text-dim); line-height: 1.5; }
+  .v code { color: var(--text-faint); font-size: var(--text-2xs); }
+</style></head>
+<body>
+  <div class="grid">
+    <dl class="v v--g"><dt>● Grounded</dt><dd>The source backs it. Kept on the record.<br><code>--verdict-grounded</code></dd></dl>
+    <dl class="v v--c"><dt>✕ Contradicted</dt><dd>The file says otherwise. The catch.<br><code>--verdict-contradicted</code></dd></dl>
+    <dl class="v v--s"><dt>— Unverifiable</dt><dd>The file is silent. Not a failure.<br><code>--verdict-silent</code></dd></dl>
+  </div>
+</body></html>

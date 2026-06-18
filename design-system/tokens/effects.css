@@ -1,0 +1,88 @@
+/* ============================================================================
+   EFFECTS — light, texture, depth & motion
+   ----------------------------------------------------------------------------
+   The creative heart of the system. Five noir signatures live here as reusable
+   tokens so every surface shares one light source and one grain:
+
+     1. KEYLIGHT   one brass lamp, top-centre — the only light in the room
+     2. GRAIN      a disciplined film-grain over everything
+     3. HALFTONE   newsprint dot screen, for paper evidence
+     4. BLINDS     venetian-blind slats — the window behind the desk
+     5. STAMPS     inked, jittered verdict impressions with depth
+   ========================================================================== */
+
+:root {
+  /* ---- 1 · KEYLIGHT — the single overhead brass lamp -------------------- */
+  --keylight: radial-gradient(
+    ellipse 60% 45% at 50% -8%,
+    rgba(232, 201, 126, 0.18) 0%,
+    rgba(201, 161, 74, 0.06) 34%,
+    transparent 68%
+  ); /* @kind other */
+  --keylight-focus: radial-gradient(
+    circle 34rem at 50% 14%,
+    rgba(232, 201, 126, 0.09),
+    transparent 70%
+  ); /* @kind other */
+  --vignette: radial-gradient(
+    ellipse 120% 110% at 50% 50%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.7) 100%
+  ); /* @kind other */
+
+  /* ---- 2 · GRAIN — film-stock noise (apply as ::after at low opacity) ---- */
+  --grain-opacity: 0.05; /* @kind other */
+  --grain-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); /* @kind other */
+
+  /* ---- 3 · HALFTONE — newsprint dot screen for aged paper --------------- */
+  --halftone: radial-gradient(rgba(0, 0, 0, 0.5) 0.5px, transparent 0.6px); /* @kind other */
+  --halftone-size: 3px 3px; /* @kind other */
+
+  /* ---- 4 · BLINDS — venetian slats raking across a dark surface --------- */
+  --blinds: repeating-linear-gradient(
+    8deg,
+    transparent 0,
+    transparent 11px,
+    rgba(0, 0, 0, 0.55) 11px,
+    rgba(0, 0, 0, 0.55) 13px
+  ); /* @kind other */
+  --blinds-soft: repeating-linear-gradient(
+    0deg,
+    rgba(232, 201, 126, 0.05) 0,
+    rgba(232, 201, 126, 0.05) 2px,
+    transparent 2px,
+    transparent 16px
+  ); /* @kind other */
+
+  /* Surface dressings — booking-card / dossier with a lit top edge */
+  --surface-lit-top: linear-gradient(
+    180deg,
+    rgba(232, 201, 126, 0.06),
+    transparent 36%
+  ); /* @kind other */
+  --paper-stock: linear-gradient(175deg, var(--bone-200), var(--bone-300)); /* @kind other */
+
+  /* ---- 5 · DEPTH — shadow ladder --------------------------------------- */
+  --shadow-card: 0 1px 0 rgba(255, 235, 190, 0.05) inset,
+    0 10px 28px rgba(0, 0, 0, 0.55);
+  --shadow-paper: 0 2px 4px rgba(0, 0, 0, 0.5), 0 14px 36px rgba(0, 0, 0, 0.55);
+  --shadow-pop: 0 24px 70px rgba(0, 0, 0, 0.78);
+  --shadow-stamped: 0 1px 0 rgba(255, 235, 190, 0.06) inset,
+    0 2px 3px rgba(0, 0, 0, 0.55), 0 14px 30px rgba(0, 0, 0, 0.5);
+  --shadow-keylit: 0 -1px 24px rgba(232, 201, 126, 0.07);
+  --shadow-brass-glow: 0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 12px 32px rgba(201, 161, 74, 0.24);
+  --shadow-oxblood-glow: 0 8px 28px rgba(197, 48, 47, 0.32);
+
+  /* ---- MOTION — restrained. A stamp punches; everything else fades. ----- */
+  --duration-fast: 160ms; /* @kind other */
+  --duration-normal: 320ms; /* @kind other */
+  --duration-slow: 700ms; /* @kind other */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
+  --ease-stamp: cubic-bezier(0.34, 1.8, 0.4, 1); /* @kind other */
+  --type-reveal-ms: 520ms; /* @kind other */
+
+  /* Stamp jitter defaults (override inline per-instance for organic ink) */
+  --stamp-rot: -2.5deg; /* @kind other */
+  --stamp-rot-lg: -4deg; /* @kind other */
+}
