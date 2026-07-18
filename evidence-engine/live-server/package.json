@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@evidence-engine/verdict-core": "file:../verdict-core",
-    "dotenv": "^16.5.0"
+    "dotenv": "^17.4.2"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
