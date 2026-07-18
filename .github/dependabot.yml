@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/evidence-engine/live-server"
+    schedule:
+      interval: "weekly"
