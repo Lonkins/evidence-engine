@@ -1,0 +1,98 @@
+/* ============================================================================
+   BUTTON
+   ========================================================================== */
+
+.ee-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  font-family: var(--font-stencil);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.ee-btn__glyph {
+  font-size: 0.95em;
+  line-height: 1;
+}
+
+/* Sizes */
+.ee-btn--sm {
+  font-size: var(--text-2xs);
+  padding: 0.5em 0.95em;
+}
+.ee-btn--md {
+  font-size: var(--text-xs);
+  padding: 0.72em 1.4em;
+}
+.ee-btn--lg {
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-widest);
+  padding: 0.95em 2.1em;
+}
+
+/* Primary — the lit lamp */
+.ee-btn--primary {
+  color: var(--text-on-brass);
+  background: linear-gradient(180deg, var(--brass-300), var(--brass-500));
+  box-shadow: var(--shadow-brass-glow);
+}
+.ee-btn--primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 18px 44px rgba(201, 161, 74, 0.34);
+}
+.ee-btn--primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Secondary — ghost hairline */
+.ee-btn--secondary {
+  color: var(--accent);
+  background: transparent;
+  border-color: var(--line-strong);
+}
+.ee-btn--secondary:hover:not(:disabled) {
+  color: var(--accent-bright);
+  border-color: var(--accent);
+  background: rgba(201, 161, 74, 0.08);
+}
+
+/* Danger — oxblood, the accusation */
+.ee-btn--danger {
+  color: var(--oxblood-500);
+  background: rgba(197, 48, 47, 0.08);
+  border-color: var(--oxblood-500);
+}
+.ee-btn--danger:hover:not(:disabled) {
+  color: var(--bone-100);
+  background: var(--oxblood-500);
+  box-shadow: var(--shadow-oxblood-glow);
+}
+
+/* Quiet — text only */
+.ee-btn--quiet {
+  color: var(--text-dim);
+  background: transparent;
+  letter-spacing: var(--tracking-wide);
+}
+.ee-btn--quiet:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.ee-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}

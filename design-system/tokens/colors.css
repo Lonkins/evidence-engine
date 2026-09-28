@@ -1,0 +1,99 @@
+/* ============================================================================
+   COLORS — a 1940s interrogation room, lit by one brass lamp
+   ----------------------------------------------------------------------------
+   Discipline over decoration. The palette is built from FOUR pigments:
+
+     INK      warm near-blacks      the room, every surface
+     BRASS    lamp-gold             the hero accent — the engine, the light
+     OXBLOOD  dried-blood crimson   the CATCH and danger ONLY — used sparingly
+     BONE     aged case-file paper  the physical evidence (receipts, slips)
+
+   Plus two quiet verdict signals: EVERGREEN (grounded/kept) and SLATE
+   (unverifiable — the honest grey that is not a failure).
+   ========================================================================== */
+
+:root {
+  /* ---- INK · warm near-blacks, lamplit not screen-gray --------------------- */
+  --ink-900: #0a0806; /* the void behind everything */
+  --ink-800: #100c09; /* page background */
+  --ink-700: #17120d; /* raised surface */
+  --ink-600: #1f1810; /* card / panel */
+  --ink-500: #2a2015; /* card top edge, hover */
+  --ink-400: #382b1b; /* hairline edge in light */
+  --ink-300: #4a3925; /* strongest ink border */
+
+  /* ---- BONE · aged stock for physical evidence ---------------------------- */
+  --bone-100: #f1e8d0; /* brightest paper highlight */
+  --bone-200: #e9dec2; /* paper face */
+  --bone-300: #dccda9; /* paper mid */
+  --bone-400: #cdbb92; /* paper shadow / deckle */
+  --bone-ink: #241b10; /* ink ON paper */
+  --bone-ink-soft: #5c4f3a; /* faded ink on paper */
+  --bone-ink-deep: #38291a; /* quote ink on paper */
+
+  /* ---- BRASS · the lamp, the engine, the hero accent --------------------- */
+  --brass-900: #6b4f24; /* deepest brass, on-paper gold ink */
+  --brass-700: #8a6a2f; /* brass shadow */
+  --brass-500: #c9a14a; /* brass — the workhorse gold */
+  --brass-300: #e8c97e; /* lit brass — bright highlight, headlines in gold */
+  --brass-100: #f6e6bd; /* the hottest filament */
+
+  /* ---- OXBLOOD · the catch, the contradiction, danger -------------------- */
+  --oxblood-900: #4a1011; /* dried, almost black-red */
+  --oxblood-700: #7e1d1f; /* deep oxblood — borders */
+  --oxblood-500: #c5302f; /* crimson — the CONTRADICTED stamp */
+  --oxblood-300: #e0645c; /* lit crimson — hot edge */
+
+  /* ---- VERDICT SIGNALS ---------------------------------------------------- */
+  --evergreen-700: #2f6b3a; /* grounded ink on paper */
+  --evergreen-500: #3f7a55; /* verified */
+  --evergreen-300: #5d9d75; /* lit verified */
+  --slate-500: #8fa0b0; /* unverifiable — the honest blue-grey */
+  --slate-300: #b0bdc9; /* lit slate */
+  --azure-500: #6aa7d8; /* the AZURE trace tag — live engine call */
+
+  /* ===== SEMANTIC ALIASES — reference these, not raw pigments ============== */
+
+  /* Surfaces */
+  --bg: var(--ink-800);
+  --bg-void: var(--ink-900);
+  --surface: var(--ink-700);
+  --surface-raised: var(--ink-600);
+  --surface-hover: var(--ink-500);
+  --surface-paper: var(--bone-200);
+
+  /* Text on ink */
+  --text: #ece1c6; /* primary — warm bone-white */
+  --text-dim: #a3977d; /* secondary */
+  --text-faint: #8a7f64; /* tertiary (WCAG-AA on ink ramp) */
+  --text-on-brass: var(--ink-900); /* black ink on a lit-brass button */
+  --text-on-paper: var(--bone-ink);
+
+  /* Accent — the lamp */
+  --accent: var(--brass-500);
+  --accent-bright: var(--brass-300);
+  --accent-deep: var(--brass-700);
+  --accent-dim: rgba(201, 161, 74, 0.32);
+
+  /* Keylines */
+  --line: rgba(201, 161, 74, 0.16);
+  --line-strong: rgba(201, 161, 74, 0.38);
+  --line-ink: var(--ink-400);
+
+  /* Verdict semantics — the catch / keep / honest-silence, in one place */
+  --verdict-grounded: var(--evergreen-300);
+  --verdict-grounded-ink: var(--evergreen-700);
+  --verdict-contradicted: var(--oxblood-500);
+  --verdict-contradicted-ink: var(--oxblood-700);
+  --verdict-silent: var(--slate-500);
+
+  /* Danger — the unplugged / contradiction edge */
+  --danger: var(--oxblood-500);
+  --danger-edge: #b3402f;
+  --danger-soft: #e08a7c;
+
+  /* Trace-origin tags (the engine tap) */
+  --tap-azure: var(--azure-500);
+  --tap-model: var(--brass-500);
+  --tap-local: var(--text-faint);
+}

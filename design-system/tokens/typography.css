@@ -1,0 +1,49 @@
+/* ============================================================================
+   TYPOGRAPHY — three voices, one editorial spine
+   ----------------------------------------------------------------------------
+   DISPLAY (Playfair)   headlines, witness testimony, narrator italics
+   STENCIL (Oswald)     stamps, classified labels, case numbers, eyebrows
+   TYPE    (Special     receipts, evidence tags, the engine tap teletype
+            Elite)
+   ========================================================================== */
+
+:root {
+  /* Families */
+  --font-display: "Playfair Display", "Iowan Old Style", Georgia, serif;
+  --font-stencil: "Oswald", "Bebas Neue", "Arial Narrow", sans-serif;
+  --font-type: "Special Elite", "Courier Prime", "Courier New", monospace;
+
+  /* Type scale — compact, editorial. Body is deliberately small so the
+     headlines and stamps carry the page. */
+  --text-2xs: 0.62rem;
+  --text-xs: 0.7rem;
+  --text-sm: 0.8rem;
+  --text-base: 0.94rem;
+  --text-md: 1.08rem;
+  --text-lg: clamp(1.3rem, calc(1rem + 0.9vw), 1.7rem); /* @kind font */
+  --text-xl: clamp(1.7rem, calc(1.1rem + 2vw), 2.6rem); /* @kind font */
+  --text-display: clamp(2.4rem, calc(1.2rem + 4.5vw), 4.4rem); /* @kind font */
+  --text-hero: clamp(2.8rem, calc(1rem + 6vw), 6rem); /* @kind font */
+
+  /* Weights */
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-black: 900;
+
+  /* Line heights */
+  --leading-tight: 1.04;
+  --leading-snug: 1.3;
+  --leading-normal: 1.6;
+  --leading-loose: 2;
+
+  /* Tracking — the stencil & teletype run wide; the display runs tight */
+  --tracking-display: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.08em;
+  --tracking-wider: 0.16em;
+  --tracking-widest: 0.28em;
+  --tracking-stamp: 0.06em;
+}

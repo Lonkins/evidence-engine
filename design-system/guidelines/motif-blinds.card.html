@@ -1,0 +1,19 @@
+<!-- @dsCard group="Brand" viewport="700x200" name="Motif · venetian blinds" subtitle="The window behind the desk — slats rake across dark surfaces" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; background: var(--bg-void); }
+  .stage { position: relative; height: 200px; overflow: hidden; background:
+      radial-gradient(ellipse 70% 60% at 50% 0%, rgba(232,201,126,.16), transparent 60%), var(--ink-800); }
+  .stage::before { content:""; position:absolute; inset:0; background: var(--blinds); mix-blend-mode: multiply; }
+  .label { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align:center; }
+  .label h3 { font-family: var(--font-display); font-style: italic; color: var(--text); font-size: var(--text-lg); }
+</style></head>
+<body>
+  <div class="stage">
+    <div class="label">
+      <h3>Slats across the lamplight.</h3>
+      <p class="meta">--blinds &nbsp;·&nbsp; mix-blend-mode: multiply</p>
+    </div>
+  </div>
+</body></html>

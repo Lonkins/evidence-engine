@@ -1,0 +1,53 @@
+/* ============================================================================
+   FIELD — case-file form line (input / textarea)
+   ========================================================================== */
+
+.ee-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.ee-field__label {
+  font-family: var(--font-stencil);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.ee-field__control {
+  font-family: var(--font-type);
+  font-size: var(--text-sm);
+  color: var(--text);
+  background: var(--ink-800);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.7em 0.8em;
+  width: 100%;
+  transition: border-color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+.ee-field__control::placeholder {
+  color: var(--text-faint);
+}
+.ee-field__control--textarea {
+  resize: vertical;
+  line-height: 1.55;
+  min-height: 4.5em;
+}
+.ee-field__control:focus {
+  outline: none;
+  border-color: var(--accent-dim);
+  background: var(--ink-700);
+  box-shadow: 0 0 0 3px rgba(201, 161, 74, 0.1);
+}
+
+.ee-field__hint {
+  font-family: var(--font-type);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--text-faint);
+}

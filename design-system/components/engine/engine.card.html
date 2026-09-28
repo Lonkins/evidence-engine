@@ -1,0 +1,35 @@
+<!-- @dsCard group="Components" viewport="700x240" name="Engine trace line" subtitle="The wiretap teletype — live Foundry IQ calls made visible" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><link rel="stylesheet" href="../../styles.css" />
+<style>
+  body { margin: 0; background: var(--bg); padding: var(--space-4); }
+  .wrap { max-width: 640px; }
+  .cap { margin: 0 0 var(--space-2); }
+</style></head>
+<body>
+  <div class="atmosphere" aria-hidden="true"></div>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="../../_ds_bundle.js"></script>
+  <script type="text/babel">
+    const { TraceLine } = window.EvidenceEngineNoirDesignSystem_d4f9b3;
+    function Demo() {
+      return (
+        <div className="wrap">
+          <p className="micro-label cap">Engine tap</p>
+          <ol className="ee-trace-log">
+            <TraceLine origin="azure" step="kb.retrieve(evidence)" method="POST" latencyMs={412} status={200}
+              detail="…20:47:33 CARD_EXIT HOLDER: Helena Voss (HV-0041)" target="evidence-kb" />
+            <TraceLine origin="model" step="llm.witness.turn" method="POST" latencyMs={1140} status={200} />
+            <TraceLine origin="azure" step="index.upload(testimony)" method="PUT" latencyMs={88} status={201} />
+            <TraceLine origin="local" step="check.clocktime" method="—" latencyMs={2} status={200} detail="VERDICT: CONTRADICTED · receipt cited" />
+            <TraceLine origin="azure" step="kb.retrieve(self)" method="POST" latencyMs={503} status={503} detail="LINE DEAD — backend unreachable" />
+          </ol>
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById("root")).render(<Demo />);
+  </script>
+</body></html>

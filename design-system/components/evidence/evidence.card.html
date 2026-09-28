@@ -1,0 +1,38 @@
+<!-- @dsCard group="Components" viewport="700x300" name="Citation slip & claim chip" subtitle="The cited receipt, and a challengeable claim in testimony" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><link rel="stylesheet" href="../../styles.css" />
+<style>
+  body { margin: 0; background: var(--bg); padding: var(--space-5); }
+  .test { font-family: var(--font-display); font-style: italic; font-size: var(--text-md); color: var(--text); line-height: 2; max-width: 60ch; margin: 0 0 var(--space-4); }
+  .slips { display: flex; flex-direction: column; gap: var(--space-2); max-width: 60ch; }
+</style></head>
+<body>
+  <div class="atmosphere" aria-hidden="true"></div>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="../../_ds_bundle.js"></script>
+  <script type="text/babel">
+    const { CitationSlip, ClaimChip } = window.EvidenceEngineNoirDesignSystem_d4f9b3;
+    function Demo() {
+      return (
+        <>
+          <p className="test">
+            “I locked the gallery at{" "}
+            <ClaimChip pressed verdict="contradicted" glyph="✕">a quarter to eight</ClaimChip>{" "}
+            and handed the key to Mr Drummond. Then I{" "}
+            <ClaimChip pressed verdict="unsupported" glyph="—">took the train home</ClaimChip>.”
+          </p>
+          <div className="slips">
+            <CitationSlip docTitle="Electronic Access Log" kind="technical record"
+              quote="2025-10-14 20:47:33 | CARD_EXIT | HOLDER: Helena Voss (HV-0041)" onOpen={() => {}} />
+            <CitationSlip docTitle="Witness Statement — H. Voss" kind="statement"
+              quote="I locked the gallery at approximately a quarter to eight in the evening…" onOpen={() => {}} />
+          </div>
+        </>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById("root")).render(<Demo />);
+  </script>
+</body></html>

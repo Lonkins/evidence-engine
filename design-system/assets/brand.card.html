@@ -1,0 +1,35 @@
+<!-- @dsCard group="Brand" viewport="700x300" name="Logo · seal & wordmark" subtitle="The case-seal mark and the two-voice wordmark" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; background: var(--bg); }
+  .wrap {
+    display: grid; grid-template-columns: auto 1fr; gap: var(--space-5);
+    align-items: center; padding: var(--space-5) var(--space-5);
+  }
+  .seal { width: 124px; height: 124px; filter: drop-shadow(0 8px 22px rgba(0,0,0,.6)); }
+  .marks { display: flex; flex-direction: column; gap: var(--space-4); }
+  .word { width: min(440px, 100%); height: auto; }
+  .lockup-mono {
+    font-family: var(--font-stencil); font-weight: 600; font-size: 1.6rem;
+    letter-spacing: 0.34em; text-transform: uppercase; color: var(--text);
+  }
+  .lockup-mono em { color: var(--accent); font-family: var(--font-display); font-style: italic; letter-spacing: 0; text-transform: none; }
+  .divider { width: 100%; height: 1px; background: linear-gradient(90deg, var(--line-strong), transparent); }
+</style>
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true"></div>
+  <div class="wrap">
+    <img class="seal" src="logo-seal.svg" alt="Evidence Engine seal" />
+    <div class="marks">
+      <img class="word" src="logo-wordmark.svg" alt="Evidence Engine wordmark" />
+      <div class="divider"></div>
+      <div class="lockup-mono">EVIDENCE&nbsp;<em>Engine</em></div>
+    </div>
+  </div>
+</body>
+</html>

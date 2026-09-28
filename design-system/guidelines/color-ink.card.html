@@ -1,0 +1,22 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Ink — the room" subtitle="Warm near-blacks, lamplit not screen-gray" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; background: var(--bg); }
+  .row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; padding: var(--space-4); }
+  .sw { height: 92px; display: flex; flex-direction: column; justify-content: flex-end; padding: var(--space-2); gap: 2px; }
+  .sw b { font-family: var(--font-type); font-size: var(--text-2xs); font-weight: 400; color: var(--text); letter-spacing: .04em; }
+  .sw span { font-family: var(--font-type); font-size: var(--text-2xs); color: var(--text-faint); }
+  .sw--lite b, .sw--lite span { color: var(--ink-900); }
+</style></head>
+<body>
+  <div class="row">
+    <div class="sw" style="background:var(--ink-900)"><b>ink-900</b><span>#0a0806</span></div>
+    <div class="sw" style="background:var(--ink-800)"><b>ink-800</b><span>#100c09</span></div>
+    <div class="sw" style="background:var(--ink-700)"><b>ink-700</b><span>#17120d</span></div>
+    <div class="sw" style="background:var(--ink-600)"><b>ink-600</b><span>#1f1810</span></div>
+    <div class="sw" style="background:var(--ink-500)"><b>ink-500</b><span>#2a2015</span></div>
+    <div class="sw" style="background:var(--ink-400)"><b>ink-400</b><span>#382b1b</span></div>
+    <div class="sw" style="background:var(--ink-300)"><b>ink-300</b><span>#4a3925</span></div>
+  </div>
+</body></html>

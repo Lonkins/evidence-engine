@@ -1,0 +1,113 @@
+/* ============================================================================
+   SUSPECT PORTRAIT + BOOKING CARD
+   ========================================================================== */
+
+.ee-portrait__svg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.ee-portrait--initial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 0%, #2a2114, #0d0a07 78%);
+}
+.ee-portrait__initial {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--brass-300);
+}
+
+.ee-suspect {
+  display: flex;
+  gap: var(--space-2);
+  align-items: stretch;
+  text-align: left;
+  width: 100%;
+  background: var(--surface-lit-top),
+    linear-gradient(160deg, var(--ink-600), var(--ink-700) 70%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  color: inherit;
+  box-shadow: var(--shadow-stamped);
+  transition: border-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+.ee-suspect:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+.ee-suspect--active {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-card), 0 0 0 1px var(--accent-dim),
+    0 0 38px rgba(201, 161, 74, 0.12);
+}
+.ee-suspect--pressured {
+  border-color: rgba(197, 48, 47, 0.5);
+}
+.ee-suspect--active.ee-suspect--pressured {
+  border-color: var(--oxblood-500);
+}
+
+.ee-suspect__portrait {
+  position: relative;
+  flex: 0 0 86px;
+  border-radius: var(--radius-sm);
+  background: radial-gradient(ellipse at 50% 0%, #2a2114, #0d0a07 78%);
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.55),
+    inset 0 -10px 18px rgba(0, 0, 0, 0.5);
+}
+.ee-suspect__portrait::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 72% 42% at 50% -8%, rgba(232, 201, 126, 0.18), transparent 62%);
+  pointer-events: none;
+}
+.ee-suspect__flag {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: var(--text-xs);
+  color: var(--oxblood-500);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.ee-suspect__id {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding-right: var(--space-1);
+}
+.ee-suspect__name {
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+  color: var(--text);
+  line-height: 1.15;
+}
+.ee-suspect__role {
+  font-family: var(--font-stencil);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.ee-suspect__hook {
+  margin-top: 2px;
+  font-family: var(--font-type);
+  font-size: var(--text-xs);
+  line-height: 1.45;
+  color: var(--text-dim);
+}

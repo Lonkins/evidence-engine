@@ -7,8 +7,10 @@ export default defineConfig({
   base: "./",
   server: {
     fs: {
-      // the case corpus lives one level up, shared with the MCP server
-      allow: [".."],
+      // Allow reading up to the repo root: the case corpus lives one level up
+      // (evidence-engine/, shared with the MCP server) and the noir design
+      // system lives at the repo root (design-system/), imported by the styles.
+      allow: ["../.."],
     },
   },
 });

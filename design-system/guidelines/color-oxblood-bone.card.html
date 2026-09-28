@@ -1,0 +1,24 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Oxblood & Bone" subtitle="The catch-red (used sparingly) and the aged evidence stock" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; background: var(--bg); }
+  .row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 0; padding: var(--space-4); }
+  .sw { height: 84px; display: flex; flex-direction: column; justify-content: flex-end; padding: var(--space-2); gap: 2px; }
+  .sw b { font-family: var(--font-type); font-size: var(--text-2xs); letter-spacing: .03em; }
+  .sw span { font-family: var(--font-type); font-size: var(--text-2xs); opacity: .7; }
+  .on-dark b { color: var(--text); } .on-dark span { color: var(--text-faint); }
+  .on-lite b, .on-lite span { color: var(--bone-ink); }
+</style></head>
+<body>
+  <div class="row">
+    <div class="sw on-dark" style="background:var(--oxblood-900)"><b>oxblood-900</b></div>
+    <div class="sw on-dark" style="background:var(--oxblood-700)"><b>oxblood-700</b></div>
+    <div class="sw on-dark" style="background:var(--oxblood-500)"><b>oxblood-500</b></div>
+    <div class="sw on-dark" style="background:var(--oxblood-300)"><b>oxblood-300</b></div>
+    <div class="sw on-lite" style="background:var(--bone-400)"><b>bone-400</b></div>
+    <div class="sw on-lite" style="background:var(--bone-300)"><b>bone-300</b></div>
+    <div class="sw on-lite" style="background:var(--bone-200)"><b>bone-200</b></div>
+    <div class="sw on-lite" style="background:var(--bone-100)"><b>bone-100</b></div>
+  </div>
+</body></html>

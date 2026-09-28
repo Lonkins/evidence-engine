@@ -1,0 +1,19 @@
+<!-- @dsCard group="Spacing" viewport="700x160" name="Radii & depth" subtitle="Paper and brass have hard-ish corners; depth is lamplit" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; background: var(--bg); padding: var(--space-4) var(--space-5); display: flex; gap: var(--space-4); align-items: center; flex-wrap: wrap; }
+  .box { width: 84px; height: 84px; background: var(--surface-raised); border: 1px solid var(--line-strong); display: flex; align-items: flex-end; justify-content: center; padding: 6px; }
+  .box span { font-family: var(--font-type); font-size: var(--text-2xs); color: var(--text-faint); }
+  .d { width: 96px; height: 84px; background: var(--surface-raised); border-radius: var(--radius-md); display: flex; align-items: flex-end; justify-content: center; padding: 6px; }
+  .d span { font-family: var(--font-type); font-size: var(--text-2xs); color: var(--text-faint); }
+</style></head>
+<body>
+  <div class="box" style="border-radius:var(--radius-xs)"><span>xs · 2</span></div>
+  <div class="box" style="border-radius:var(--radius-sm)"><span>sm · 3</span></div>
+  <div class="box" style="border-radius:var(--radius-md)"><span>md · 5</span></div>
+  <div class="box" style="border-radius:var(--radius-lg)"><span>lg · 8</span></div>
+  <div class="d" style="box-shadow:var(--shadow-card)"><span>card</span></div>
+  <div class="d" style="box-shadow:var(--shadow-stamped)"><span>stamped</span></div>
+  <div class="d" style="box-shadow:var(--shadow-brass-glow)"><span>brass-glow</span></div>
+</body></html>

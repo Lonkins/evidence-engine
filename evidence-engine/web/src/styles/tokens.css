@@ -1,104 +1,61 @@
+/* ============================================================================
+   DESIGN TOKENS — sourced from the Evidence Engine Noir Design System
+   ----------------------------------------------------------------------------
+   The web app no longer hand-rolls its palette and type. It imports the design
+   system's token layer — the single source of truth, living at the repo-root
+   design-system/ — and bridges the app's original token names onto the design
+   system's evolved vocabulary. Fonts are self-hosted via the design system's
+   @font-face (no Google Fonts CDN), so the "play instantly, offline" promise
+   actually holds.
+
+   Source of truth: design-system/ (a generated export of the claude.ai Design
+   project). Edit tokens there and re-export — not here. This file only imports
+   them and aliases the legacy names.
+   ========================================================================== */
+
+/* Design-system foundation — self-hosted @font-face + every :root variable. */
+@import "../../../../design-system/tokens/fonts.css";
+@import "../../../../design-system/tokens/colors.css";
+@import "../../../../design-system/tokens/typography.css";
+@import "../../../../design-system/tokens/spacing.css";
+@import "../../../../design-system/tokens/effects.css";
+
+/* ----------------------------------------------------------------------------
+   Compatibility bridge — the app's components were authored against the
+   pre-overhaul token names. Alias each onto the design system's vocabulary so
+   the design system is the single source of truth, with no component rewrites.
+   (Right-hand side = the design-system token now backing each legacy name.)
+   -------------------------------------------------------------------------- */
 :root {
-  /* Ink — warm near-blacks, lamplit not template-gray */
-  --ink-0: #0b0907;
-  --ink-1: #131008;
-  --ink-2: #1c1710;
-  --ink-3: #292015;
-  --ink-edge: #3a2e1c;
+  /* Ink ramp — app indexed 0…3 (light→deep); DS uses a 900…300 value scale.
+     The DS values are a touch deeper/warmer — the intended palette evolution. */
+  --ink-0: var(--ink-900);
+  --ink-1: var(--ink-800);
+  --ink-2: var(--ink-700);
+  --ink-3: var(--ink-600);
+  --ink-edge: var(--ink-400);
 
-  /* Paper — aged case-file stock */
-  --paper: #e9dec2;
-  --paper-2: #dccda9;
-  --paper-3: #cdbb92;
-  --paper-ink: #241b10;
-  --paper-ink-dim: #5c4f3a;
+  /* Bone — aged case-file paper. Was "paper". */
+  --paper: var(--bone-200);
+  --paper-2: var(--bone-300);
+  --paper-3: var(--bone-400);
+  --paper-ink: var(--bone-ink);
+  --paper-ink-dim: var(--bone-ink-soft);
 
-  /* Accents */
-  --gold: #c9a14a;
-  --gold-bright: #e8c97e;
-  --gold-dim: rgba(201, 161, 74, 0.32);
-  --crimson: #c5302f;
-  --crimson-deep: #7e1d1f;
-  --verified: #3f7a55;
-  --verified-bright: #5d9d75;
-  --silent: #8fa0b0;
+  /* Brass — the lamp, the engine, the hero accent. Was "gold". */
+  --gold: var(--brass-500);
+  --gold-bright: var(--brass-300);
+  --gold-dim: var(--accent-dim);
 
-  /* Semantic verdict palette — the catch / keep / honest-silence, in one place.
-     Components reference these, not raw hexes, so a verdict-colour change is one edit.
-     Brass/gold = the engine; oxblood/crimson = the catch; blue-grey = honest refusal. */
-  --verdict-grounded: var(--verified-bright);
-  --verdict-contradicted: var(--crimson);
-  --verdict-silent: var(--silent);
-  --verdict-grounded-ink: #2f6b3a; /* on aged paper (record rows, report) */
-  --verdict-contradicted-ink: var(--crimson-deep);
+  /* Oxblood — the catch and danger, used sparingly. Was "crimson". */
+  --crimson: var(--oxblood-500);
+  --crimson-deep: var(--oxblood-700);
 
-  /* Danger hairline — the unplugged / contradiction edge (was ~6 raw hexes in live.css) */
-  --danger-edge: #b3402f;
-  --danger-soft: #e08a7c;
+  /* Verdict signals — evergreen (grounded) / slate (the honest unverifiable). */
+  --verified: var(--evergreen-500);
+  --verified-bright: var(--evergreen-300);
+  --silent: var(--slate-500);
 
-  /* Light & texture — one overhead interrogation lamp + a disciplined grain/halftone.
-     The key light is a single top-centre cone so every surface shares one source. */
-  --keylight: radial-gradient(
-    ellipse 60% 45% at 50% -8%,
-    rgba(232, 201, 126, 0.16) 0%,
-    rgba(201, 161, 74, 0.06) 34%,
-    transparent 68%
-  );
-  --keylight-focus: radial-gradient(
-    circle 34rem at 50% 16%,
-    rgba(232, 201, 126, 0.08),
-    transparent 70%
-  );
-  --grain-opacity: 0.05;
-  --halftone: radial-gradient(rgba(0, 0, 0, 0.5) 0.5px, transparent 0.6px);
-  --halftone-size: 3px 3px;
-
-  /* Text on ink */
-  --text: #e8ddc4;
-  --text-dim: #a3977d;
-  /* Raised from #6e6450 → clears WCAG-AA (~5:1) on the ink ramp while staying "faint". */
-  --text-faint: #8a7f64;
-
-  /* Keylines */
-  --line: rgba(201, 161, 74, 0.16);
-  --line-strong: rgba(201, 161, 74, 0.38);
-
-  /* Type */
-  --font-display: "Playfair Display", "Iowan Old Style", Georgia, serif;
-  --font-type: "Special Elite", "Courier Prime", "Courier New", monospace;
-
-  --text-xs: 0.66rem;
-  --text-sm: 0.78rem;
-  --text-base: 0.92rem;
-  --text-md: 1.05rem;
-  --text-lg: clamp(1.25rem, 1rem + 0.8vw, 1.6rem);
-  --text-hero: clamp(2.6rem, 1.2rem + 5vw, 5.4rem);
-
-  /* Rhythm */
-  --space-1: 0.375rem;
-  --space-2: 0.625rem;
-  --space-3: 1rem;
-  --space-4: 1.5rem;
-  --space-5: 2.25rem;
-
-  /* Motion */
-  --duration-fast: 160ms;
-  --duration-normal: 320ms;
-  --duration-slow: 700ms;
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-stamp: cubic-bezier(0.34, 1.8, 0.4, 1);
-  /* Per-instance stamp rotation defaults (Stamp.tsx overrides inline for jitter). */
-  --stamp-rot: -2.5deg;
-  --stamp-rot-large: -4deg;
-  /* Typewriter reveal duration (testimony + receipts type on). */
-  --type-reveal-ms: 520ms;
-
-  /* Depth */
-  --shadow-card: 0 1px 0 rgba(255, 235, 190, 0.05) inset, 0 10px 28px rgba(0, 0, 0, 0.55);
-  --shadow-paper: 0 2px 4px rgba(0, 0, 0, 0.5), 0 14px 36px rgba(0, 0, 0, 0.55);
-  --shadow-pop: 0 24px 70px rgba(0, 0, 0, 0.75);
-  /* Pinned-evidence lift — a stamped receipt sitting on the desk, not a flat panel. */
-  --shadow-stamped: 0 1px 0 rgba(255, 235, 190, 0.06) inset, 0 2px 3px rgba(0, 0, 0, 0.55),
-    0 14px 30px rgba(0, 0, 0, 0.5);
-  --shadow-keylit: 0 -1px 24px rgba(232, 201, 126, 0.07);
+  /* Stamp jitter — DS shortened the name. */
+  --stamp-rot-large: var(--stamp-rot-lg);
 }

@@ -1,0 +1,20 @@
+<!-- @dsCard group="Type" viewport="700x190" name="Typewriter — Special Elite" subtitle="Receipts, evidence tags, the engine-tap teletype" -->
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; background: var(--bg); padding: var(--space-4) var(--space-5); }
+  .tt { font-family: var(--font-type); font-size: var(--text-base); color: var(--text); }
+  .trace { margin-top: var(--space-3); font-family: var(--font-type); font-size: var(--text-sm); color: var(--text-dim); line-height: 1.9; }
+  .trace .az { color: var(--tap-azure); }
+  .trace .gl { color: var(--accent); }
+  .stk { margin-top: var(--space-3); }
+</style></head>
+<body>
+  <div class="tt">2025-10-14 20:47:33 | CARD_EXIT | READER_01_MAIN_DOOR</div>
+  <div class="trace">
+    <span class="gl">◉</span> <span class="az">AZURE</span> kb.retrieve · 412ms · 200<br>
+    <span class="gl">✎</span> MODEL llm.witness.turn · 1.1s · 200<br>
+    <span class="gl">▲</span> AZURE index.upload(testimony) · 88ms · 201
+  </div>
+  <p class="meta stk">Regular — monospaced records, citations, technical lines, timestamps</p>
+</body></html>
